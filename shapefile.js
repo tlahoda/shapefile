@@ -46,7 +46,7 @@ function Header (shx) {
   }
 }
 
-function Shape (shp, num) {
+function Shape (shp) {
   this.header = new Array ();
   this.header[0] = shp.readInt32 ();
   for (var i = 1; i < 5; ++i)
@@ -72,7 +72,7 @@ function ShapeFile (name) {
   this.shapes = new Array();
   for (var i = 0; i < this.header.numShapes; ++i) {
     shp.seek (this.header.offsets[i]);
-    this.shapes[i] = new Shape (shp, i);
+    this.shapes[i] = new Shape (shp);
   }
 }
 
