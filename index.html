@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="binaryReader.js"></script>
+    <script type="text/javascript" src="shapefile.js"></script>
+    <script type="text/javascript">
+
+      $(document).ready (function () {
+        var screen = document.getElementById ('screen');
+        if (screen.getContext) {
+          var context = screen.getContext ('2d');
+          var shapeFile = new ShapeFile ('shapefiles/northamerica_adm0');
+         
+          for (var i = 0; i < shapeFile.header.numShapes; ++i) {
+            var shape = shapeFile.shapes[i];
+
+            for (var j = 0; j < shape.header[5]; ++j) {
+              var startIndex = shape.header[7 + j];
+              var endIndex = (j == shape.header[5] - 1) ? shape.header[6] : shape.header[7 + j + 1];
+
+              var startPoint = ll2Orthoxy (shape.points[startIndex].x, shape.points[startIndex].y);
+              context.moveTo (startPoint.x, startPoint.y);
+
+              for (var k = startIndex + 1; k < endIndex; ++k) {
+                var temp = ll2Orthoxy (shape.points[k].x, shape.points[k].y);
+                context.lineTo (temp.x, temp.y);
+              }
+            }
+          }
+          context.strokeStyle = "#000";
+          context.stroke ();
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <canvas id="screen" width="800" height="800">
+      Your browser doesn't support canvas.
+    </canvas>
+  </body>
+</html>
