@@ -27,13 +27,6 @@ function Point (x, y) {
   this.y = y;
 }
 
-function ll2Orthoxy (lat, lon) {
-  lat *= deg2rad;
-  lon *= deg2rad;
-  var slat = Math.sin (piOverTwo - lat);
-  return new Point (400 + slat * Math.cos (lon) * 800, 800 - (800 + slat * Math.sin (lon) * 800));
-}
-
 function endianSwap (num) {
   //The shift then mask on the end prevents a sign issue.
   return ((num & 0xFF) << 24) | ((num & 0xFF00) << 8) | ((num & 0xFF0000) >> 8) | ((num >> 24) & 0xFF);
@@ -45,7 +38,7 @@ function load_binary_resource (url) {
   req.open ('GET', url, false);
   req.overrideMimeType('text/plain; charset=x-user-defined');
   req.send (null);
-  if (req.status != 200) return '';
+  if (req.status != 0) return '';
     return req.responseText;
 }
 
