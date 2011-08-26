@@ -24,24 +24,21 @@ function Point2d (x, y) {
   this.y = y;
 }
 
-function Point3d (x, y, z) {
-  this.x = x;
-  this.y = y;
-  this.z = z;
-}
-
-function ll2Orthoxy (ll) {
+function ll22d (ll) {
   ll.lat *= deg2rad;
   ll.lon *= deg2rad;
   var slat = Math.sin (piOverTwo - ll.lat);
   return new Point2d (400 + slat * Math.cos (ll.lon) * 400, 800 - (400 + slat * Math.sin (ll.lon) * 400));
 }
 
-function ll2xyz (ll) {
-  ll.lat *= deg2rad;
-  ll.lon *= deg2rad;
-  var clat = Math.cos (ll.lat);
-  return new Point3d (clat * Math.cos (ll.lon), clat * Math.sin (ll.lon), Math.sin (ll.lat));
+function transform2d (shapeFile) {
+  for (var i = 0; i < shapeFile.header.numShapes; ++i) {
+    var shape = shapeFile.shapes[i];
+
+    for (var j = 0; j < shape.header[6]; ++j) {
+        shape.points[j] = ll22d (shape.points[j]);
+    }
+  }
 }
 
 function render2d (shapeFile, context, color) {
@@ -52,17 +49,42 @@ function render2d (shapeFile, context, color) {
       var startIndex = shape.header[7 + j];
       var endIndex = (j == shape.header[5] - 1) ? shape.header[6] : shape.header[7 + j + 1];
 
-      var startPoint = ll2Orthoxy (shape.points[startIndex]);
+      //var startPoint = ll2Orthoxy (shape.points[startIndex]);
+      var startPoint = shape.points[startIndex];
       context.moveTo (startPoint.x, startPoint.y);
 
       for (var k = startIndex + 1; k < endIndex; ++k) {
-        var temp = ll2Orthoxy (shape.points[k]);
+        //var temp = ll2Orthoxy (shape.points[k]);
+        var temp = shape.points[k];
         context.lineTo (temp.x, temp.y);
       }
     }
   }
   context.strokeStyle = color;
   context.stroke ();
+}
+
+function Point3d (x, y, z) {
+  this.x = x;
+  this.y = y;
+  this.z = z;
+}
+
+function ll23d (ll) {
+  ll.lat *= deg2rad;
+  ll.lon *= deg2rad;
+  var clat = Math.cos (ll.lat);
+  return new Point3d (clat * Math.cos (ll.lon), clat * Math.sin (ll.lon), Math.sin (ll.lat));
+}
+
+function transform3d () {
+  for (var i = 0; i < shapeFile.header.numShapes; ++i) {
+    var shape = shapeFile.shapes[i];
+
+    for (var j = 0; j < shape.header[6]; ++j) {
+        shape.points[j] = ll23d (shape.points[j]);
+    }
+  }
 }
 
 function render3d (shapeFile, context, color) {
