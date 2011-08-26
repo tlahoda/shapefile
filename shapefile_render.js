@@ -34,7 +34,7 @@ function ll2Orthoxy (ll) {
   ll.lat *= deg2rad;
   ll.lon *= deg2rad;
   var slat = Math.sin (piOverTwo - ll.lat);
-  return new Point2d (400 + slat * Math.cos (ll.lon) * 800, 800 - (800 + slat * Math.sin (ll.lon) * 800));
+  return new Point2d (400 + slat * Math.cos (ll.lon) * 400, 800 - (400 + slat * Math.sin (ll.lon) * 400));
 }
 
 function ll2xyz (ll) {
