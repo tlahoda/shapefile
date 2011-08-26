@@ -19,24 +19,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+function Point2d (x, y) {
+  this.x = x;
+  this.y = y;
+}
+
 function Point3d (x, y, z) {
   this.x = x;
   this.y = y;
   this.z = z;
 }
 
-function ll2Orthoxy (lat, lon) {
-  lat *= deg2rad;
-  lon *= deg2rad;
-  var slat = Math.sin (piOverTwo - lat);
-  return new Point (400 + slat * Math.cos (lon) * 800, 800 - (800 + slat * Math.sin (lon) * 800));
+function ll2Orthoxy (ll) {
+  ll.lat *= deg2rad;
+  ll.lon *= deg2rad;
+  var slat = Math.sin (piOverTwo - ll.lat);
+  return new Point2d (400 + slat * Math.cos (ll.lon) * 800, 800 - (800 + slat * Math.sin (ll.lon) * 800));
 }
 
-function ll2xyz (lat, lon) {
-  lat *= deg2rad;
-  lon *= deg2rad;
-  var clat = Math.cos (lat);
-  return new Point3d (clat * Math.cos (lon), clat * Math.sin (lon), Math.sin (lat));
+function ll2xyz (ll) {
+  ll.lat *= deg2rad;
+  ll.lon *= deg2rad;
+  var clat = Math.cos (ll.lat);
+  return new Point3d (clat * Math.cos (ll.lon), clat * Math.sin (ll.lon), Math.sin (ll.lat));
 }
 
 function render2d (shapeFile, context, color) {
@@ -47,12 +52,33 @@ function render2d (shapeFile, context, color) {
       var startIndex = shape.header[7 + j];
       var endIndex = (j == shape.header[5] - 1) ? shape.header[6] : shape.header[7 + j + 1];
 
-      var startPoint = ll2Orthoxy (shape.points[startIndex].x, shape.points[startIndex].y);
+      var startPoint = ll2Orthoxy (shape.points[startIndex]);
       context.moveTo (startPoint.x, startPoint.y);
 
       for (var k = startIndex + 1; k < endIndex; ++k) {
-        var temp = ll2Orthoxy (shape.points[k].x, shape.points[k].y);
+        var temp = ll2Orthoxy (shape.points[k]);
         context.lineTo (temp.x, temp.y);
+      }
+    }
+  }
+  context.strokeStyle = color;
+  context.stroke ();
+}
+
+function render3d (shapeFile, context, color) {
+  for (var i = 0; i < shapeFile.header.numShapes; ++i) {
+    var shape = shapeFile.shapes[i];
+
+    for (var j = 0; j < shape.header[5]; ++j) {
+      var startIndex = shape.header[7 + j];
+      var endIndex = (j == shape.header[5] - 1) ? shape.header[6] : shape.header[7 + j + 1];
+
+      var startPoint = ll2xyz (shape.points[startIndex]);
+      //context.moveTo (startPoint.x, startPoint.y);
+
+      for (var k = startIndex + 1; k < endIndex; ++k) {
+        var temp = ll2xyz (shape.points[k]);
+        //context.lineTo (temp.x, temp.y);
       }
     }
   }
