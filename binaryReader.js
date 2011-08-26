@@ -2,6 +2,8 @@
 //The _checkSize function erroneously checks for < this._buffer.length
 //which fails when you try to read the last double in a file (I have
 //not tried it for the othe types). The fix is to check for <=
+//
+//Also has and endianSwap function added for swapping the endianess of a number.
 
 // BinaryReader
 // Refactored by Vjeux <vjeuxx@gmail.com>
@@ -50,6 +52,11 @@ BinaryReader.prototype = {
 	getSize: function () {
 		return this._buffer.length;
 	},
+
+  endianSwap: function endianSwap (num) {
+    //The shift then mask on the end prevents a sign issue.
+    return ((num & 0xFF) << 24) | ((num & 0xFF00) << 8) | ((num & 0xFF0000) >> 8) | ((num >> 24) & 0xFF);
+  },
 
 
 	/* Private */
