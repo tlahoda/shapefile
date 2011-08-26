@@ -22,9 +22,9 @@
 var piOverTwo = Math.PI / 2.0;
 var deg2rad = Math.PI / 180.0;
 
-function Point (x, y) {
-  this.x = x;
-  this.y = y;
+function PointLL (lat, lon) {
+  this.lat = lat;
+  this.lon = lon;
 }
 
 function endianSwap (num) {
@@ -74,7 +74,7 @@ function Shape (shp) {
   for (var i = 0; i < this.header[6]; ++i) {
     var lon = shp.readDouble ();
     var lat = shp.readDouble ();
-    this.points[i] = new Point (lat, lon);
+    this.points[i] = new PointLL (lat, lon);
   }
 }
 
