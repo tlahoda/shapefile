@@ -1,5 +1,5 @@
 /**
- * file shapefile.js
+ * \file shapefile.js
  * Contains the shapefile library.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -19,9 +19,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/**
+ * Precalculated pi / 2
+ */
 var piOverTwo = Math.PI / 2.0;
+
+/**
+ * Precalculated deg2rad conversion factor.
+ */
 var deg2rad = Math.PI / 180.0;
 
+/**
+ * Represents a lat/lon point.
+ *
+ * \param lat The latitude.
+ * \param lon The longitude.
+ */
 function PointLL (lat, lon) {
   this.lat = lat;
   this.lon = lon;
@@ -38,6 +51,11 @@ function load_binary_resource (url) {
     return req.responseText;
 }
 
+/**
+ * The shapefile header contains various pieces of management data for the shapefile.
+ *
+ * \param shx The binaryReader containg the shapefile index.
+ */
 function Header (shx) {
   this.header = new Array ();
   for (var i = 0; i < 7; ++i)
@@ -56,6 +74,11 @@ function Header (shx) {
   }
 }
 
+/**
+ * Represents a shape. This needs to be done polymorphically to fully represent a shapefile.
+ *
+ * \param shp The binaryReader containing the main shapefile.
+ */
 function Shape (shp) {
   this.header = new Array ();
   this.header[0] = shp.readInt32 ();
@@ -74,6 +97,11 @@ function Shape (shp) {
   }
 }
 
+/**
+ * Represents a shapefile
+ *
+ * \param name The base name of the shape file exluding extensions but including path.
+ */
 function ShapeFile (name) {
   var shxFile = load_binary_resource (name + '.shx');
   if (shxFile) {

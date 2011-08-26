@@ -1,5 +1,5 @@
 /**
- * file shapefile_render.js
+ * \file shapefile_render.js
  * Contains the shapefile render function.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -19,11 +19,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/**
+ * Represents a two dimensional point
+ *
+ * \param x The x coordinate.
+ * \param y The y coordinate.
+ */
 function Point2d (x, y) {
   this.x = x;
   this.y = y;
 }
 
+/**
+ * Converts a lat/lon point to a two dimensional point in an orthographic projection..
+ *
+ * \param ll The Pointll.
+ *
+ * \return The Point2d.
+ */
 function ll22d (ll) {
   ll.lat *= deg2rad;
   ll.lon *= deg2rad;
@@ -31,6 +44,11 @@ function ll22d (ll) {
   return new Point2d (400 + slat * Math.cos (ll.lon) * 400, 800 - (400 + slat * Math.sin (ll.lon) * 400));
 }
 
+/**
+ * Transforms all of the points in a shapefile from lat/lon points to two dimensional points.
+ *
+ * \param shapefile The shapefile to transform.
+ */
 function transform2d (shapeFile) {
   for (var i = 0; i < shapeFile.header.numShapes; ++i) {
     var shape = shapeFile.shapes[i];
@@ -41,6 +59,12 @@ function transform2d (shapeFile) {
   }
 }
 
+/**
+ * Renders a shapefile in a two dimensional orthographic projection.
+ *
+ * \param shapeFile The shapefile.
+ * \param color, The color to render the shapes.
+ */
 function render2d (shapeFile, context, color) {
   for (var i = 0; i < shapeFile.header.numShapes; ++i) {
     var shape = shapeFile.shapes[i];
@@ -64,12 +88,26 @@ function render2d (shapeFile, context, color) {
   context.stroke ();
 }
 
+/**
+ * Represents a three dimensional point
+ *
+ * \param x The x coordinate.
+ * \param y The y coordinate.
+ * \param z The z coordinate.
+ */
 function Point3d (x, y, z) {
   this.x = x;
   this.y = y;
   this.z = z;
 }
 
+/**
+ * Converts a lat/lon point to a three dimensional point.
+ *
+ * \param ll The PointLL.
+ *
+ * \return The Point3d.
+ */
 function ll23d (ll) {
   ll.lat *= deg2rad;
   ll.lon *= deg2rad;
@@ -77,6 +115,11 @@ function ll23d (ll) {
   return new Point3d (clat * Math.cos (ll.lon), clat * Math.sin (ll.lon), Math.sin (ll.lat));
 }
 
+/**
+ * Transforms all of the points in a shapefile from lat/lon points to three dimensional points.
+ *
+ * \param shapefile The shapefile to transform.
+ */
 function transform3d () {
   for (var i = 0; i < shapeFile.header.numShapes; ++i) {
     var shape = shapeFile.shapes[i];
@@ -87,6 +130,12 @@ function transform3d () {
   }
 }
 
+/**
+ * Renders a shapefile in 3d.
+ *
+ * \param shapeFile The shapefile.
+ * \param color, The color to render the shapes.
+ */
 function render3d (shapeFile, context, color) {
   for (var i = 0; i < shapeFile.header.numShapes; ++i) {
     var shape = shapeFile.shapes[i];
