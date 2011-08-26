@@ -1,5 +1,5 @@
 /**
- * @file shapefile.js
+ * file shapefile.js
  * Contains the shapefile library.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
