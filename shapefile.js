@@ -27,17 +27,13 @@ function PointLL (lat, lon) {
   this.lon = lon;
 }
 
-function endianSwap (num) {
-  //The shift then mask on the end prevents a sign issue.
-  return ((num & 0xFF) << 24) | ((num & 0xFF00) << 8) | ((num & 0xFF0000) >> 8) | ((num >> 24) & 0xFF);
-}
-
 // Code from https://developer.mozilla.org/En/Using_XMLHttpRequest#Receiving_binary_data
 function load_binary_resource (url) {
   var req = new XMLHttpRequest ();
   req.open ('GET', url, false);
   req.overrideMimeType('text/plain; charset=x-user-defined');
   req.send (null);
+  //Change 200 to 0 for local file testing
   if (req.status != 200) return '';
     return req.responseText;
 }
@@ -45,7 +41,7 @@ function load_binary_resource (url) {
 function Header (shx) {
   this.header = new Array ();
   for (var i = 0; i < 7; ++i)
-    this.header[i] = endianSwap (shx.readInt32 ());
+    this.header[i] = shx.endianSwap (shx.readInt32 ());
   for (var i = 7; i < 9; ++i)
     this.header[i] = shx.readInt32 ();
   for (var i = 9; i < 17; ++i)
@@ -54,8 +50,8 @@ function Header (shx) {
   this.offsets = new Array ();
   this.numShapes = 0;
   while (this.numShapes * 8 + 100 < this.header[6] * 2) {
-    var offset = endianSwap (shx.readInt32 ()) * 2;
-    var contentLen = endianSwap (shx.readInt32 ()) * 2;
+    var offset = shx.endianSwap (shx.readInt32 ()) * 2;
+    var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
     this.offsets[this.numShapes++] = offset + 8;
   }
 }
@@ -79,14 +75,22 @@ function Shape (shp) {
 }
 
 function ShapeFile (name) {
-  var shx = new BinaryReader (load_binary_resource (name + '.shx'));
-  this.header = new Header (shx);
-  
-  var shp = new BinaryReader (load_binary_resource (name + '.shp'));
-  this.shapes = new Array();
-  for (var i = 0; i < this.header.numShapes; ++i) {
-    shp.seek (this.header.offsets[i]);
-    this.shapes[i] = new Shape (shp);
-  }
+  var shxFile = load_binary_resource (name + '.shx');
+  if (shxFile) {
+    var shx = new BinaryReader (shxFile);
+    this.header = new Header (shx);
+   
+    var shpFile = load_binary_resource (name + '.shp');
+    if (shpFile) {
+      var shp = new BinaryReader (shpFile);
+      this.shapes = new Array();
+      for (var i = 0; i < this.header.numShapes; ++i) {
+        shp.seek (this.header.offsets[i]);
+        this.shapes[i] = new Shape (shp);
+      }
+    } else
+      alert ("Unable to load shapefile!");
+  } else
+    alert ("Unable to load shapefile index!");
 }
 
