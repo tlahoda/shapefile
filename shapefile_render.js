@@ -19,6 +19,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+function Point3d (x, y, z) {
+  this.x = x;
+  this.y = y;
+  this.z = z;
+}
 
 function ll2Orthoxy (lat, lon) {
   lat *= deg2rad;
@@ -27,7 +32,14 @@ function ll2Orthoxy (lat, lon) {
   return new Point (400 + slat * Math.cos (lon) * 800, 800 - (800 + slat * Math.sin (lon) * 800));
 }
 
-function render (shapeFile, context, color) {
+function ll2xyz (lat, lon) {
+  lat *= deg2rad;
+  lon *= deg2rad;
+  var clat = Math.cos (lat);
+  return new Point3d (clat * Math.cos (lon), clat * Math.sin (lon), Math.sin (lat));
+}
+
+function render2d (shapeFile, context, color) {
   for (var i = 0; i < shapeFile.header.numShapes; ++i) {
     var shape = shapeFile.shapes[i];
 

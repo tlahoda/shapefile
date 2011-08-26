@@ -30,7 +30,7 @@
       $(document).ready (function () {
         var screen = document.getElementById ('screen');
         if (screen.getContext) {
-          render (new ShapeFile ('shapefiles/northamerica_adm0'), screen.getContext ('2d'), "#000");
+          render2d (new ShapeFile ('shapefiles/northamerica_adm0'), screen.getContext ('2d'), "#000");
         }
       });
     </script>
