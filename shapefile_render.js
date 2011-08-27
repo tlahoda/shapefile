@@ -20,42 +20,56 @@
  */
 
 /**
- * Represents a two dimensional point
- *
- * \param x The x coordinate.
- * \param y The y coordinate.
+ * Precalculated pi / 2.
  */
-function Point2d (x, y) {
-  this.x = x;
-  this.y = y;
-}
+var piOverTwo = Math.PI / 2.0;
 
 /**
- * Converts a lat/lon point to a two dimensional point in an orthographic projection..
+ * Precalculated deg2rad conversion factor.
+ */
+var deg2rad = Math.PI / 180.0;
+
+/**
+ * Converts a lat/lon point to a two dimensional point in an orthographic projection.
  *
- * \param ll The Pointll.
+ * \param ll The lat/lon point.
  *
- * \return The Point2d.
+ * \return The two dimensional point.
  */
 function ll22d (ll) {
-  ll.lat *= deg2rad;
-  ll.lon *= deg2rad;
-  var slat = Math.sin (piOverTwo - ll.lat);
-  return new Point2d (400 + slat * Math.cos (ll.lon) * 400, 800 - (400 + slat * Math.sin (ll.lon) * 400));
+  ll[0] *= deg2rad;
+  ll[1] *= deg2rad;
+  var slat = Math.sin (piOverTwo - ll[0]);
+  return [400 + slat * Math.cos (ll[1]) * 400, 800 - (400 + slat * Math.sin (ll[1]) * 400)];
 }
 
 /**
- * Transforms all of the points in a shapefile from lat/lon points to two dimensional points.
+ * Converts a lat/lon point to a three dimensional point.
+ *
+ * \param ll The lat/lon point.
+ *
+ * \return The three dimensional point.
+ */
+function ll23d (ll) {
+  ll[0] *= deg2rad;
+  ll[1] *= deg2rad;
+  var clat = Math.cos (ll[0]);
+  return [clat * Math.cos (ll[1]), clat * Math.sin (ll[1]), Math.sin (ll[0])];
+}
+
+/**
+ * Transforms all of the points in a shapefile from lat/lon points to n-dimensional points.
  *
  * \param shapefile The shapefile to transform.
+ * \param transformFunction The coordinate transformation function.
  */
-function transform2d (shapeFile) {
+function transform (shapeFile, transformFunction) {
   for (var i = 0; i < shapeFile.header.numShapes; ++i) {
     var shape = shapeFile.shapes[i];
 
-    for (var j = 0; j < shape.header[6]; ++j) {
-        shape.points[j] = ll22d (shape.points[j]);
-    }
+    for (var j = 0; j < shape.header[5]; ++j)
+      for (var k = 0; k < shape.parts[j].length; ++k)
+        shape.parts[j][k] = transformFunction (shape.parts[j][k]);
   }
 }
 
@@ -63,6 +77,7 @@ function transform2d (shapeFile) {
  * Renders a shapefile in a two dimensional orthographic projection.
  *
  * \param shapeFile The shapefile.
+ * \param context The canvas onto which to draw.
  * \param color, The color to render the shapes.
  */
 function render2d (shapeFile, context, color) {
@@ -70,17 +85,12 @@ function render2d (shapeFile, context, color) {
     var shape = shapeFile.shapes[i];
 
     for (var j = 0; j < shape.header[5]; ++j) {
-      var startIndex = shape.header[7 + j];
-      var endIndex = (j == shape.header[5] - 1) ? shape.header[6] : shape.header[7 + j + 1];
-
-      //var startPoint = ll2Orthoxy (shape.points[startIndex]);
-      var startPoint = shape.points[startIndex];
-      context.moveTo (startPoint.x, startPoint.y);
-
-      for (var k = startIndex + 1; k < endIndex; ++k) {
-        //var temp = ll2Orthoxy (shape.points[k]);
-        var temp = shape.points[k];
-        context.lineTo (temp.x, temp.y);
+      var startPoint = shape.parts[j][0];
+      context.moveTo (startPoint[0], startPoint[1]);
+      
+      for (var k = 1; k < shape.parts[j].length; ++k) {
+        var temp = shape.parts[j][k];
+        context.lineTo (temp[0], temp[1]);
       }
     }
   }
@@ -89,67 +99,24 @@ function render2d (shapeFile, context, color) {
 }
 
 /**
- * Represents a three dimensional point
- *
- * \param x The x coordinate.
- * \param y The y coordinate.
- * \param z The z coordinate.
- */
-function Point3d (x, y, z) {
-  this.x = x;
-  this.y = y;
-  this.z = z;
-}
-
-/**
- * Converts a lat/lon point to a three dimensional point.
- *
- * \param ll The PointLL.
- *
- * \return The Point3d.
- */
-function ll23d (ll) {
-  ll.lat *= deg2rad;
-  ll.lon *= deg2rad;
-  var clat = Math.cos (ll.lat);
-  return new Point3d (clat * Math.cos (ll.lon), clat * Math.sin (ll.lon), Math.sin (ll.lat));
-}
-
-/**
- * Transforms all of the points in a shapefile from lat/lon points to three dimensional points.
- *
- * \param shapefile The shapefile to transform.
- */
-function transform3d () {
-  for (var i = 0; i < shapeFile.header.numShapes; ++i) {
-    var shape = shapeFile.shapes[i];
-
-    for (var j = 0; j < shape.header[6]; ++j) {
-        shape.points[j] = ll23d (shape.points[j]);
-    }
-  }
-}
-
-/**
  * Renders a shapefile in 3d.
  *
  * \param shapeFile The shapefile.
+ * \param context The canvas onto which to draw.
  * \param color, The color to render the shapes.
  */
 function render3d (shapeFile, context, color) {
   for (var i = 0; i < shapeFile.header.numShapes; ++i) {
     var shape = shapeFile.shapes[i];
 
+    //the innards of this loop are going to change, just pass array of vertices into webgl.
     for (var j = 0; j < shape.header[5]; ++j) {
-      var startIndex = shape.header[7 + j];
-      var endIndex = (j == shape.header[5] - 1) ? shape.header[6] : shape.header[7 + j + 1];
-
-      var startPoint = ll2xyz (shape.points[startIndex]);
-      //context.moveTo (startPoint.x, startPoint.y);
-
-      for (var k = startIndex + 1; k < endIndex; ++k) {
-        var temp = ll2xyz (shape.points[k]);
-        //context.lineTo (temp.x, temp.y);
+      var startPoint = shape.parts[j][0];
+      //context.moveTo (startPoint[0], startPoint[1]);
+      
+      for (var k = 1; k < shape.parts[j].length; ++k) {
+        var temp = shape.parts[j][k];
+        //context.lineTo (temp[0], temp[1]);
       }
     }
   }
