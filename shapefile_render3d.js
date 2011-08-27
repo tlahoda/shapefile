@@ -25,9 +25,11 @@
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PointRenderer3d (shape, context) {
-  throw "Point rendering not implemented.";
-}
+var PointRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "Point rendering not implemented.";
+  }
+});
 
 /**
  * Renders a PointZ point in a 3d.
@@ -35,9 +37,11 @@ function PointRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PointZRenderer3d (shape, context) {
-  throw "PointZ rendering not implemented.";
-}
+var PointZRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "PointZ rendering not implemented.";
+  }
+});
 
 /**
  * Renders a measured point in a 3d.
@@ -45,9 +49,11 @@ function PointZRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PointMRenderer3d (shape, context) {
-  throw "PointM rendering not implemented.";
-}
+var PointMRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "PointM rendering not implemented.";
+  }
+});
 
 /**
  * Renders a set of multiple points in a 3d.
@@ -55,9 +61,11 @@ function PointMRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPointRenderer3d (shape, context) {
-  throw "MultiPoint rendering not implemented.";
-}
+var MultiPointRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "MultiPoint rendering not implemented.";
+  }
+});
 
 /**
  * Renders a set of PointZs in a 3d.
@@ -65,9 +73,11 @@ function MultiPointRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPointZRenderer3d (shape, context) {
-  throw "MultiPointZ rendering not implemented.";
-}
+var MultiPointZRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "MultiPointZ rendering not implemented.";
+  }
+});
 
 /**
  * Renders a set of measured points in a 3d.
@@ -75,19 +85,11 @@ function MultiPointZRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPointMRenderer3d (shape, context) {
-  throw "MultiPointM rendering not implemented.";
-}
-
-/**
- * Renders a PolyLineZ in a 3d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function PolyLineZRenderer3d (shape, context) {
-  throw "PolyLineZ rendering not implemented.";
-}
+var MultiPointMRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "MultiPointM rendering not implemented.";
+  }
+});
 
 /**
  * Renders a polygon in a 3d.
@@ -95,21 +97,23 @@ function PolyLineZRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolygonRenderer3d (shape, context) {
-  //the innards of this loop are going to change, just pass array of vertices into webgl.
-  for (var j = 0; j < shape.header[5]; ++j) {
-    var startPoint = shape.parts[j][0];
-    context.beginPath ();
-    //context.moveTo (startPoint[0], startPoint[1]);
-    
-    for (var k = 1; k < shape.parts[j].length; ++k) {
-      var temp = shape.parts[j][k];
-      //context.lineTo (temp[0], temp[1]);
+var PolygonRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    //the innards of this loop are going to change, just pass array of vertices into webgl.
+    for (var j = 0; j < shape.header[5]; ++j) {
+      var startPoint = shape.parts[j][0];
+      context.beginPath ();
+      //context.moveTo (startPoint[0], startPoint[1]);
+      
+      for (var k = 1; k < shape.parts[j].length; ++k) {
+        var temp = shape.parts[j][k];
+        //context.lineTo (temp[0], temp[1]);
+      }
+      context.stroke ();
+      context.closePath ();
     }
-    context.stroke ();
-    context.closePath ();
   }
-}
+});
 
 /**
  * Renders a PolygonZ in a 3d.
@@ -117,9 +121,11 @@ function PolygonRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolygonZRenderer3d (shape, context) {
-  throw "PolygonZ rendering not implemented.";
-}
+var PolygonZRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "PolygonZ rendering not implemented.";
+  }
+});
 
 /**
  * Renders a measured polygon in a 3d.
@@ -127,9 +133,47 @@ function PolygonZRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolygonMRenderer3d (shape, context) {
-  throw "PolygonM rendering not implemented.";
-}
+var PolygonMRenderer3d = Class.create ({
+  initialize: function (shape, context) {
+    throw "PolygonM rendering not implemented.";
+  }
+});
+
+/**
+ * Renders a PolyLine in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+var PolyLineRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "PolyLine rendering not implemented.";
+  }
+});
+
+/**
+ * Renders a PolyLineZ in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+var PolyLineZRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "PolyLineZ rendering not implemented.";
+  }
+});
+
+/**
+ * Renders a PolyLineM in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+var PolyLineMRenderer3d = Class.create ({
+  initialize: function(shape, context) {
+    throw "PolyLineM rendering not implemented.";
+  }
+});
 
 /**
  * Renders a MultiPatch in a 3d.
@@ -137,9 +181,11 @@ function PolygonMRenderer3d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPatchRenderer3d (shape, context) {
-  throw "MultiPatch rendering not implemented.";
-}
+var MultiPatchRenderer3d = Class.create ({
+  initialize: function (shape, context) {
+    throw "MultiPatch rendering not implemented.";
+  }
+});
 
 /**
  * Calls the appropriate renderer.
@@ -156,8 +202,7 @@ function RenderFactory3d (shape, context) {
       PointRenderer3d (shape, context);
       break;
     case 3:
-      //Polyline has the same structure as Polygon so using it for now.
-      PolygonRenderer3d (shape, context);
+      PolyLineRenderer3d (shape, context);
       break;
     case 5:
       PolygonRenderer3d (shape, context);
@@ -181,8 +226,7 @@ function RenderFactory3d (shape, context) {
       PointMRenderer3d (shape, context);
       break;
     case 23:
-      //PolylineM has the same structure as PolygonM so using it for now.
-      PolygonMRenderer3d (shape, context);
+      PolyLineMRenderer3d (shape, context);
       break;
     case 25:
       PolygonMRenderer3d (shape, context);

@@ -25,9 +25,11 @@
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PointRenderer2d (shape, context) {
-  throw "Point rendering not implemented.";
-}
+var PointRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    throw "Point rendering not implemented.";
+  }
+});
 
 /**
  * Renders a PointZ point in a 2d.
@@ -35,9 +37,11 @@ function PointRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PointZRenderer2d (shape, context) {
-  throw "PointZ rendering not implemented.";
-}
+var PointZRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    throw "PointZ rendering not implemented.";
+  }
+});
 
 /**
  * Renders a measured point in a 2d.
@@ -45,9 +49,11 @@ function PointZRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PointMRenderer2d (shape, context) {
-  throw "PointM rendering not implemented.";
-}
+var PointMRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    throw "PointM rendering not implemented.";
+  }
+});
 
 /**
  * Renders a set of multiple points in a 2d.
@@ -55,9 +61,11 @@ function PointMRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPointRenderer2d (shape, context) {
-  throw "MultiPoint rendering not implemented.";
-}
+var MultiPointRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    throw "MultiPoint rendering not implemented.";
+  }
+});
 
 /**
  * Renders a set of PointZs in a 2d.
@@ -65,19 +73,23 @@ function MultiPointRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPointZRenderer2d (shape, context) {
-  throw "MultiPointZ rendering not implemented.";
-}
+var MultiPointZRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    throw "MultiPointZ rendering not implemented.";
+  }
+});
 
 /**
- * Renders a PolyLineZ in a 2d.
+ * Renders a set of PointMs in a 2d.
  *
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolyLineZRenderer2d (shape, context) {
-  throw "PolyLineZ rendering not implemented.";
-}
+var MultiPointMRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    throw "MultiPointM rendering not implemented.";
+  }
+});
 
 /**
  * Renders a polygon in a 2d.
@@ -85,20 +97,22 @@ function PolyLineZRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolygonRenderer2d (shape, context) {
-  for (var j = 0; j < shape.header[5]; ++j) {
-    var startPoint = shape.parts[j][0];
-    context.beginPath ();
-    context.moveTo (startPoint[0], startPoint[1]);
-    
-    for (var k = 1; k < shape.parts[j].length; ++k) {
-      var temp = shape.parts[j][k];
-      context.lineTo (temp[0], temp[1]);
+var PolygonRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    for (var j = 0; j < shape.header[5]; ++j) {
+      var startPoint = shape.parts[j][0];
+      context.beginPath ();
+      context.moveTo (startPoint[0], startPoint[1]);
+      
+      for (var k = 1; k < shape.parts[j].length; ++k) {
+        var temp = shape.parts[j][k];
+        context.lineTo (temp[0], temp[1]);
+      }
+      context.stroke ();
+      context.closePath ();
     }
-    context.stroke ();
-    context.closePath ();
   }
-}
+});
 
 /**
  * Renders a PolygonZ in a 2d.
@@ -106,9 +120,12 @@ function PolygonRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolygonZRenderer2d (shape, context) {
-  throw "PolygonZ rendering not implemented.";
-}
+var PolygonZRenderer2d = Class.create (PolygonRenderer2d, {
+  initialize: function ($super, shape, context) {
+    //$super (shape, context);
+    throw "PolygonZ rendering not implemented.";
+  }
+});
 
 /**
  * Renders a measured polygon in a 2d.
@@ -116,20 +133,11 @@ function PolygonZRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolygonMRenderer2d (shape, context) {
-  for (var j = 0; j < shape.header[5]; ++j) {
-    var startPoint = shape.parts[j][0];
-    context.beginPath ();
-    context.moveTo (startPoint[0], startPoint[1]);
-    
-    for (var k = 1; k < shape.parts[j].length; ++k) {
-      var temp = shape.parts[j][k];
-      context.lineTo (temp[0], temp[1]);
-    }
-    context.stroke ();
-    context.closePath ();
+var PolygonMRenderer2d = Class.create (PolygonRenderer2d, {
+  initialize: function ($super, shape, context) {
+    $super (shape, context);
   }
-}
+});
 
 /**
  * Renders a PolygonZ in a 2d.
@@ -137,18 +145,61 @@ function PolygonMRenderer2d (shape, context) {
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function PolygonZRenderer2d (shape, context) {
-  throw "PolygonZ rendering not implemented.";
-}
+var PolygonZRenderer2d = Class.create (PolygonRenderer2d, {
+  initialize: function ($super, shape, context) {
+    //$super (shape, context);
+    throw "PolygonZ rendering not implemented.";
+  }
+});
+
+/**
+ * Renders a PolyLine in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+var PolyLineRenderer2d = Class.create (PolygonRenderer2d, {
+  initialize: function ($super, shape, context) {
+    $super (shape, context);
+  }
+});
+
+/**
+ * Renders a PolyLineZ in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+var PolyLineZRenderer2d = Class.create (PolygonRenderer2d, {
+  initialize: function ($super, shape, context) {
+    //$super (shape, context);
+    throw "PolyLineZ rendering not implemented.";
+  }
+});
+
+/**
+ * Renders a PolyLineM in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+var PolyLineMRenderer2d = Class.create (PolygonRenderer2d, {
+  initialize: function ($super, shape, context) {
+    $super (shape, context);
+  }
+});
+
 /**
  * Renders a MultiPatch in a 2d.
  *
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPatchRenderer2d (shape, context) {
-  throw "MultiPatch rendering not implemented.";
-}
+var MultiPatchRenderer2d = Class.create ({
+  initialize: function (shape, context) {
+    throw "MultiPatch rendering not implemented.";
+  }
+});
 
 /**
  * Calls the appropriate renderer.
@@ -162,45 +213,43 @@ function RenderFactory2d (shape, context) {
       //NullShape does not need rendering. 
       break;
     case 1:
-      PointRenderer2d (shape, context);
+      new PointRenderer2d (shape, context);
       break;
     case 3:
-      //Polyline has the same structure as Polygon so using it for now.
-      PolygonRenderer2d (shape, context);
+      new PolyLineRenderer2d (shape, context);
       break;
     case 5:
-      PolygonRenderer2d (shape, context);
+      new PolygonRenderer2d (shape, context);
       break;
     case 8:
-      MultiPointRenderer2d (shape, context);
+      new MultiPointRenderer2d (shape, context);
       break;
     case 11:
-      PointZRenderer2d (shape, context);
+      new PointZRenderer2d (shape, context);
       break;
     case 13:
-      PolyLineZRenderer2d (shape, context);
+      new PolyLineZRenderer2d (shape, context);
       break;
     case 15:
-      PolygonZRenderer2d (shape, context);
+      new PolygonZRenderer2d (shape, context);
       break;
     case 18:
-      MultiPopintZRenderer2d (shape, context);
+      new MultiPopintZRenderer2d (shape, context);
       break;
     case 21:
-      PointMRenderer2d (shape, context);
+      new PointMRenderer2d (shape, context);
       break;
     case 23:
-      //PolylineM has the same structure as PolygonM so using it for now.
-      PolygonMRenderer2d (shape, context);
+      new PolyLineMRenderer2d (shape, context);
       break;
     case 25:
-      PolygonMRenderer2d (shape, context);
+      new PolygonMRenderer2d (shape, context);
       break;
     case 28:
-      MultiPointMRenderer2d (shape, context);
+      new MultiPointMRenderer2d (shape, context);
       break;
     case 31:
-      MultiPatchRenderer2d (shape, context);
+      new MultiPatchRenderer2d (shape, context);
       break;
     default:
       throw "Shape type unknown.";
