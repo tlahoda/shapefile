@@ -50,6 +50,15 @@ function PolygonRenderer3d (shape, context) {
 function RenderFactory3d (shape, context) {
   switch (shape.header[0]) {
     case 0:
+      //NullShape does not need rendering.
+      break;
+    case 3:
+      //Polyline has the same structure as Polygon so using it for now.
+      PolygonRenderer3d (shape, context);
+      break;
+    case 5:
+      PolygonRenderer3d (shape, context);
+      break;
     case 1:
     case 8:
     case 11:
@@ -62,13 +71,6 @@ function RenderFactory3d (shape, context) {
     case 28:
     case 31:
       throw "Shape type rendering not implemented.";
-      break;
-    case 3:
-      //Polyline has the same structure as Polygon so using it for now.
-      PolygonRenderer3d (shape, context);
-      break;
-    case 5:
-      PolygonRenderer3d (shape, context);
       break;
     default:
       throw "Shape type unknown.";
