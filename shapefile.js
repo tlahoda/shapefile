@@ -54,8 +54,54 @@ function Header (shx) {
 }
 
 /**
+ * Represents a null shape.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function NullShape (shapeType, shp) {
+  this.header = new Array (1);
+  this.header[0] = shapeType;
+}
+
+/**
+ * Represents a point.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function Point (shapeType, shp) {
+  this.header = new Array (1);
+  this.header[0] = shapeType;
+  this.x = shp.readDouble ();
+  this.y = shp.readDouble ();
+}
+
+/**
+ * Represents multiple points.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function MultiPoint (shapeType, shp) {
+  this.header = new Array (6);
+  this.header[0] = shapeType;
+  for (var i = 1; i < 5; ++i)
+    this.header[i] = shp.readDouble ();
+  this.header[5] = shp.readInt32 ();
+
+  this.points = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i) {
+    var x = shp.readDouble ();
+    var y = shp.readDouble ();
+    this.points[i] = [x, y];
+  }
+}
+
+/**
  * Represents a Polygon.
  *
+ * \param shapeType The type of the shape.
  * \param shp The binaryReader containing the main shapefile.
  */
 function Polygon (shapeType, shp) {
@@ -84,6 +130,47 @@ function Polygon (shapeType, shp) {
 }
 
 /**
+ * Represents a measured point.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function PointM (shapeType, shp) {
+  this.header = new Array (1);
+  this.header[0] = shapeType;
+  this.x = shp.readDouble ();
+  this.y = shp.readDouble ();
+  this.m = shp.readDouble ();
+}
+
+/**
+ * Represents multiple measured points.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function MultiPointM (shapeType, shp) {
+  this.header = new Array (6);
+  this.header[0] = shapeType;
+  for (var i = 1; i < 5; ++i)
+    this.header[i] = shp.readDouble ();
+  this.header[5] = shp.readInt32 ();
+
+  this.points = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i) {
+    var x = shp.readDouble ();
+    var y = shp.readDouble ();
+    this.points[i] = [x, y];
+  }
+
+  this.Mmin = shp.readDouble ();
+  this.Mmax = shp.readDouble ();
+  this.Marray = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i)
+    this.Marray[i] = shp.readDouble ();
+}
+
+/**
  * Creates the appropriate shape type.
  *
  * \param shapeType The type of the shape
@@ -92,22 +179,35 @@ function Polygon (shapeType, shp) {
 function ShapeFactory (shapeType, shp) {
   switch (shapeType) {
     case 0:
+      return new NullShape (shapeType, shp);
+      break;
     case 1:
+      return new Point (shapeType, shp);
+      break;
     case 3:
+      //Polyline has the same structure as Polygon so using it for now.
+      return new Polygon (shapeType, shp);
+      break;
+    case 5:
+      return new Polygon (shapeType, shp);
+      break;
     case 8:
+      return new MultiPoint (shapeType, shp);
+      break;
+    case 21:
+      return new PointM (shapeType, shp);
+      break;
+    case 28:
+      return new MultiPointM (shapeType, shp);
+      break;
     case 11:
     case 13:
     case 15:
     case 18:
-    case 21:
     case 23:
     case 25:
-    case 28:
     case 31:
       throw "Shape type not implemented.";
-      break;
-    case 5:
-      return new Polygon (shapeType, shp);
       break;
     default:
       throw "Shape type unknown.";
