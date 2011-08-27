@@ -68,6 +68,18 @@ function PointTransform (shape, transformFunction) {
 }
 
 /**
+ * Transforms a Polygon using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function PolygonTransform (shape, transformFunction) {
+  for (var i = 0; i < shape.header[5]; ++i)
+    for (var j = 0; j < shape.parts[i].length; ++j)
+      shape.parts[i][j] = transformFunction (shape.parts[i][j]);
+}
+
+/**
  * Transforms a MultiPoint using the provided transform function.
  *
  * \param shape The shape to transform.
@@ -79,15 +91,43 @@ function MultiPointTransform (shape, transformFunction) {
 }
 
 /**
- * Transforms a Polygon using the provided transform function.
+ * Transforms a PointZ using the provided transform function.
  *
  * \param shape The shape to transform.
  * \param transformFunction The function with which to transform the shape.
  */
-function PolygonTransform (shape, transformFunction) {
-  for (var i = 0; i < shape.header[5]; ++i)
-    for (var j = 0; j < shape.parts[i].length; ++j)
-      shape.parts[i][j] = transformFunction (shape.parts[i][j]);
+function PointZTransform (shape, transformFunction) {
+  throw "PointZ transforming not implemented.";
+}
+
+/**
+ * Transforms a PolyLineZ using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function PolyLineZTransform (shape, transformFunction) {
+  throw "PolyLineZ transforming not implemented.";
+}
+
+/**
+ * Transforms a PolygonZ using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function PolygonZTransform (shape, transformFunction) {
+  throw "PolygonZ transforming not implemented.";
+}
+
+/**
+ * Transforms a MultiPointZ using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function MultiPointZTransform (shape, transformFunction) {
+  throw "MultiPointZ transforming not implemented.";
 }
 
 /**
@@ -101,6 +141,18 @@ function PointMTransform (shape, transformFunction) {
 }
 
 /**
+ * Transforms a PolygonM using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function PolygonMTransform (shape, transformFunction) {
+  for (var i = 0; i < shape.header[5]; ++i)
+    for (var j = 0; j < shape.parts[i].length; ++j)
+      shape.parts[i][j] = transformFunction (shape.parts[i][j]);
+}
+
+/**
  * Transforms a MultiPointM using the provided transform function.
  *
  * \param shape The shape to transform.
@@ -109,6 +161,16 @@ function PointMTransform (shape, transformFunction) {
 function MultiPointMTransform (shape, transformFunction) {
   for (var i = 0; i < shape.header[5]; ++i)
     shape.points[i] = transformFunction (shape.points[i]);
+}
+
+/**
+ * Transforms a MultiPatch using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function MultiPatchTransform (shape, transformFunction) {
+  throw "MultiPatch transforming not implemented.";
 }
 
 /**
@@ -135,20 +197,33 @@ function TransformFactory (shape, transformFunction) {
     case 8:
       MultiPointTransform (shape, transformFunction);
       break;
+    case 11:
+      PointZTransform (shape, transformFunction);
+      break;
+    case 13:
+      PolyLineZTransform (shape, transformFunction);
+      break;
+    case 15:
+      PolygonZTransform (shape, transformFunction);
+      break;
+    case 18:
+      MultiPointZTransform (shape, transformFunction);
+      break;
     case 21:
       PointMTransform (shape, transformFunction);
+      break;
+    case 23:
+      //PolylineM has the same structure as PolygonM so using it for now.
+      PolygonMTransform (shape, transformFunction);
+      break;
+    case 25:
+      PolygonMTransform (shape, transformFunction);
       break;
     case 28:
       MultiPointMTransform (shape, transformFunction);
       break;
-    case 11:
-    case 13:
-    case 15:
-    case 18:
-    case 23:
-    case 25:
     case 31:
-      throw "Shape type transforming not implemented.";
+      MultiPatchTransform (shape, transformFunction);
       break;
     default:
       throw "Shape type unknown.";

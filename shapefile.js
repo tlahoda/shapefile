@@ -79,28 +79,7 @@ function Point (shapeType, shp) {
 }
 
 /**
- * Represents multiple points.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
- */
-function MultiPoint (shapeType, shp) {
-  this.header = new Array (6);
-  this.header[0] = shapeType;
-  for (var i = 1; i < 5; ++i)
-    this.header[i] = shp.readDouble ();
-  this.header[5] = shp.readInt32 ();
-
-  this.points = new Array (this.header[5]);
-  for (var i = 0; i < this.header[5]; ++i) {
-    var x = shp.readDouble ();
-    var y = shp.readDouble ();
-    this.points[i] = [x, y];
-  }
-}
-
-/**
- * Represents a Polygon.
+ * Represents a polygon.
  *
  * \param shapeType The type of the shape.
  * \param shp The binaryReader containing the main shapefile.
@@ -131,6 +110,67 @@ function Polygon (shapeType, shp) {
 }
 
 /**
+ * Represents a set of points.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function MultiPoint (shapeType, shp) {
+  this.header = new Array (6);
+  this.header[0] = shapeType;
+  for (var i = 1; i < 5; ++i)
+    this.header[i] = shp.readDouble ();
+  this.header[5] = shp.readInt32 ();
+
+  this.points = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i) {
+    var x = shp.readDouble ();
+    var y = shp.readDouble ();
+    this.points[i] = [x, y];
+  }
+}
+
+/**
+ * Represents a PointZ.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function PointZ (shapeType, shp) {
+  throw "PointZ not implemented.";
+}
+
+/**
+ * Represents a PolyLineZ.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function PolyLineZ (shapeType, shp) {
+  throw "PolyLineZ not implemented.";
+}
+
+/**
+ * Represents a PolygonZ.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function PolygonZ (shapeType, shp) {
+  throw "PolygonZ not implemented.";
+}
+
+/**
+ * Represents a set of MultiPointZs.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function MultiPointZ (shapeType, shp) {
+  throw "MultiPointZ not implemented.";
+}
+
+/**
  * Represents a measured point.
  *
  * \param shapeType The type of the shape.
@@ -146,7 +186,49 @@ function PointM (shapeType, shp) {
 }
 
 /**
- * Represents multiple measured points.
+ * Represents a PolygonM.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function PolygonM (shapeType, shp) {
+  this.header = new Array (6);
+  this.header[0] = shapeType;
+  for (var i = 1; i < 5; ++i)
+    this.header[i] = shp.readDouble ();
+  for (var i = 5; i < 7; ++i)
+    this.header[i] = shp.readInt32 ();
+
+  var partsIndex = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i)
+    partsIndex[i] = shp.readInt32 ();
+
+  this.parts = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i) {
+    var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+    this.parts[i] = new Array (length);
+
+    for (var j = 0; j < length; ++j) {
+      var lon = shp.readDouble ();
+      var lat = shp.readDouble ();
+      this.parts[i][j] = [lat, lon];
+    }
+  }
+
+  this.Mmin = shp.readDouble ();
+  this.Mmax = shp.readDouble ();
+  this.Mparts = new Array ();
+  for (var i = 0; i < this.header[5]; ++i) {
+    var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+    this.Mparts[i] = new Array (length);
+
+    for (var j = 0; j < length; ++j)
+      this.Mparts[i][j] = shp.readDouble ();
+  }
+}
+
+/**
+ * Represents a set of measured points.
  *
  * \param shapeType The type of the shape.
  * \param shp The binaryReader containing the main shapefile.
@@ -173,6 +255,16 @@ function MultiPointM (shapeType, shp) {
 }
 
 /**
+ * Represents a MultiPatch.
+ *
+ * \param shapeType The type of the shape.
+ * \param shp The binaryReader containing the main shapefile.
+ */
+function MultiPatch (shapeType, shp) {
+  throw "MultiPatch not implemented.";
+}
+
+/**
  * Creates the appropriate shape type.
  *
  * \param shapeType The type of the shape
@@ -196,20 +288,33 @@ function ShapeFactory (shapeType, shp) {
     case 8:
       return new MultiPoint (shapeType, shp);
       break;
+    case 11:
+      return new PointZ (shapeType, shp);
+      break;
+    case 13:
+      return new PolyLineZ (shapeType, shp);
+      break;
+    case 15:
+      return new PolygonZ (shapeType, shp);
+      break;
+    case 18:
+      return new MultiPointZ (shapeType, shp);
+      break;
     case 21:
       return new PointM (shapeType, shp);
+      break;
+    case 23:
+      //PolylineM has the same structure as PolygonM so using it for now.
+      return new PolygonM (shapeType, shp);
+      break;
+    case 25:
+      return new PolygonM (shapeType, shp);
       break;
     case 28:
       return new MultiPointM (shapeType, shp);
       break;
-    case 11:
-    case 13:
-    case 15:
-    case 18:
-    case 23:
-    case 25:
     case 31:
-      throw "Shape type not implemented.";
+      return new MultiPatch (shapeType, shp);
       break;
     default:
       throw "Shape type unknown.";
