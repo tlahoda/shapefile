@@ -24,7 +24,8 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
     <script type="text/javascript" src="binaryReader.js"></script>
     <script type="text/javascript" src="shapefile.js"></script>
-    <script type="text/javascript" src="shapefile_render.js"></script>
+    <script type="text/javascript" src="shapefile_transforms.js"></script>
+    <script type="text/javascript" src="shapefile_render2d.js"></script>
 
     <script type="text/javascript">
       $(document).ready (function () {
@@ -33,7 +34,7 @@
           try {
             var shapeFile = new ShapeFile ('shapefiles/northamerica_adm0');
             //var shapeFile = new ShapeFile ('shapefiles/world_borders');
-            transform (shapeFile, ll22d);
+            transform (shapeFile, llto2d);
             render2d (shapeFile, screen.getContext ('2d'), "#FF0000");
           } catch (error) {
             console.log (error);
