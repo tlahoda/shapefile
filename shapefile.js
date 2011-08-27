@@ -19,27 +19,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/**
- * Precalculated pi / 2
- */
-var piOverTwo = Math.PI / 2.0;
-
-/**
- * Precalculated deg2rad conversion factor.
- */
-var deg2rad = Math.PI / 180.0;
-
-/**
- * Represents a lat/lon point.
- *
- * \param lat The latitude.
- * \param lon The longitude.
- */
-function PointLL (lat, lon) {
-  this.lat = lat;
-  this.lon = lon;
-}
-
 // Code from https://developer.mozilla.org/En/Using_XMLHttpRequest#Receiving_binary_data
 function load_binary_resource (url) {
   var req = new XMLHttpRequest ();
@@ -47,7 +26,7 @@ function load_binary_resource (url) {
   req.overrideMimeType('text/plain; charset=x-user-defined');
   req.send (null);
   //Change 200 to 0 for local file testing
-  if (req.status != 200) return '';
+  if (req.status != 200) throw "Unable to load " + url;
     return req.responseText;
 }
 
@@ -57,7 +36,7 @@ function load_binary_resource (url) {
  * \param shx The binaryReader containg the shapefile index.
  */
 function Header (shx) {
-  this.header = new Array ();
+  this.header = new Array (17);
   for (var i = 0; i < 7; ++i)
     this.header[i] = shx.endianSwap (shx.readInt32 ());
   for (var i = 7; i < 9; ++i)
@@ -75,25 +54,32 @@ function Header (shx) {
 }
 
 /**
- * Represents a shape. This needs to be done polymorphically to fully represent a shapefile.
+ * Represents a shape (Polygon or PolyLine). This needs to be done polymorphically to fully represent a shapefile.
  *
  * \param shp The binaryReader containing the main shapefile.
  */
 function Shape (shp) {
-  this.header = new Array ();
+  this.header = new Array (6);
   this.header[0] = shp.readInt32 ();
   for (var i = 1; i < 5; ++i)
     this.header[i] = shp.readDouble ();
   for (var i = 5; i < 7; ++i)
     this.header[i] = shp.readInt32 ();
-  for (var i = 7; i < this.header[5] + 7; ++i)
-    this.header[i] = shp.readInt32 ();
 
-  this.points = new Array ();
-  for (var i = 0; i < this.header[6]; ++i) {
-    var lon = shp.readDouble ();
-    var lat = shp.readDouble ();
-    this.points[i] = new PointLL (lat, lon);
+  var partsIndex = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i)
+    partsIndex[i] = shp.readInt32 ();
+
+  this.parts = new Array (this.header[5]);
+  for (var i = 0; i < this.header[5]; ++i) {
+    var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+    this.parts[i] = new Array (length);
+
+    for (var j = 0; j < length; ++j) {
+      var lon = shp.readDouble ();
+      var lat = shp.readDouble ();
+      this.parts[i][j] = [lat, lon];
+    }
   }
 }
 
@@ -104,21 +90,16 @@ function Shape (shp) {
  */
 function ShapeFile (name) {
   var shxFile = load_binary_resource (name + '.shx');
-  if (shxFile) {
     var shx = new BinaryReader (shxFile);
     this.header = new Header (shx);
    
     var shpFile = load_binary_resource (name + '.shp');
-    if (shpFile) {
-      var shp = new BinaryReader (shpFile);
-      this.shapes = new Array();
-      for (var i = 0; i < this.header.numShapes; ++i) {
-        shp.seek (this.header.offsets[i]);
-        this.shapes[i] = new Shape (shp);
-      }
-    } else
-      alert ("Unable to load shapefile!");
-  } else
-    alert ("Unable to load shapefile index!");
+    var shp = new BinaryReader (shpFile);
+
+    this.shapes = new Array(this.header.numShapes);
+    for (var i = 0; i < this.header.numShapes; ++i) {
+      shp.seek (this.header.offsets[i]);
+      this.shapes[i] = new Shape (shp);
+    }
 }
 
