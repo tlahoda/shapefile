@@ -40,7 +40,7 @@ function llto2d (ll) {
   ll[0] *= deg2rad;
   ll[1] *= deg2rad;
   var slat = Math.sin (piOverTwo - ll[0]);
-  return [400 + slat * Math.cos (ll[1]) * 400, 800 - (400 + slat * Math.sin (ll[1]) * 400)];
+  return [Math.round (400 + slat * Math.cos (ll[1]) * 400), Math.round (800 - (400 + slat * Math.sin (ll[1]) * 400))];
 }
 
 /**
