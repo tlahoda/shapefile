@@ -80,7 +80,7 @@ var Point = Class.create (Shape, {
     $super (shapeType, shp);
     var x = shp.readDouble ();
     var y = shp.readDouble ();
-    this.coords = [0, 0];//[x, y];
+    this.coords = [x, y];
   },
   transform: function (transformFunction) {
     this.coords = transformFunction (shape.coords);
