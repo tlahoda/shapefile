@@ -50,7 +50,6 @@ function RenderFactory2d (shape, context) {
   switch (shape.header[0]) {
     case 0:
     case 1:
-    case 3:
     case 8:
     case 11:
     case 13:
@@ -61,7 +60,11 @@ function RenderFactory2d (shape, context) {
     case 25:
     case 28:
     case 31:
-      throw "Shape type not implemented.";
+      throw "Shape type rendering not implemented.";
+      break;
+    case 3:
+      //Polyline has the same structure as Polygon so using it for now.
+      PolygonRenderer2d (shape, context);
       break;
     case 5:
       PolygonRenderer2d (shape, context);

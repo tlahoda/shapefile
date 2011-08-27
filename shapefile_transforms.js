@@ -79,7 +79,6 @@ function TransformFactory (shape, transformFunction) {
   switch (shape.header[0]) {
     case 0:
     case 1:
-    case 3:
     case 8:
     case 11:
     case 13:
@@ -90,7 +89,11 @@ function TransformFactory (shape, transformFunction) {
     case 25:
     case 28:
     case 31:
-      throw "Shape type not implemented.";
+      throw "Shape type transforming not implemented.";
+      break;
+    case 3:
+      //Polyline has the same structure as Polygon so using it for now.
+      PolygonTransform (shape, transformFunction);
       break;
     case 5:
       PolygonTransform (shape, transformFunction);
