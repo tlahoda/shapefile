@@ -26,7 +26,7 @@ function load_binary_resource (url) {
   req.overrideMimeType('text/plain; charset=x-user-defined');
   req.send (null);
   //Change 200 to 0 for local file testing
-  if (req.status != 200) throw "Unable to load " + url;
+  if (req.status != 0) throw "Unable to load " + url;
     return req.responseText;
 }
 
@@ -54,13 +54,13 @@ function Header (shx) {
 }
 
 /**
- * Represents a shape (Polygon or PolyLine). This needs to be done polymorphically to fully represent a shapefile.
+ * Represents a Polygon.
  *
  * \param shp The binaryReader containing the main shapefile.
  */
-function Shape (shp) {
+function Polygon (shapeType, shp) {
   this.header = new Array (6);
-  this.header[0] = shp.readInt32 ();
+  this.header[0] = shapeType;
   for (var i = 1; i < 5; ++i)
     this.header[i] = shp.readDouble ();
   for (var i = 5; i < 7; ++i)
@@ -84,6 +84,37 @@ function Shape (shp) {
 }
 
 /**
+ * Creates the appropriate shape type.
+ *
+ * \param shapeType The type of the shape
+ * \param shp The BinaryReader containing the raw shapefile.
+ */
+function ShapeFactory (shapeType, shp) {
+  switch (shapeType) {
+    case 0:
+    case 1:
+    case 3:
+    case 8:
+    case 11:
+    case 13:
+    case 15:
+    case 18:
+    case 21:
+    case 23:
+    case 25:
+    case 28:
+    case 31:
+      throw "Shape type not implemented.";
+      break;
+    case 5:
+      return new Polygon (shapeType, shp);
+      break;
+    default:
+      throw "Shape type unknown.";
+  }
+}
+
+/**
  * Represents a shapefile
  *
  * \param name The base name of the shape file exluding extensions but including path.
@@ -99,7 +130,7 @@ function ShapeFile (name) {
     this.shapes = new Array(this.header.numShapes);
     for (var i = 0; i < this.header.numShapes; ++i) {
       shp.seek (this.header.offsets[i]);
-      this.shapes[i] = new Shape (shp);
+      this.shapes[i] = ShapeFactory (shp.readInt32 (), shp);
     }
 }
 
