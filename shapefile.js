@@ -66,7 +66,7 @@ var Shape = Class.create ({
   },
   transform: function (transformFunction) {
     //Does nothing.
-  }
+  },
 });
 
 /**
@@ -113,9 +113,6 @@ var PointM = Class.create (Point, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     this.m = shp.readDouble ();
-  },
-  transform: function (transformFunction) {
-    this.coords = transformFunction (shape.coords);
   }
 });
 
@@ -175,10 +172,6 @@ var MultiPointM = Class.create (MultiPoint, {
     this.Marray = new Array (this.header[5]);
     for (var i = 0; i < this.header[5]; ++i)
       this.Marray[i] = shp.readDouble ();
-  },
-  transform: function (transformFunction) {
-    for (var i = 0; i < this.header[5]; ++i)
-      this.points[i] = transformFunction (this.points[i]);
   }
 });
 
@@ -254,11 +247,6 @@ var PolygonM = Class.create (Polygon, {
       for (var j = 0; j < length; ++j)
         this.Mparts[i][j] = shp.readDouble ();
     }
-  },
-  transform: function (transformFunction) {
-    for (var i = 0; i < this.header[5]; ++i)
-      for (var j = 0; j < this.parts[i].length; ++j)
-        this.parts[i][j] = transformFunction (this.parts[i][j]);
   }
 });
 
@@ -271,11 +259,6 @@ var PolygonM = Class.create (Polygon, {
 var PolyLine = Class.create (Polygon, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-  },
-  transform: function (transformFunction) {
-    for (var i = 0; i < this.header[5]; ++i)
-      for (var j = 0; j < this.parts[i].length; ++j)
-        this.parts[i][j] = transformFunction (this.parts[i][j]);
   }
 });
 
@@ -305,11 +288,6 @@ var PolyLineM = Class.create (PolygonM, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     throw "PolyLineM not implemented.";
-  },
-  transform: function (transformFunction) {
-    for (var i = 0; i < this.header[5]; ++i)
-      for (var j = 0; j < this.parts[i].length; ++j)
-        this.parts[i][j] = transformFunction (this.parts[i][j]);
   }
 });
 
