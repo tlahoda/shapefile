@@ -30,7 +30,7 @@ var piOverTwo = Math.PI / 2.0;
 var deg2rad = Math.PI / 180.0;
 
 /**
- * Converts a lat/lon point to a two dimensional point in an orthographic projection.
+ * Converts a lat/lon point to a two dimensional point in an orthographic projection without anti-aliasing.
  *
  * \param ll The lat/lon point.
  *
@@ -41,6 +41,20 @@ function llto2d (ll) {
   ll[1] *= deg2rad;
   var slat = Math.sin (piOverTwo - ll[0]);
   return [Math.round (400 + slat * Math.cos (ll[1]) * 400), Math.round (800 - (400 + slat * Math.sin (ll[1]) * 400))];
+}
+
+/**
+ * Converts a lat/lon point to a two dimensional point in an orthographic projection with anti-aliasing.
+ *
+ * \param ll The lat/lon point.
+ *
+ * \return The two dimensional point.
+ */
+function llto2dAntiAlias (ll) {
+  ll[0] *= deg2rad;
+  ll[1] *= deg2rad;
+  var slat = Math.sin (piOverTwo - ll[0]);
+  return [400 + slat * Math.cos (ll[1]) * 400, 800 - (400 + slat * Math.sin (ll[1]) * 400)];
 }
 
 /**
