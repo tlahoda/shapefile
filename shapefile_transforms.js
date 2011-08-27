@@ -58,6 +58,27 @@ function llto3d (ll) {
 }
 
 /**
+ * Transforms a Point using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function PointTransform (shape, transformFunction) {
+  shape.coords = transformFunction (shape.coords);
+}
+
+/**
+ * Transforms a MultiPoint using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function MultiPointTransform (shape, transformFunction) {
+  for (var i = 0; i < shape.header[5]; ++i)
+    shape.points[i] = transformFunction (shape.points[i]);
+}
+
+/**
  * Transforms a Polygon using the provided transform function.
  *
  * \param shape The shape to transform.
@@ -70,6 +91,27 @@ function PolygonTransform (shape, transformFunction) {
 }
 
 /**
+ * Transforms a PointM using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function PointMTransform (shape, transformFunction) {
+  shape.coords = transformFunction (shape.coords);
+}
+
+/**
+ * Transforms a MultiPointM using the provided transform function.
+ *
+ * \param shape The shape to transform.
+ * \param transformFunction The function with which to transform the shape.
+ */
+function MultiPointMTransform (shape, transformFunction) {
+  for (var i = 0; i < shape.header[5]; ++i)
+    shape.points[i] = transformFunction (shape.points[i]);
+}
+
+/**
  * Calls the appropriate transformer for the shape type.
  *
  * \param shape The shape to transform.
@@ -78,18 +120,10 @@ function PolygonTransform (shape, transformFunction) {
 function TransformFactory (shape, transformFunction) {
   switch (shape.header[0]) {
     case 0:
+      //NullShape does not need transforming
+      break;
     case 1:
-    case 8:
-    case 11:
-    case 13:
-    case 15:
-    case 18:
-    case 21:
-    case 23:
-    case 25:
-    case 28:
-    case 31:
-      throw "Shape type transforming not implemented.";
+      PointTransform (shape, transformFunction);
       break;
     case 3:
       //Polyline has the same structure as Polygon so using it for now.
@@ -97,6 +131,24 @@ function TransformFactory (shape, transformFunction) {
       break;
     case 5:
       PolygonTransform (shape, transformFunction);
+      break;
+    case 8:
+      MultiPointTransform (shape, transformFunction);
+      break;
+    case 21:
+      PointMTransform (shape, transformFunction);
+      break;
+    case 28:
+      MultiPointMTransform (shape, transformFunction);
+      break;
+    case 11:
+    case 13:
+    case 15:
+    case 18:
+    case 23:
+    case 25:
+    case 31:
+      throw "Shape type transforming not implemented.";
       break;
     default:
       throw "Shape type unknown.";
