@@ -30,6 +30,56 @@ function PointRenderer2d (shape, context) {
 }
 
 /**
+ * Renders a PointZ point in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function PointZRenderer2d (shape, context) {
+  throw "PointZ rendering not implemented.";
+}
+
+/**
+ * Renders a measured point in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function PointMRenderer2d (shape, context) {
+  throw "PointM rendering not implemented.";
+}
+
+/**
+ * Renders a set of multiple points in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function MultiPointRenderer2d (shape, context) {
+  throw "MultiPoint rendering not implemented.";
+}
+
+/**
+ * Renders a set of PointZs in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function MultiPointZRenderer2d (shape, context) {
+  throw "MultiPointZ rendering not implemented.";
+}
+
+/**
+ * Renders a PolyLineZ in a 2d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function PolyLineZRenderer2d (shape, context) {
+  throw "PolyLineZ rendering not implemented.";
+}
+
+/**
  * Renders a polygon in a 2d.
  *
  * \param shape The shape to render.
@@ -51,36 +101,6 @@ function PolygonRenderer2d (shape, context) {
 }
 
 /**
- * Renders a set of multiple points in a 2d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function MultiPointRenderer2d (shape, context) {
-  throw "MultiPoint rendering not implemented.";
-}
-
-/**
- * Renders a PointZ point in a 2d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function PointZRenderer2d (shape, context) {
-  throw "PointZ rendering not implemented.";
-}
-
-/**
- * Renders a PolyLineZ in a 2d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function PolyLineZRenderer2d (shape, context) {
-  throw "PolyLineZ rendering not implemented.";
-}
-
-/**
  * Renders a PolygonZ in a 2d.
  *
  * \param shape The shape to render.
@@ -88,26 +108,6 @@ function PolyLineZRenderer2d (shape, context) {
  */
 function PolygonZRenderer2d (shape, context) {
   throw "PolygonZ rendering not implemented.";
-}
-
-/**
- * Renders a set of PointZs in a 2d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function MultiPointZRenderer2d (shape, context) {
-  throw "MultiPointZ rendering not implemented.";
-}
-
-/**
- * Renders a measured point in a 2d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function PointMRenderer2d (shape, context) {
-  throw "PointM rendering not implemented.";
 }
 
 /**
@@ -132,15 +132,14 @@ function PolygonMRenderer2d (shape, context) {
 }
 
 /**
- * Renders a set of measured points in a 2d.
+ * Renders a PolygonZ in a 2d.
  *
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function MultiPointMRenderer2d (shape, context) {
-  throw "MultiPointM rendering not implemented.";
+function PolygonZRenderer2d (shape, context) {
+  throw "PolygonZ rendering not implemented.";
 }
-
 /**
  * Renders a MultiPatch in a 2d.
  *

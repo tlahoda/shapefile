@@ -30,6 +30,66 @@ function PointRenderer3d (shape, context) {
 }
 
 /**
+ * Renders a PointZ point in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function PointZRenderer3d (shape, context) {
+  throw "PointZ rendering not implemented.";
+}
+
+/**
+ * Renders a measured point in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function PointMRenderer3d (shape, context) {
+  throw "PointM rendering not implemented.";
+}
+
+/**
+ * Renders a set of multiple points in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function MultiPointRenderer3d (shape, context) {
+  throw "MultiPoint rendering not implemented.";
+}
+
+/**
+ * Renders a set of PointZs in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function MultiPointZRenderer3d (shape, context) {
+  throw "MultiPointZ rendering not implemented.";
+}
+
+/**
+ * Renders a set of measured points in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function MultiPointMRenderer3d (shape, context) {
+  throw "MultiPointM rendering not implemented.";
+}
+
+/**
+ * Renders a PolyLineZ in a 3d.
+ *
+ * \param shape The shape to render.
+ * \param context The context onto which to render.
+ */
+function PolyLineZRenderer3d (shape, context) {
+  throw "PolyLineZ rendering not implemented.";
+}
+
+/**
  * Renders a polygon in a 3d.
  *
  * \param shape The shape to render.
@@ -52,36 +112,6 @@ function PolygonRenderer3d (shape, context) {
 }
 
 /**
- * Renders a set of multiple points in a 3d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function MultiPointRenderer3d (shape, context) {
-  throw "MultiPoint rendering not implemented.";
-}
-
-/**
- * Renders a PointZ point in a 3d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function PointZRenderer3d (shape, context) {
-  throw "PointZ rendering not implemented.";
-}
-
-/**
- * Renders a PolyLineZ in a 3d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function PolyLineZRenderer3d (shape, context) {
-  throw "PolyLineZ rendering not implemented.";
-}
-
-/**
  * Renders a PolygonZ in a 3d.
  *
  * \param shape The shape to render.
@@ -92,26 +122,6 @@ function PolygonZRenderer3d (shape, context) {
 }
 
 /**
- * Renders a set of PointZs in a 3d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function MultiPointZRenderer3d (shape, context) {
-  throw "MultiPointZ rendering not implemented.";
-}
-
-/**
- * Renders a measured point in a 3d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function PointMRenderer3d (shape, context) {
-  throw "PointM rendering not implemented.";
-}
-
-/**
  * Renders a measured polygon in a 3d.
  *
  * \param shape The shape to render.
@@ -119,16 +129,6 @@ function PointMRenderer3d (shape, context) {
  */
 function PolygonMRenderer3d (shape, context) {
   throw "PolygonM rendering not implemented.";
-}
-
-/**
- * Renders a set of measured points in a 3d.
- *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- */
-function MultiPointMRenderer3d (shape, context) {
-  throw "MultiPointM rendering not implemented.";
 }
 
 /**
