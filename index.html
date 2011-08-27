@@ -21,14 +21,14 @@
 
 <html>
   <head>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="prototype.js"></script>
     <script type="text/javascript" src="binaryReader.js"></script>
     <script type="text/javascript" src="shapefile.js"></script>
     <script type="text/javascript" src="shapefile_transforms.js"></script>
     <script type="text/javascript" src="shapefile_render2d.js"></script>
 
     <script type="text/javascript">
-      $(document).ready (function () {
+      function ready () {
         var screen = document.getElementById ('screen');
         if (screen.getContext) {
           try {
@@ -40,10 +40,10 @@
             console.log (error);
           }
         }
-      });
+      }
     </script>
   </head>
-  <body>
+  <body onLoad="ready ();">
     <canvas id="screen" width="800" height="800">
       Your browser doesn't support canvas.
     </canvas>
