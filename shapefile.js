@@ -35,23 +35,25 @@ function load_binary_resource (url) {
  *
  * \param shx The binaryReader containg the shapefile index.
  */
-function Header (shx) {
-  this.header = new Array (17);
-  for (var i = 0; i < 7; ++i)
-    this.header[i] = shx.endianSwap (shx.readInt32 ());
-  for (var i = 7; i < 9; ++i)
-    this.header[i] = shx.readInt32 ();
-  for (var i = 9; i < 17; ++i)
-    this.header[i] = shx.readDouble ();
+var Header = Class.create ({
+  initialize: function (shx) {
+    this.header = new Array (17);
+    for (var i = 0; i < 7; ++i)
+      this.header[i] = shx.endianSwap (shx.readInt32 ());
+    for (var i = 7; i < 9; ++i)
+      this.header[i] = shx.readInt32 ();
+    for (var i = 9; i < 17; ++i)
+      this.header[i] = shx.readDouble ();
 
-  this.offsets = new Array ();
-  this.numShapes = 0;
-  while (this.numShapes * 8 + 100 < this.header[6] * 2) {
-    var offset = shx.endianSwap (shx.readInt32 ()) * 2;
-    var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
-    this.offsets[this.numShapes++] = offset + 8;
+    this.offsets = new Array ();
+    this.numShapes = 0;
+    while (this.numShapes * 8 + 100 < this.header[6] * 2) {
+      var offset = shx.endianSwap (shx.readInt32 ()) * 2;
+      var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
+      this.offsets[this.numShapes++] = offset + 8;
+    }
   }
-}
+});
 
 /**
  * The base shape class. Also represents a null shape.
@@ -66,7 +68,7 @@ var Shape = Class.create ({
   },
   transform: function (transformFunction) {
     //Does nothing.
-  },
+  }
 });
 
 /**
@@ -367,11 +369,12 @@ function ShapeFactory (shapeType, shp) {
  *
  * \param name The base name of the shape file exluding extensions but including path.
  */
-function ShapeFile (name) {
-  var shxFile = load_binary_resource (name + '.shx');
+var ShapeFile = Class.create ({
+  initialize: function (name) {
+    var shxFile = load_binary_resource (name + '.shx');
     var shx = new BinaryReader (shxFile);
     this.header = new Header (shx);
-   
+  
     var shpFile = load_binary_resource (name + '.shp');
     var shp = new BinaryReader (shpFile);
 
@@ -380,5 +383,6 @@ function ShapeFile (name) {
       shp.seek (this.header.offsets[i]);
       this.shapes[i] = ShapeFactory (shp.readInt32 (), shp);
     }
-}
+  }
+});
 
