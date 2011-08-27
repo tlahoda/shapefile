@@ -73,8 +73,9 @@ function NullShape (shapeType, shp) {
 function Point (shapeType, shp) {
   this.header = new Array (1);
   this.header[0] = shapeType;
-  this.x = shp.readDouble ();
-  this.y = shp.readDouble ();
+  var x = shp.readDouble ();
+  var y = shp.readDouble ();
+  this.coords = [x, y];
 }
 
 /**
@@ -138,8 +139,9 @@ function Polygon (shapeType, shp) {
 function PointM (shapeType, shp) {
   this.header = new Array (1);
   this.header[0] = shapeType;
-  this.x = shp.readDouble ();
-  this.y = shp.readDouble ();
+  var x = shp.readDouble ();
+  var y = shp.readDouble ();
+  this.coords = [x, y];
   this.m = shp.readDouble ();
 }
 
