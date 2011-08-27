@@ -371,13 +371,9 @@ function ShapeFactory (shapeType, shp) {
  */
 var ShapeFile = Class.create ({
   initialize: function (name) {
-    var shxFile = load_binary_resource (name + '.shx');
-    var shx = new BinaryReader (shxFile);
-    this.header = new Header (shx);
+    this.header = new Header (new BinaryReader (load_binary_resource (name + '.shx')));
   
-    var shpFile = load_binary_resource (name + '.shp');
-    var shp = new BinaryReader (shpFile);
-
+    var shp = new BinaryReader (load_binary_resource (name + '.shp'));
     this.shapes = new Array(this.header.numShapes);
     for (var i = 0; i < this.header.numShapes; ++i) {
       shp.seek (this.header.offsets[i]);
