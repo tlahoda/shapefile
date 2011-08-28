@@ -26,7 +26,7 @@ function load_binary_resource (url) {
   req.overrideMimeType('text/plain; charset=x-user-defined');
   req.send (null);
   //Change 200 to 0 for local file testing
-  if (req.status != 0) throw "Unable to load " + url;
+  if (req.status != 200) throw "Unable to load " + url;
     return req.responseText;
 }
 
@@ -83,9 +83,10 @@ var Header = Class.create ({
  * \param shp The binaryReader containing the main shapefile.
  */
 var Shape = Class.create ({
+  SHAPE_TYPE: 0,
   initialize: function (shapeType, shp) {
     this.header = new Array (1);
-    this.header[0] = shapeType;
+    this.header[this.SHAPE_TYPE] = shapeType;
   },
   transform: function (transformFunction) {
     //Does nothing.
@@ -99,6 +100,8 @@ var Shape = Class.create ({
  * \param shp The binaryReader containing the main shapefile.
  */
 var Point = Class.create (Shape, {
+  X: 0,
+  Y: 1,
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     var x = shp.readDouble ();
@@ -144,22 +147,29 @@ var PointM = Class.create (Point, {
  * \param shp The binaryReader containing the main shapefile.
  */
 var MultiPoint = Class.create (Shape, {
+  X: 0,
+  Y: 1,
+  XMIN: 1,
+  YMIN: 2,
+  XMAX: 3,
+  YMAX: 4,
+  NUM_POINTS: 5,
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     
     for (var i = 1; i < 5; ++i)
       this.header[i] = shp.readDouble ();
-    this.header[5] = shp.readInt32 ();
+    this.header[this.NUM_POINTS] = shp.readInt32 ();
 
-    this.points = new Array (this.header[5]);
-    for (var i = 0; i < this.header[5]; ++i) {
+    this.points = new Array (this.header[this.NUM_POINTS]);
+    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i) {
       var x = shp.readDouble ();
       var y = shp.readDouble ();
       this.points[i] = [x, y];
     }
   },
   transform: function (transformFunction) {
-    for (var i = 0; i < this.header[5]; ++i)
+    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
       this.points[i] = transformFunction (this.points[i]);
   }
 });
@@ -176,14 +186,14 @@ var MultiPointZ = Class.create (MultiPoint, {
     
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
-    this.Zarray = new Array (this.header[5]);
-    for (var i = 0; i < this.header[5]; ++i)
+    this.Zarray = new Array (this.header[this.NUM_POINTS]);
+    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
       this.Zarray[i] = shp.readDouble ();
 
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
-    this.Marray = new Array (this.header[5]);
-    for (var i = 0; i < this.header[5]; ++i)
+    this.Marray = new Array (this.header[this.NUM_POINTS]);
+    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
       this.Marray[i] = shp.readDouble ();
   }
 });
@@ -200,8 +210,8 @@ var MultiPointM = Class.create (MultiPoint, {
     
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
-    this.Marray = new Array (this.header[5]);
-    for (var i = 0; i < this.header[5]; ++i)
+    this.Marray = new Array (this.header[this.NUM_POINTS]);
+    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
       this.Marray[i] = shp.readDouble ();
   }
 });
@@ -213,6 +223,14 @@ var MultiPointM = Class.create (MultiPoint, {
  * \param shp The binaryReader containing the main shapefile.
  */
 var Polygon = Class.create (Shape, {
+  X: 0,
+  Y: 1,
+  XMIN: 1,
+  YMIN: 2,
+  XMAX: 3,
+  YMAX: 4,
+  NUM_PARTS: 5,
+  NUM_POINTS: 6,
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     
@@ -221,13 +239,13 @@ var Polygon = Class.create (Shape, {
     for (var i = 5; i < 7; ++i)
       this.header[i] = shp.readInt32 ();
 
-    var partsIndex = new Array (this.header[5]);
-    for (var i = 0; i < this.header[5]; ++i)
+    var partsIndex = new Array (this.header[this.NUM_PARTS]);
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
       partsIndex[i] = shp.readInt32 ();
 
-    this.parts = new Array (this.header[5]);
-    for (var i = 0; i < this.header[5]; ++i) {
-      var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+    this.parts = new Array (this.header[this.NUM_PARTS]);
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
+      var length = ((i == this.header[this.NUM_PARTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
       this.parts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j) {
@@ -238,7 +256,7 @@ var Polygon = Class.create (Shape, {
     }
   },
   transform: function (transformFunction) {
-    for (var i = 0; i < this.header[5]; ++i)
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
       for (var j = 0; j < this.parts[i].length; ++j)
         this.parts[i][j] = transformFunction (this.parts[i][j]);
   }
@@ -257,8 +275,8 @@ var PolygonZ = Class.create (Polygon, {
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
     this.Zparts = new Array ();
-    for (var i = 0; i < this.header[5]; ++i) {
-      var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
+      var length = ((i == this.header[this.NUM_POINTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
       this.Zparts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j)
@@ -268,8 +286,8 @@ var PolygonZ = Class.create (Polygon, {
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array ();
-    for (var i = 0; i < this.header[5]; ++i) {
-      var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
+      var length = ((i == this.header[this.NUM_PARTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
       this.Mparts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j)
@@ -291,8 +309,8 @@ var PolygonM = Class.create (Polygon, {
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array ();
-    for (var i = 0; i < this.header[5]; ++i) {
-      var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
+      var length = ((i == this.header[this.NUM_PARTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
       this.Mparts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j)

@@ -27,7 +27,7 @@
  */
 var PointRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    context.strokeRect (shape.coords[0], shape.coords[1], 1, 1);
+    context.strokeRect (shape.coords[shape.X], shape.coords[shape.Y], 1, 1);
   }
 });
 
@@ -64,7 +64,7 @@ var PointMRenderer2d = Class.create (PointRenderer2d, {
 var MultiPointRenderer2d = Class.create ({
   initialize: function (shape, context) {
     for (var i = 0; i < shape.header[5]; ++i)
-      context.strokeRect (shape.points[i][0], shape.points[i][1], 1, 1);
+      context.strokeRect (shape.points[i][shape.X], shape.points[i][shape.Y], 1, 1);
   }
 });
 
@@ -100,14 +100,14 @@ var MultiPointMRenderer2d = Class.create ({
  */
 var PolygonRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    for (var i = 0; i < shape.header[5]; ++i) {
+    for (var i = 0; i < shape.header[shape.NUM_PARTS]; ++i) {
       var startPoint = shape.parts[i][0];
       context.beginPath ();
-      context.moveTo (startPoint[0], startPoint[1]);
+      context.moveTo (startPoint[shape.X], startPoint[shape.Y]);
       
       for (var j = 1; j < shape.parts[i].length; ++j) {
         var temp = shape.parts[i][j];
-        context.lineTo (temp[0], temp[1]);
+        context.lineTo (temp[shape.X], temp[shape.Y]);
       }
       context.stroke ();
       context.closePath ();
