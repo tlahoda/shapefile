@@ -103,14 +103,10 @@ var PolygonRenderer3d = Class.create ({
     for (var j = 0; j < shape.header[5]; ++j) {
       var startPoint = shape.parts[j][0];
       context.beginPath ();
-      //context.moveTo (startPoint[0], startPoint[1]);
       
       for (var k = 1; k < shape.parts[j].length; ++k) {
         var temp = shape.parts[j][k];
-        //context.lineTo (temp[0], temp[1]);
       }
-      context.stroke ();
-      context.closePath ();
     }
   }
 });
@@ -250,7 +246,6 @@ function RenderFactory3d (shape, context) {
  * \param color, The color to render the shapes.
  */
 function render3d (shapeFile, context, color) {
-  context.strokeStyle = color;
   for (var i = 0; i < shapeFile.header.numShapes; ++i)
     RenderFactory3d (shapeFile.shapes[i], context);
 }
