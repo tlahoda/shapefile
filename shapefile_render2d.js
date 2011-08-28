@@ -27,7 +27,7 @@
  */
 var PointRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    throw "Point rendering not implemented.";
+    context.strokeRect (shape.coords[0], shape.coords[1], 1, 1);
   }
 });
 
@@ -37,9 +37,9 @@ var PointRenderer2d = Class.create ({
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-var PointZRenderer2d = Class.create ({
-  initialize: function (shape, context) {
-    throw "PointZ rendering not implemented.";
+var PointZRenderer2d = Class.create (PointRenderer2d, {
+  initialize: function ($super, shape, context) {
+    $super (shape, context);
   }
 });
 
@@ -49,9 +49,9 @@ var PointZRenderer2d = Class.create ({
  * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-var PointMRenderer2d = Class.create ({
-  initialize: function (shape, context) {
-    throw "PointM rendering not implemented.";
+var PointMRenderer2d = Class.create (PointRenderer2d, {
+  initialize: function ($super, shape, context) {
+    $super (shape, context);
   }
 });
 
@@ -63,7 +63,8 @@ var PointMRenderer2d = Class.create ({
  */
 var MultiPointRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    throw "MultiPoint rendering not implemented.";
+    for (var i = 0; i < shape.header[5]; ++i)
+      context.strokeRect (shape.points[i][0], shape.points[i][1], 1, 1);
   }
 });
 
@@ -75,7 +76,7 @@ var MultiPointRenderer2d = Class.create ({
  */
 var MultiPointZRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    throw "MultiPointZ rendering not implemented.";
+    $super (shape, context);
   }
 });
 
@@ -87,7 +88,7 @@ var MultiPointZRenderer2d = Class.create ({
  */
 var MultiPointMRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    throw "MultiPointM rendering not implemented.";
+    $super (shape, context);
   }
 });
 
@@ -99,13 +100,13 @@ var MultiPointMRenderer2d = Class.create ({
  */
 var PolygonRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    for (var j = 0; j < shape.header[5]; ++j) {
-      var startPoint = shape.parts[j][0];
+    for (var i = 0; i < shape.header[5]; ++i) {
+      var startPoint = shape.parts[i][0];
       context.beginPath ();
       context.moveTo (startPoint[0], startPoint[1]);
       
-      for (var k = 1; k < shape.parts[j].length; ++k) {
-        var temp = shape.parts[j][k];
+      for (var j = 1; j < shape.parts[i].length; ++j) {
+        var temp = shape.parts[i][j];
         context.lineTo (temp[0], temp[1]);
       }
       context.stroke ();
@@ -122,8 +123,7 @@ var PolygonRenderer2d = Class.create ({
  */
 var PolygonZRenderer2d = Class.create (PolygonRenderer2d, {
   initialize: function ($super, shape, context) {
-    //$super (shape, context);
-    throw "PolygonZ rendering not implemented.";
+    $super (shape, context);
   }
 });
 
@@ -147,8 +147,7 @@ var PolygonMRenderer2d = Class.create (PolygonRenderer2d, {
  */
 var PolygonZRenderer2d = Class.create (PolygonRenderer2d, {
   initialize: function ($super, shape, context) {
-    //$super (shape, context);
-    throw "PolygonZ rendering not implemented.";
+    $super (shape, context);
   }
 });
 
@@ -172,8 +171,7 @@ var PolyLineRenderer2d = Class.create (PolygonRenderer2d, {
  */
 var PolyLineZRenderer2d = Class.create (PolygonRenderer2d, {
   initialize: function ($super, shape, context) {
-    //$super (shape, context);
-    throw "PolyLineZ rendering not implemented.";
+    $super (shape, context);
   }
 });
 
