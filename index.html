@@ -44,7 +44,8 @@
     </script>
   </head>
   <body onLoad="ready ();">
-    <canvas id="screen" width="800" height="800">
+    <div id="messages" width="800" height="800" z-index="10" style="position: relative; float: top; display: inline;">Loading...</div>
+    <canvas id="screen" width="800" height="800" z-index="0" style="border: solid 1px; position: absolute; left: 0px; display: inline;">
       Your browser doesn't support canvas.
     </canvas>
   </body>
