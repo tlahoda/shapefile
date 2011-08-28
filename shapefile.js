@@ -100,9 +100,6 @@ var PointZ = Class.create (Point, {
     $super (shapeType, shp);
     this.z = shp.readDouble ();
     this.m = shp.readDouble ();
-  },
-  transform: function (transformFunction) {
-    throw "PointZ transforming not implemented.";
   }
 });
 
@@ -167,9 +164,6 @@ var MultiPointZ = Class.create (MultiPoint, {
     this.Marray = new Array (this.header[5]);
     for (var i = 0; i < this.header[5]; ++i)
       this.Marray[i] = shp.readDouble ();
-  },
-  transform: function (transformFunction) {
-    throw "MultiPointZ transforming not implemented.";
   }
 });
 
@@ -260,9 +254,6 @@ var PolygonZ = Class.create (Polygon, {
       for (var j = 0; j < length; ++j)
         this.Mparts[i][j] = shp.readDouble ();
     }
-  },
-  transform: function (transformFunction) {
-    throw "PolygonZ transforming not implemented.";
   }
 });
 
@@ -310,9 +301,6 @@ var PolyLine = Class.create (Polygon, {
 var PolyLineZ = Class.create (PolygonZ, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-  },
-  transform: function (transformFunction) {
-    throw "PolyLineZ transforming not implemented.";
   }
 });
 
