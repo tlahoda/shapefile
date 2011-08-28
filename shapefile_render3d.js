@@ -99,7 +99,7 @@ var MultiPointMRenderer3d = Class.create ({
  */
 var PolygonRenderer3d = Class.create ({
   initialize: function(shape, context) {
-    for (var j = 0; j < shape.header[5]; ++j) {
+    for (var j = 0; j < shape.header[shape.NUM_PARTS]; ++j) {
     }
   }
 });
