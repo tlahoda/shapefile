@@ -199,43 +199,43 @@ function RenderFactory3d (shape, context) {
       //NullShape does not need rendering.
       break;
     case 1:
-      PointRenderer3d (shape, context);
+      new PointRenderer3d (shape, context);
       break;
     case 3:
-      PolyLineRenderer3d (shape, context);
+      new PolyLineRenderer3d (shape, context);
       break;
     case 5:
-      PolygonRenderer3d (shape, context);
+      new PolygonRenderer3d (shape, context);
       break;
     case 8:
-      MultiPointRenderer3d (shape, context);
+      new MultiPointRenderer3d (shape, context);
       break;
     case 11:
-      PointZRenderer3d (shape, context);
+      new PointZRenderer3d (shape, context);
       break;
     case 13:
-      PolyLineZRenderer3d (shape, context);
+      new PolyLineZRenderer3d (shape, context);
       break;
     case 15:
-      PolygonZRenderer3d (shape, context);
+      new PolygonZRenderer3d (shape, context);
       break;
     case 18:
-      MultiPopintZRenderer3d (shape, context);
+      new MultiPopintZRenderer3d (shape, context);
       break;
     case 21:
-      PointMRenderer3d (shape, context);
+      new PointMRenderer3d (shape, context);
       break;
     case 23:
-      PolyLineMRenderer3d (shape, context);
+      new PolyLineMRenderer3d (shape, context);
       break;
     case 25:
-      PolygonMRenderer3d (shape, context);
+      new PolygonMRenderer3d (shape, context);
       break;
     case 28:
-      MultiPointMRenderer3d (shape, context);
+      new MultiPointMRenderer3d (shape, context);
       break;
     case 31:
-      MultiPatchRenderer3d (shape, context);
+      new MultiPatchRenderer3d (shape, context);
       break;
     default:
       throw "Shape type unknown.";
