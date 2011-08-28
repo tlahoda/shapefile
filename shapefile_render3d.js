@@ -99,14 +99,7 @@ var MultiPointMRenderer3d = Class.create ({
  */
 var PolygonRenderer3d = Class.create ({
   initialize: function(shape, context) {
-    //the innards of this loop are going to change, just pass array of vertices into webgl.
     for (var j = 0; j < shape.header[5]; ++j) {
-      var startPoint = shape.parts[j][0];
-      context.beginPath ();
-      
-      for (var k = 1; k < shape.parts[j].length; ++k) {
-        var temp = shape.parts[j][k];
-      }
     }
   }
 });
