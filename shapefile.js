@@ -325,10 +325,8 @@ var PolyLineM = Class.create (PolygonM, {
 var MultiPatch = Class.create (Shape, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    throw "MultiPatch not implemented.";
   },
   transform: function (transformFunction) {
-    throw "MultiPatch transforming not implemented.";
   }
 });
 
@@ -337,6 +335,8 @@ var MultiPatch = Class.create (Shape, {
  *
  * \param shapeType The type of the shape
  * \param shp The BinaryReader containing the raw shapefile.
+ *
+ * \throw error On unknown shape type.
  */
 function ShapeFactory (shapeType, shp) {
   switch (shapeType) {
@@ -391,9 +391,12 @@ function ShapeFactory (shapeType, shp) {
  * Represents a shapefile
  *
  * \param name The base name of the shape file exluding extensions but including path.
+ *
+ * \throws error On failure to load the shapefile and on unkown shape type.
  */
 var ShapeFile = Class.create ({
   initialize: function (name) {
+    this.name = name;
     this.header = new Header (new BinaryReader (load_binary_resource (name + '.shx')));
   
     var shp = new BinaryReader (load_binary_resource (name + '.shp'));
