@@ -98,7 +98,8 @@ var Point = Class.create (Shape, {
 var PointZ = Class.create (Point, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    throw "PointZ not implemented.";
+    this.z = shp.readDouble ();
+    this.m = shp.readDouble ();
   },
   transform: function (transformFunction) {
     throw "PointZ transforming not implemented.";
@@ -127,6 +128,7 @@ var PointM = Class.create (Point, {
 var MultiPoint = Class.create (Shape, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
+    
     for (var i = 1; i < 5; ++i)
       this.header[i] = shp.readDouble ();
     this.header[5] = shp.readInt32 ();
@@ -153,7 +155,18 @@ var MultiPoint = Class.create (Shape, {
 var MultiPointZ = Class.create (MultiPoint, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    throw "MultiPointZ not implemented.";
+    
+    this.Zmin = shp.readDouble ();
+    this.Zmax = shp.readDouble ();
+    this.Zarray = new Array (this.header[5]);
+    for (var i = 0; i < this.header[5]; ++i)
+      this.Zarray[i] = shp.readDouble ();
+
+    this.Mmin = shp.readDouble ();
+    this.Mmax = shp.readDouble ();
+    this.Marray = new Array (this.header[5]);
+    for (var i = 0; i < this.header[5]; ++i)
+      this.Marray[i] = shp.readDouble ();
   },
   transform: function (transformFunction) {
     throw "MultiPointZ transforming not implemented.";
@@ -169,6 +182,7 @@ var MultiPointZ = Class.create (MultiPoint, {
 var MultiPointM = Class.create (MultiPoint, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
+    
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Marray = new Array (this.header[5]);
@@ -186,6 +200,7 @@ var MultiPointM = Class.create (MultiPoint, {
 var Polygon = Class.create (Shape, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
+    
     for (var i = 1; i < 5; ++i)
       this.header[i] = shp.readDouble ();
     for (var i = 5; i < 7; ++i)
@@ -223,7 +238,28 @@ var Polygon = Class.create (Shape, {
 var PolygonZ = Class.create (Polygon, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    throw "PolygonZ not implemented.";
+
+    this.Zmin = shp.readDouble ();
+    this.Zmax = shp.readDouble ();
+    this.Zparts = new Array ();
+    for (var i = 0; i < this.header[5]; ++i) {
+      var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+      this.Zparts[i] = new Array (length);
+
+      for (var j = 0; j < length; ++j)
+        this.Zparts[i][j] = shp.readDouble ();
+    }
+
+    this.Mmin = shp.readDouble ();
+    this.Mmax = shp.readDouble ();
+    this.Mparts = new Array ();
+    for (var i = 0; i < this.header[5]; ++i) {
+      var length = ((i == this.header[5] - 1) ? this.header[6] : partsIndex[i + 1]) - partsIndex[i];
+      this.Mparts[i] = new Array (length);
+
+      for (var j = 0; j < length; ++j)
+        this.Mparts[i][j] = shp.readDouble ();
+    }
   },
   transform: function (transformFunction) {
     throw "PolygonZ transforming not implemented.";
@@ -239,6 +275,7 @@ var PolygonZ = Class.create (Polygon, {
 var PolygonM = Class.create (Polygon, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
+
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array ();
@@ -273,7 +310,6 @@ var PolyLine = Class.create (Polygon, {
 var PolyLineZ = Class.create (PolygonZ, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    throw "PolyLineZ not implemented.";
   },
   transform: function (transformFunction) {
     throw "PolyLineZ transforming not implemented.";
@@ -289,12 +325,11 @@ var PolyLineZ = Class.create (PolygonZ, {
 var PolyLineM = Class.create (PolygonM, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    throw "PolyLineM not implemented.";
   }
 });
 
 /**
- * Represents a MultiPatch.
+ * Represents a MultiPatch. Due to the complicated nature of this shape type it is not yet implemented.
  *
  * \param shapeType The type of the shape.
  * \param shp The binaryReader containing the main shapefile.
