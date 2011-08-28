@@ -195,7 +195,6 @@ var PolyLineMRenderer2d = Class.create (PolygonRenderer2d, {
  */
 var MultiPatchRenderer2d = Class.create ({
   initialize: function (shape, context) {
-    throw "MultiPatch rendering not implemented.";
   }
 });
 
@@ -204,6 +203,8 @@ var MultiPatchRenderer2d = Class.create ({
  *
  * \param shape The shape to render.
  * \param context The context onto which to render.
+ *
+ * \throw error On unknown shape type.
  */
 function RenderFactory2d (shape, context) {
   switch (shape.header[0]) {
@@ -260,6 +261,8 @@ function RenderFactory2d (shape, context) {
  * \param shapeFile The shapefile.
  * \param context The canvas onto which to draw.
  * \param color, The color to render the shapes.
+ *
+ * \throw error On trying to render an unknown shape type.
  */
 function render2d (shapeFile, context, color) {
   context.strokeStyle = color;
