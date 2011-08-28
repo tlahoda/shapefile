@@ -251,7 +251,7 @@ function RenderFactory3d (shape, context) {
  */
 function render3d (shapeFile, context, color) {
   context.strokeStyle = color;
-  for (var i = 0; i < shapeFile.header.numShapes; ++i) {
+  for (var i = 0; i < shapeFile.header.numShapes; ++i)
     RenderFactory3d (shapeFile.shapes[i], context);
 }
 
