@@ -26,26 +26,30 @@ function load_binary_resource (url) {
   req.overrideMimeType('text/plain; charset=x-user-defined');
   req.send (null);
   //Change 200 to 0 for local file testing
-  if (req.status != 200) throw "Unable to load " + url;
+  if (req.status != 0) throw "Unable to load " + url;
     return req.responseText;
 }
 
 var Color = Class.create ({
+  R: 0,
+  G: 1,
+  B: 2,
+  A: 3,
   initialize: function (r, g, b, a) {
       this.data = [r & 0xFF, g & 0xFF, b & 0xFF, a & 0xFF];
   },
   to_rgb_string: function () {
-      var r = this.data[0];
-      var g = this.data[1];
-      var b = this.data[2];
+      var r = this.data[this.R];
+      var g = this.data[this.G];
+      var b = this.data[this.B];
       return "#" + ((r < 10) ? "0" : "") + r.toString (16) + ((g < 10) ? "0" : "") + g.toString (16) + 
              ((b < 10) ? "0" : "") + b.toString (16);
   },
   to_rgba_string: function () {
-      var r = this.data[0];
-      var g = this.data[1];
-      var b = this.data[2];
-      var a = this.data[3];
+      var r = this.data[this.R];
+      var g = this.data[this.G];
+      var b = this.data[this.B];
+      var a = this.data[this.A];
       return "#" + ((r < 10) ? "0" : "") + r.toString (16) + ((g < 10) ? "0" : "") + g.toString (16) + 
              ((b < 10) ? "0" : "") + b.toString (16) + ((a < 10) ? "0" : "") + a.toString (16);
   }
@@ -57,6 +61,18 @@ var Color = Class.create ({
  * \param shx The binaryReader containg the shapefile index.
  */
 var Header = Class.create ({
+  FILE_CODE: 0,
+  FILE_LENGTH: 6,
+  VERSION: 7,
+  SHAPE_TYPE: 8,
+  XMIN: 9,
+  YMIN: 10,
+  XMAX: 11,
+  YMAX: 12,
+  ZMIN: 13,
+  ZMAX: 14,
+  MMIN: 15,
+  MMAX: 16,
   initialize: function (shx) {
     this.header = new Array (17);
     for (var i = 0; i < 7; ++i)
@@ -68,7 +84,7 @@ var Header = Class.create ({
 
     this.offsets = new Array ();
     this.numShapes = 0;
-    while (this.numShapes * 8 + 100 < this.header[6] * 2) {
+    while (this.numShapes * 8 + 100 < this.header[this.FILE_LENGTH] * 2) {
       var offset = shx.endianSwap (shx.readInt32 ()) * 2;
       var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
       this.offsets[this.numShapes++] = offset + 8;
