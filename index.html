@@ -32,11 +32,15 @@
         var screen = document.getElementById ('screen');
         if (screen.getContext) {
           try {
-            var shapeFile = new ShapeFile ('shapefiles/northamerica_adm0');
+            var shapeFileName = "shapefiles/northamerica_adm0";
+            var shapeFile = new ShapeFile (shapeFileName);
             //var shapeFile = new ShapeFile ('shapefiles/world_borders');
+            
             transform (shapeFile, llto2d);
-            render2d (shapeFile, screen.getContext ('2d'), "#FF0000");
+            render2d (shapeFile, screen.getContext ('2d'), new Color (0xFF, 0x00, 0x00, 0x00));
           } catch (error) {
+            var messages = document.getElementById ('messages');
+            messages.innerHTML = error;
             console.log (error);
           }
         }
@@ -44,7 +48,7 @@
     </script>
   </head>
   <body onLoad="ready ();">
-    <div id="messages" width="800" height="800" z-index="10" style="position: relative; float: top; display: inline;">Loading...</div>
+    <div id="messages" width="800" height="800" z-index="10" style="position: relative; float: top; display: inline;"></div>
     <canvas id="screen" width="800" height="800" z-index="0" style="border: solid 1px; position: absolute; left: 0px; display: inline;">
       Your browser doesn't support canvas.
     </canvas>

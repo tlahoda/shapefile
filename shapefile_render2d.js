@@ -265,7 +265,7 @@ function RenderFactory2d (shape, context) {
  * \throw error On trying to render an unknown shape type.
  */
 function render2d (shapeFile, context, color) {
-  context.strokeStyle = color;
+  context.strokeStyle = color.to_rgb_string ();
   for (var i = 0; i < shapeFile.header.numShapes; ++i)
     RenderFactory2d (shapeFile.shapes[i], context);
 }
