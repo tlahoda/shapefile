@@ -124,7 +124,7 @@ function renderPolygonPart (part, context) {
  * \param context The conext onto which to render.
  */
 function renderPolygon (shape, context) {
-  shape.eachPart.apply (renderPolygonPart, context);
+  shape.eachPart (renderPolygonPart, context);
 }
 
 /**
