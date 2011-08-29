@@ -124,7 +124,7 @@ function renderPolygonPart (part, context) {
  * \param context The conext onto which to render.
  */
 function renderPolygon (shape, context) {
-  shape.eachPart (renderPolygonPart, context);
+  shape.eachPart.apply (renderPolygonPart, context);
 }
 
 /**
@@ -154,12 +154,12 @@ function render (shape, context, color) {
     case 1: //Point
     case 11: //PointZ
     case 21: //PointM
-      renderPoint (shape, context);
+      renderPoint.apply (null, arguments);
       break;
     case 8: //MultiPoint
     case 18: //MultiPointZ
     case 28: //MultiPointM
-      renderMultiPoint (shape, context);
+      renderMultiPoint.apply (null, arguments);
       break;
     case 5: //Polygon
     case 15: //PolygonZ
@@ -167,10 +167,10 @@ function render (shape, context, color) {
     case 3: //PolyLine
     case 13: //PolyLineZ
     case 23: //PolyLineM
-      renderPolygon (shape, context);
+      renderPolygon.apply (null, arguments);
       break;
     case 31: //MultiPatch
-      renderMultiPatch (shape, context);
+      renderMultiPatch.apply (null, arguments);
       break;
     default:
       throw "Shape type unknown.";
