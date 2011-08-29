@@ -65,10 +65,11 @@ function llto2dAntiAlias (ll) {
  * \return The three dimensional point.
  */
 function llto3d (ll) {
+  var scale = 3;
   ll[0] *= deg2rad;
   ll[1] *= deg2rad;
   var clat = Math.cos (ll[0]);
-  return [clat * Math.cos (ll[1]), clat * Math.sin (ll[1]), Math.sin (ll[0])];
+  return[clat * Math.cos (ll[1]) * scale, clat * Math.sin (ll[1]) * scale, Math.sin (ll[0]) * scale];
 }
 
 /**
