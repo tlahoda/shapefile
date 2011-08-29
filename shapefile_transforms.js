@@ -30,31 +30,17 @@ var piOverTwo = Math.PI / 2.0;
 var deg2rad = Math.PI / 180.0;
 
 /**
- * Converts a lat/lon point to a two dimensional point in an orthographic projection without anti-aliasing.
+ * Converts a lat/lon point to a two dimensional point in an orthographic projection.
  *
  * \param ll The lat/lon point.
  *
  * \return The two dimensional point.
  */
-function llto2d (ll) {
+function toOrtho (ll) {
   ll[0] *= deg2rad;
   ll[1] *= deg2rad;
   var slat = Math.sin (piOverTwo - ll[0]);
-  return [Math.round (400 + slat * Math.cos (ll[1]) * 400), Math.round (800 - (400 + slat * Math.sin (ll[1]) * 400))];
-}
-
-/**
- * Converts a lat/lon point to a two dimensional point in an orthographic projection with anti-aliasing.
- *
- * \param ll The lat/lon point.
- *
- * \return The two dimensional point.
- */
-function llto2dAntiAlias (ll) {
-  ll[0] *= deg2rad;
-  ll[1] *= deg2rad;
-  var slat = Math.sin (piOverTwo - ll[0]);
-  return [400 + slat * Math.cos (ll[1]) * 400, 800 - (400 + slat * Math.sin (ll[1]) * 400)];
+  return [slat * Math.cos (ll[1]), slat * Math.sin (ll[1])];
 }
 
 /**
@@ -64,7 +50,7 @@ function llto2dAntiAlias (ll) {
  *
  * \return The three dimensional point.
  */
-function llto3d (ll) {
+function to3d (ll) {
   ll[0] *= deg2rad;
   ll[1] *= deg2rad;
   var clat = Math.cos (ll[0]);
@@ -75,12 +61,75 @@ function llto3d (ll) {
  * Scales a point.
  *
  * \param point The point.
+ * \param s The scaling factor.
+ * \param axis The axis to scale. If not present all axes are scaled.
  *
  * \return The scaled point.
  */
-function scale (point, s) {
+function scale (point, s, axis) {
+  if (axis == undefined) {
+    for (var i = 0; i < point.length; ++i)
+      point[i] *= s;
+  }
+  else {
+    if (axis >= point.length) throw "axis out of range.";
+    point[axis] *= s;
+  }
+  return point;
+}
+
+/**
+ * Shifts a point.
+ *
+ * \param point The point.
+ * \param s The amount to shift.
+ * \param axis The axis to shift. If not present all axes are shifted.
+ *
+ * \return The shifted point.
+ */
+function shift (point, s, axis) {
+  if (axis == undefined) {
+    for (var i = 0; i < point.length; ++i)
+      point[i] += s;
+  }
+  else {
+    if (axis >= point.length) throw "axis out of range.";
+    point[axis] += s;
+  }
+  return point;
+}
+
+/**
+ * Inverts a point.
+ *
+ * \param point The point.
+ * \param bound The max bound of the axis.
+ * \param axis The axis to invert. If not present all axes are inverted.
+ *
+ * \return The shifted point.
+ */
+function invert (point, bound, axis) {
+  if (axis == undefined) {
+    for (var i = 0; i < point.length; ++i)
+      point[i] = bound - point[i];
+  }
+  else {
+    if (axis >= point.length) throw "axis out of range.";
+    point[axis] = bound - point[axis];
+  }
+  return point;
+}
+
+/**
+ * Converts a point to an integer to rendering will be done without anti-aliasing.
+ *
+ * \param point The point.
+ *
+ * \return The rounded point.
+ */
+function deAlias (point) {
   for (var i = 0; i < point.length; ++i)
-    point[i] *= s;
+    point[i] = Math.round (point[i]);
   return point;
 }
 
