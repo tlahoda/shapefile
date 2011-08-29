@@ -39,8 +39,9 @@
           //var shapeFileName = "shapefiles/world_borders";
           var shapeFile = new ShapeFile (shapeFileName);
           
-          shapeFile.eachVertex (llto3d);
+          shapeFile.eachVertex (to3d);
           shapeFile.eachVertex (scale, 3);
+
           shapeFile.eachShape (buildModels, [1, 0, 0]);
 
         } catch (error) {
