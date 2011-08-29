@@ -119,12 +119,12 @@ function buildModels (shape, color) {
     case 1:
     case 11: //PointZ
     case 21: //PointM
-      buildPointModel (shape, color);
+      buildPointModel.apply (null, arguments);
       break;
     case 8: //MultiPoint
     case 18: //MultiPointZ
     case 28: //MultiPointM
-      buildMultiPointModel (shape, color);
+      buildMultiPointModel.apply (null, arguments);
       break;
     case 3: //PolyLine
     case 5: //Polygon
@@ -132,10 +132,10 @@ function buildModels (shape, color) {
     case 15: //PolygonZ
     case 23: //PolyLineM
     case 25: //PolygonM
-      buildPolygonModels (shape, color);
+      buildPolygonModels.apply (null, arguments);
       break;
     case 31: //MultiPatch
-      buildMultiPatchModels (shape, color);
+      buildMultiPatchModels.apply (null, arguments);
       break;
     default:
       throw "Shape type unknown.";
