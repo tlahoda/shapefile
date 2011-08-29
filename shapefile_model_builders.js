@@ -106,7 +106,7 @@ function buildMultiPatchModels (shape, color) {
 }
 
 /**
- * Builds the modesl for a shape.
+ * Builds the models for a shape.
  *
  * \param shape The shape to render.
  * \param color The color to render the shape.
