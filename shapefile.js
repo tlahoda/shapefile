@@ -31,9 +31,7 @@ function load_binary_resource (url) {
 }
 
 /**
- * The shapefile header contains various pieces of management data for the shapefile.
- *
- * \param shx The binaryReader containg the shapefile index.
+ * \class Header The shapefile header contains various pieces of management data for the shapefile.
  */
 var Header = Class.create ({
   FILE_CODE: 0,
@@ -48,6 +46,11 @@ var Header = Class.create ({
   ZMAX: 14,
   MMIN: 15,
   MMAX: 16,
+  /**
+   * Creates a Header.
+   *
+   * \param shx The binaryReader containg the shapefile index.
+   */
   initialize: function (shx) {
     this.header = new Array (17);
     for (var i = 0; i < 7; ++i)
@@ -68,24 +71,34 @@ var Header = Class.create ({
 });
 
 /**
- * The base shape class. Also represents a null shape.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class Shape The base shape class. Also represents a null shape.
  */
 var Shape = Class.create ({
   SHAPE_TYPE: 0,
+
+  /**
+   * Creates a Shape.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function (shapeType, shp) {
     this.header = new Array (1);
     this.header[this.SHAPE_TYPE] = shapeType;
   },
-  transform: function (transformFunction) {
+
+  /**
+   * Applies action to each vertex in the shape.
+   *
+   * \param action The action to apply.
+   */
+  eachVertex: function (action) {
     //Does nothing.
   }
 });
 
 /**
- * Represents a point.
+ * \class Point Represents a point.
  *
  * \param shapeType The type of the shape.
  * \param shp The binaryReader containing the main shapefile.
@@ -93,24 +106,42 @@ var Shape = Class.create ({
 var Point = Class.create (Shape, {
   X: 0,
   Y: 1,
+
+  /**
+   * Creates a Point.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     var x = shp.readDouble ();
     var y = shp.readDouble ();
     this.coords = [x, y];
   },
-  transform: function (transformFunction) {
-    this.coords = transformFunction (shape.coords);
+
+  /**
+   * Applies action to the Point.
+   *
+   * \param action The action to apply.
+   */
+  eachVertex: function (action) {
+    var args = new Array (arguments.length);
+    for (var i = 1; i < args.length; ++i)
+      args[i] = arguments[i];
+
+    args[0] = this.coords;
+    action.apply (this.coords, args);
   }
 });
 
 /**
- * Represents a PointZ.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class PointZ Represents a PointZ.
  */
 var PointZ = Class.create (Point, {
+  /**
+   * Creates a PointZ.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     this.z = shp.readDouble ();
@@ -119,12 +150,15 @@ var PointZ = Class.create (Point, {
 });
 
 /**
- * Represents a measured point.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class PointM Represents a measured point.
  */
 var PointM = Class.create (Point, {
+  /**
+   * Creates a PointM.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     this.m = shp.readDouble ();
@@ -132,10 +166,7 @@ var PointM = Class.create (Point, {
 });
 
 /**
- * Represents a set of points.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class MultiPoint Represents a set of points.
  */
 var MultiPoint = Class.create (Shape, {
   X: 0,
@@ -145,6 +176,13 @@ var MultiPoint = Class.create (Shape, {
   XMAX: 3,
   YMAX: 4,
   NUM_POINTS: 5,
+
+  /**
+   * Creates a MultiPoint.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     
@@ -159,19 +197,34 @@ var MultiPoint = Class.create (Shape, {
       this.points[i] = [x, y];
     }
   },
-  transform: function (transformFunction) {
-    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
-      this.points[i] = transformFunction (this.points[i]);
+
+  /**
+   * Applies action to each vertex in the shape.
+   *
+   * \param action The action to apply.
+   */
+  eachVertex: function (action) {
+    var args = new Array (arguments.length);
+    for (var i = 1; i < args.length; ++i)
+      args[i] = arguments[i];
+
+    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i) {
+      args[0] = this.points[i];
+      this.points[i] = action.apply (this.points[i], args);
+    }
   }
 });
 
 /**
- * Represents a set of MultiPointZs.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class MultiPointZ Represents a set of MultiPointZs.
  */
 var MultiPointZ = Class.create (MultiPoint, {
+  /**
+   * Creates a MultiPointZ.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     
@@ -190,12 +243,15 @@ var MultiPointZ = Class.create (MultiPoint, {
 });
 
 /**
- * Represents a set of measured points.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class MultiPointM Represents a set of measured points.
  */
 var MultiPointM = Class.create (MultiPoint, {
+  /**
+   * Creates a .MultiPointM
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     
@@ -208,10 +264,7 @@ var MultiPointM = Class.create (MultiPoint, {
 });
 
 /**
- * Represents a polygon.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class Polygon Represents a polygon.
  */
 var Polygon = Class.create (Shape, {
   X: 0,
@@ -222,6 +275,13 @@ var Polygon = Class.create (Shape, {
   YMAX: 4,
   NUM_PARTS: 5,
   NUM_POINTS: 6,
+
+  /**
+   * Creates a Polygon.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     
@@ -246,20 +306,51 @@ var Polygon = Class.create (Shape, {
       }
     }
   },
-  transform: function (transformFunction) {
+
+  /**
+   * Applies action to each vertex in the shape.
+   *
+   * \param action The action to apply.
+   */
+  eachVertex: function (action) {
+    var args = new Array (arguments.length);
+    for (var i = 1; i < args.length; ++i)
+      args[i] = arguments[i];
+
     for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
-      for (var j = 0; j < this.parts[i].length; ++j)
-        this.parts[i][j] = transformFunction (this.parts[i][j]);
+      for (var j = 0; j < this.parts[i].length; ++j) {
+        args[0] = this.parts[i][j];
+        this.parts[i][j] = action.apply (this.parts[i][j], args);
+      }
+  },
+
+  /**
+   * Applies action to each part in the Polygon.
+   *
+   * \param action The action to apply.
+   */
+  eachPart: function (action) {
+    var args = new Array (arguments.length);
+    for (var i = 1; i < args.length; ++i)
+      args[i] = arguments[i];
+
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
+      args[0] = this.parts[i];
+      this.parts[i] = action.apply (this.parts[i], args);
+    }
   }
 });
 
 /**
- * Represents a PolygonZ.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class PolygonZ Represents a PolygonZ.
  */
 var PolygonZ = Class.create (Polygon, {
+  /**
+   * Creates a PolygonZ.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
 
@@ -288,12 +379,15 @@ var PolygonZ = Class.create (Polygon, {
 });
 
 /**
- * Represents a PolygonM.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class PolygonM Represents a PolygonM.
  */
 var PolygonM = Class.create (Polygon, {
+  /**
+   * Creates a PolygonM.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
 
@@ -311,52 +405,70 @@ var PolygonM = Class.create (Polygon, {
 });
 
 /**
- * Represents a PolyLine.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class PolyLine Represents a PolyLine.
  */
 var PolyLine = Class.create (Polygon, {
+  /**
+   * Creates a PolyLine.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
   }
 });
 
 /**
- * Represents a PolyLineZ.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class PolyLineZ Represents a PolyLineZ.
  */
 var PolyLineZ = Class.create (PolygonZ, {
+  /**
+   * Creates a PolyLineZ.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
   }
 });
 
 /**
- * Represents a PolyLineM.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class PolyLineM Represents a PolyLineM.
  */
 var PolyLineM = Class.create (PolygonM, {
+  /**
+   * Creates a PolyLineM.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
   }
 });
 
 /**
- * Represents a MultiPatch. Due to the complicated nature of this shape type it is not yet implemented.
- *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * \class MultiPatch Represents a MultiPatch. Due to the complicated nature of this shape type it is not yet implemented.
  */
 var MultiPatch = Class.create (Shape, {
+  /**
+   * Creates a MultiPatch.
+   *
+   * \param shapeType The type of the shape.
+   * \param shp The binaryReader containing the main shapefile.
+   */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
   },
-  transform: function (transformFunction) {
+  /**
+   * Applies action to each vertex in the shape.
+   *
+   * \param action The action to apply.
+   */
+  eachVertex: function (action) {
+    //Do nothing
   }
 });
 
@@ -418,13 +530,16 @@ function ShapeFactory (shapeType, shp) {
 }
 
 /**
- * Represents a shapefile
- *
- * \param name The base name of the shape file exluding extensions but including path.
- *
- * \throws error On failure to load the shapefile and on unkown shape type.
+ * \class Shapefile Represents a shapefile
  */
 var ShapeFile = Class.create ({
+  /**
+   * Creates a ShapeFile.
+   *
+   * \param name The base name of the shape file exluding extensions but including path.
+   *
+   * \throws error On failure to load the shapefile and on unkown shape type.
+   */
   initialize: function (name) {
     this.name = name;
     this.header = new Header (new BinaryReader (load_binary_resource (name + '.shx')));
@@ -434,6 +549,32 @@ var ShapeFile = Class.create ({
     for (var i = 0; i < this.header.numShapes; ++i) {
       shp.seek (this.header.offsets[i]);
       this.shapes[i] = ShapeFactory (shp.readInt32 (), shp);
+    }
+  },
+
+  /**
+   * Applies action to each vertex in the shapefile.
+   *
+   * \param action The action to apply.
+   */
+  eachVertex: function (action) {
+    for (var i = 0; i < this.header.numShapes; ++i)
+      this.shapes[i].eachVertex.apply (this.shapes[i], arguments);
+  },
+
+  /**
+   * Applies action to each Shape in the shapefile.
+   *
+   * \param action The action to apply.
+   */
+  eachShape: function (action) {
+    var args = new Array (arguments.length);
+    for (var i = 1; i < args.length; ++i)
+      args[i] = arguments[i];
+
+    for (var i = 0; i < this.header.numShapes; ++i) {
+      args[0] = this.shapes[i];
+      this.shapes[i] = action.apply (this.shapes[i], args);
     }
   }
 });
