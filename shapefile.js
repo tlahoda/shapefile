@@ -38,9 +38,6 @@ function load_binary_resource (url) {
  * \param args The arguments.
  *
  * \return The remaining arguments.
- *
- * \throw 
- * \throw If the length of the range is greater than the length of the array.
  */
 function stripArgRange (begin, end, args) {
   var length = end - begin;
@@ -50,47 +47,96 @@ function stripArgRange (begin, end, args) {
   return res;
 }
 
+/**
+ * Reads a big endian int32 from reader.
+ *
+ * \param reader The BinaryReary from which to read.
+ *
+ * \return The big endian int32.
+ */
 function readBigEndianInt32 (reader) {
   return reader.endianSwap (reader.readInt32 ());
 }
 
+/**
+ * Reads an int32 from reader.
+ *
+ * \param reader The BinaryReary from which to read.
+ *
+ * \return The int32.
+ */
 function readInt32 (reader) {
   return reader.readInt32 ();
 }
 
+/**
+ * Reads a double from reader.
+ *
+ * \param reader The BinaryReary from which to read.
+ *
+ * \return The double.
+ */
 function readDouble (reader) {
   return reader.readDouble ();
 }
 
-function readPoint (shp) {
-  var x = shp.readDouble ();
-  var y = shp.readDouble ();
+/**
+ * Reads a point from reader.
+ *
+ * \param reader The BinaryReary from which to read.
+ *
+ * \return The point.
+ */
+function readPoint (reader) {
+  var x = reader.readDouble ();
+  var y = reader.readDouble ();
   return [x, y];
 }
 
 /**
  * Reads a two element array where the elements are reversed in the BinaryReader.
  *
- * \param shp The BinaryReader from which to read.
+ * \param reader The BinaryReader from which to read.
  *
  * \return The array.
  */
-function readReversedPoint (shp) {
-  var first = shp.readDouble ();
-  var second = shp.readDouble ();
+function readReversedPoint (reader) {
+  var first = reader.readDouble ();
+  var second = reader.readDouble ();
   return [second, first];
 }
 
+/**
+ * Reads a record header from reader.
+ *
+ * \param reader The BinaryReary from which to read.
+ *
+ * \return The record header.
+ */
 function readRecordHeader (shx) {
   var offset = shx.endianSwap (shx.readInt32 ()) * 2;
   var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
   return [offset, contentLen];
 }
 
+/**
+ * Reads a offset from reader.
+ *
+ * \param reader The BinaryReary from which to read.
+ *
+ * \return The offset.
+ */
 function readOffset (shx) {
   return readRecordHeader (shx)[0] + 8;
 }
 
+/**
+ * Applies action to all of the elements of the Array.
+ *
+ * \param action The action to apply.
+ *
+ * \return The Array.
+ */
 Array.prototype.apply = function (action) {
   var args = stripArgRange (0, arguments.length, arguments);
   args.unshift (this.length);
@@ -99,6 +145,15 @@ Array.prototype.apply = function (action) {
   return this;
 }
 
+/**
+ * Applies action to the specified range of the Array elements.
+ *
+ * \param begin The beginning of the range.
+ * \param end The end of the range.
+ * \param action The action to apply.
+ *
+ * \return The Array.
+ */
 Array.prototype.applyRange = function (begin, end, action) {
   var length = this.length;
   var args = stripArgRange (3, arguments.length, arguments);
@@ -108,6 +163,15 @@ Array.prototype.applyRange = function (begin, end, action) {
   return this;
 }
 
+/**
+ * Runs action on each element in the specified range of the Array.
+ *
+ * \param begin The beginning of the range.
+ * \param end The end of the range.
+ * \param action The action to apply.
+ *
+ * \return The Array.
+ */
 Array.prototype.forEachRange = function (begin, end, action) {
   var args = stripArgRange (3, arguments.length, arguments);
   for (var i = begin; i < end; ++i)
