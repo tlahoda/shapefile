@@ -43,7 +43,7 @@ function toOrtho () {
 /**
  * Converts a lat/lon point to a three dimensional point.
  */
-function to3d (ll) {
+function to3d () {
   var lat = this[0] * deg2rad;
   var lon = this[1] * deg2rad;
   var clat = Math.cos (lat);
