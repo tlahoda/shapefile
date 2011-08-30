@@ -71,7 +71,6 @@ var Color = Class.create ({
 /**
  * Draws a point onto context.
  *
- * \param point The point
  * \param context The onto onto which to draw.
  */
 function drawPoint (context) {
