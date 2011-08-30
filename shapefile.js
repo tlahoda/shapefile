@@ -250,7 +250,7 @@ var MultiPointZ = Class.create (MultiPoint, {
  */
 var MultiPointM = Class.create (MultiPoint, {
   /**
-   * Creates a .MultiPointM
+   * Creates a MultiPointM.
    *
    * \param shapeType The type of the shape.
    * \param shp The binaryReader containing the main shapefile.
