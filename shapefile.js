@@ -46,6 +46,7 @@ var Header = Class.create ({
   ZMAX: 14,
   MMIN: 15,
   MMAX: 16,
+
   /**
    * Creates a Header.
    *
@@ -61,11 +62,12 @@ var Header = Class.create ({
       this.header[i] = shx.readDouble ();
 
     this.offsets = new Array ();
-    this.numShapes = 0;
-    while (this.numShapes * 8 + 100 < this.header[this.FILE_LENGTH] * 2) {
+    var fileLength = this.header[this.FILE_LENGTH] * 2;
+    this.numShapes = (fileLength - 100) / 8;
+    for (var i = 0, numShapes = this.numShapes; i < numShapes; ++i) {
       var offset = shx.endianSwap (shx.readInt32 ()) * 2;
       var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
-      this.offsets[this.numShapes++] = offset + 8;
+      this.offsets[i] = offset + 8;
     }
   }
 });
@@ -76,10 +78,11 @@ var Header = Class.create ({
  * \return The remaining arguments.
  */
 function stripFirstArg () {
-  if (arguments.length == 0) throw "An action argument is required."
-  var args = new Array (arguments.length - 1);
-  if (arguments.length > 1)
-    for (var i = 1; i < arguments.length; ++i)
+  var length = arguments.length;
+  if (length == 0) throw "An action argument is required."
+  var args = new Array (length - 1);
+  if (length > 1)
+    for (var i = 1; i < length; ++i)
       args[i - 1] = arguments[i];
   return args;
 }
@@ -199,8 +202,9 @@ var MultiPoint = Class.create (Shape, {
       this.header[i] = shp.readDouble ();
     this.header[this.NUM_POINTS] = shp.readInt32 ();
 
-    this.points = new Array (this.header[this.NUM_POINTS]);
-    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i) {
+    var numPoints = this.header[this.NUM_POINTS];
+    this.points = new Array (numPoints);
+    for (var i = 0; i < numPoints; ++i) {
       var x = shp.readDouble ();
       var y = shp.readDouble ();
       this.points[i] = [x, y];
@@ -213,7 +217,7 @@ var MultiPoint = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
+    for (var i = 0, numPoints = this.header[this.NUM_POINTS]; i < numPoints; ++i)
       action.apply (this.points[i], stripFirstArg.apply (null, arguments));
   }
 });
@@ -230,17 +234,18 @@ var MultiPointZ = Class.create (MultiPoint, {
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    
+
+    var numPoints = this.header[this.NUM_POINTS];
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
-    this.Zarray = new Array (this.header[this.NUM_POINTS]);
-    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
+    this.Zarray = new Array (numPoints);
+    for (var i = 0; i < numPoints; ++i)
       this.Zarray[i] = shp.readDouble ();
 
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
-    this.Marray = new Array (this.header[this.NUM_POINTS]);
-    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
+    this.Marray = new Array (numPoints);
+    for (var i = 0; i < numPoints; ++i)
       this.Marray[i] = shp.readDouble ();
   }
 });
@@ -258,10 +263,11 @@ var MultiPointM = Class.create (MultiPoint, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
     
+    var numPoints = this.header[this.NUM_POINTS];
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
-    this.Marray = new Array (this.header[this.NUM_POINTS]);
-    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
+    this.Marray = new Array (numPoints);
+    for (var i = 0; i < numPoints; ++i)
       this.Marray[i] = shp.readDouble ();
   }
 });
@@ -287,19 +293,22 @@ var Polygon = Class.create (Shape, {
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    
+   
     for (var i = 1; i < 5; ++i)
       this.header[i] = shp.readDouble ();
     for (var i = 5; i < 7; ++i)
       this.header[i] = shp.readInt32 ();
 
-    var partsIndex = new Array (this.header[this.NUM_PARTS]);
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
+    var numParts = this.header[this.NUM_PARTS];
+    var numPoints = this.header[this.NUM_POINTS];
+
+    var partsIndex = new Array (numParts);
+    for (var i = 0; i < numParts; ++i)
       partsIndex[i] = shp.readInt32 ();
 
-    this.parts = new Array (this.header[this.NUM_PARTS]);
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
-      var length = ((i == this.header[this.NUM_PARTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
+    this.parts = new Array (numParts);
+    for (var i = 0; i < numParts; ++i) {
+      var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
       this.parts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j) {
@@ -316,8 +325,8 @@ var Polygon = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
-      for (var j = 0; j < this.parts[i].length; ++j)
+    for (var i = 0, numParts = this.header[this.NUM_PARTS]; i < numParts; ++i)
+      for (var j = 0, length = this.parts[i].length; j < length; ++j)
         action.apply (this.parts[i][j], stripFirstArg.apply (null, arguments));
   },
 
@@ -327,7 +336,7 @@ var Polygon = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachPart: function (action) {
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
+    for (var i = 0, numParts = this.header[this.NUM_PARTS]; i < numParts; ++i)
       action.apply (this.parts[i], stripFirstArg.apply (null, arguments));
   }
 });
@@ -345,11 +354,14 @@ var PolygonZ = Class.create (Polygon, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
 
+    var numParts = this.header[this.NUM_PARTS];
+    var numPoints = this.header[this.NUM_POINTS];
+
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
-    this.Zparts = new Array ();
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
-      var length = ((i == this.header[this.NUM_POINTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
+    this.Zparts = new Array (numParts);
+    for (var i = 0; i < numParts; ++i) {
+      var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
       this.Zparts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j)
@@ -358,9 +370,9 @@ var PolygonZ = Class.create (Polygon, {
 
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
-    this.Mparts = new Array ();
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
-      var length = ((i == this.header[this.NUM_PARTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
+    this.Mparts = new Array (numParts);
+    for (var i = 0; i < numParts; ++i) {
+      var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
       this.Mparts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j)
@@ -382,11 +394,14 @@ var PolygonM = Class.create (Polygon, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
 
+    var numParts = this.header[this.NUM_PARTS];
+    var numPoints = this.header[this.NUM_POINTS];
+
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
-    this.Mparts = new Array ();
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
-      var length = ((i == this.header[this.NUM_PARTS] - 1) ? this.header[this.NUM_POINTS] : partsIndex[i + 1]) - partsIndex[i];
+    this.Mparts = new Array (numParts);
+    for (var i = 0; i < numParts; ++i) {
+      var length = ((i ==  - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
       this.Mparts[i] = new Array (length);
 
       for (var j = 0; j < length; ++j)
@@ -534,11 +549,12 @@ var ShapeFile = Class.create ({
    */
   initialize: function (name) {
     this.name = name;
-    this.header = new Header (new BinaryReader (load_binary_resource (name + '.shx')));
+    this.header = new Header (new BinaryReader (load_binary_resource (name + ".shx")));
   
-    var shp = new BinaryReader (load_binary_resource (name + '.shp'));
-    this.shapes = new Array(this.header.numShapes);
-    for (var i = 0; i < this.header.numShapes; ++i) {
+    var shp = new BinaryReader (load_binary_resource (name + ".shp"));
+    var numShapes = this.header.numShapes;
+    this.shapes = new Array (numShapes);
+    for (var i = 0; i < numShapes; ++i) {
       shp.seek (this.header.offsets[i]);
       this.shapes[i] = ShapeFactory (shp.readInt32 (), shp);
     }
@@ -550,7 +566,7 @@ var ShapeFile = Class.create ({
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    for (var i = 0; i < this.header.numShapes; ++i)
+    for (var i = 0, numShapes = this.header.numShapes; i < numShapes; ++i)
       this.shapes[i].eachVertex.apply (this.shapes[i], arguments);
   },
 
@@ -560,7 +576,7 @@ var ShapeFile = Class.create ({
    * \param action The action to apply.
    */
   eachShape: function (action) {
-    for (var i = 0; i < this.header.numShapes; ++i)
+    for (var i = 0, numShapes = this.header.numShapes; i < numShapes; ++i)
       action.apply (this.shapes[i], stripFirstArg.apply (null, arguments));
   }
 });
