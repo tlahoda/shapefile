@@ -22,20 +22,20 @@
 /**
  * Precalculated pi / 2.
  */
-var piOverTwo = Math.PI / 2.0;
+Math.piOverTwo = Math.PI / 2.0;
 
 /**
  * Precalculated deg2rad conversion factor.
  */
-var deg2rad = Math.PI / 180.0;
+Math.deg2rad = Math.PI / 180.0;
 
 /**
  * Converts a lat/lon point to a two dimensional point in an orthographic projection.
  */
 function toOrtho () {
-  var lat = this[0] * deg2rad;
-  var lon = this[1] * deg2rad;
-  var slat = Math.sin (piOverTwo - lat);
+  var lat = this[0] * Math.deg2rad;
+  var lon = this[1] * Math.deg2rad;
+  var slat = Math.sin (Math.piOverTwo - lat);
   this[0] = slat * Math.cos (lon);
   this[1] = slat * Math.sin (lon);
 }
@@ -44,16 +44,12 @@ function toOrtho () {
  * Converts a lat/lon point to a three dimensional point.
  */
 function to3d () {
-  var lat = this[0] * deg2rad;
-  var lon = this[1] * deg2rad;
+  var lat = this[0] * Math.deg2rad;
+  var lon = this[1] * Math.deg2rad;
   var clat = Math.cos (lat);
   this[0] = clat * Math.cos (lon);
   this[1] = clat * Math.sin (lon);
   this[2] = Math.sin (lat);
-}
-
-function mul (s) {
-  return this * s;
 }
 
 /**
