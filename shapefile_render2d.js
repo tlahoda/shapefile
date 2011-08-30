@@ -103,7 +103,7 @@ function renderMultiPoint (context) {
 function renderPolygonPart (context) {
   context.beginPath ();
   context.moveTo (this[0][0], this[0][1]);
-  this.forEach (function (vertex) { context.lineTo (vertex[0], vertex[1]); });
+  this.forEachRange (1, this.length, function () { context.lineTo (this[0], this[1]); });
   context.stroke ();
   context.closePath ();
 }

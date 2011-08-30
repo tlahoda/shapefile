@@ -34,16 +34,12 @@ function makeData (vertices, colors) {
 }
 
 /**
- * Fills an array with a value.
+ * Retruns a value with which to replace an array element.
  *
  * \param value The value with which to fill.
- *
- * \return The array.
  */
-Array.prototype.fill = function (value) {
-  for (var i = 0, length = this.length; i < length; ++i)
-    this[i] = value;
-  return this;
+function replace (value) {
+  return value;
 }
 
 /**
@@ -55,7 +51,7 @@ Array.prototype.fill = function (value) {
  * \return The array of colors.
  */
 function makeVertexColors (arr, color) {
-  return new Array (arr.length).fill (color);
+  return new Array (arr.length).apply (replace, color);
 }
 
 /**
@@ -98,15 +94,19 @@ function buildPolygonPartModel (color) {
  */
 function buildPolygonModels (color) {
   this.eachPart (buildPolygonPartModel, color);
+  this.eachModel = function (action) {
+     action.apply (this.model, stripArgRange (1, arguments.length, arguments));
+  };
 }
 
 /**
- * Builds the models for a MultiPatch.
+ * Builds the models for a MultiPatch. MultiPatch is not yet implemented.
  *
  * \param color The color to render the shape.
  */
 function buildMultiPatchModels (color) {
-  //not yet implemented.
+  this.eachModel = function (action) {
+  };
 }
 
 /**
