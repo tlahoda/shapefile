@@ -22,37 +22,35 @@
 /**
  * Build the model for a point.
  *
- * \param shape The shape to render.
  * \param color The color to render the shape.
  */
-function buildPointModel (shape, color) {
-  var data = [["vertex", shape.coords], 
-              ["color", color],
+function buildPointModel (color) {
+  var data = [["vertex", [this.coords]], 
+              ["color", [color]],
               ["wglu_elements", [0, 1, 2, 0, 3, 4, 0, 3, 1, 0, 2, 4]]];
 
-  shape.model = $W.createObject({ type: $W.GL.POINTS, data: data });
-  shape.model.setPosition (0, 0, 0);
-  shape.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0); }
+  this.model = $W.createObject({ type: $W.GL.POINTS, data: data });
+  this.model.setPosition (0, 0, 0);
+  this.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0); }
 }
 
 /**
  * Builds the model for a MultiPoint.
  *
- * \param shape The shape to render.
  * \param color The color to render the shape.
  */
-function buildMultiPointModel (shape, color) {
+function buildMultiPointModel (color) {
   var colors = new Array ();
-  for (var i = 0; i < shape.points.length; ++i)
+  for (var i = 0; i < this.points.length; ++i)
     colors[i] = color;
 
-  var data = [["vertex", shape.points], 
+  var data = [["vertex", this.points], 
               ["color", colors],
               ["wglu_elements", [0, 1, 2, 0, 3, 4, 0, 3, 1, 0, 2, 4]]];
 
-  shape.model = $W.createObject({ type: $W.GL.POINTS, data: data });
-  shape.model.setPosition (0, 0, 0);
-  shape.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0); }
+  this.model = $W.createObject({ type: $W.GL.POINTS, data: data });
+  this.model.setPosition (0, 0, 0);
+  this.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0); }
 }
 
 /**
@@ -74,15 +72,14 @@ function makePolygonPartColors (part, color) {
  * \param part The part for which to build the models.
  * \param color The color of the part.
  */
-function buildPolygonPartModel (part, color) {
-  var data = [["vertex", part], 
-              ["color", makePolygonPartColors (part, color)],
+function buildPolygonPartModel (color) {
+  var data = [["vertex", this], 
+              ["color", makePolygonPartColors (this, color)],
               ["wglu_elements", [0, 1, 2, 0, 3, 4, 0, 3, 1, 0, 2, 4]]];
 
-  part.model = $W.createObject({ type: $W.GL.POINTS, data: data });
-  part.model.setPosition (0, 1, 0);
-  part.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0);}
-  return part;
+  this.model = $W.createObject({ type: $W.GL.POINTS, data: data });
+  this.model.setPosition (0, 1, 0);
+  this.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0);}
 }
 
 /**
@@ -91,8 +88,8 @@ function buildPolygonPartModel (part, color) {
  * \param shape The shape to render.
  * \param color The color to render the shape.
  */
-function buildPolygonModels (shape, color) {
-  shape.eachPart (buildPolygonPartModel, color);
+function buildPolygonModels (color) {
+  this.eachPart (buildPolygonPartModel, color);
 }
 
 /**
@@ -101,7 +98,7 @@ function buildPolygonModels (shape, color) {
  * \param shape The shape to render.
  * \param color The color to render the shape.
  */
-function buildMultiPatchModels (shape, color) {
+function buildMultiPatchModels (color) {
   //not yet implemented.
 }
 
@@ -111,20 +108,20 @@ function buildMultiPatchModels (shape, color) {
  * \param shape The shape to render.
  * \param color The color to render the shape.
  */
-function buildModels (shape, color) {
-  switch (shape.header[0]) {
+function buildModels (color) {
+  switch (this.header[0]) {
     case 0:
       //NullShape does not need a model.
       break;
     case 1:
     case 11: //PointZ
     case 21: //PointM
-      buildPointModel.apply (null, arguments);
+      buildPointModel.apply (this, arguments);
       break;
     case 8: //MultiPoint
     case 18: //MultiPointZ
     case 28: //MultiPointM
-      buildMultiPointModel.apply (null, arguments);
+      buildMultiPointModel.apply (this, arguments);
       break;
     case 3: //PolyLine
     case 5: //Polygon
@@ -132,14 +129,13 @@ function buildModels (shape, color) {
     case 15: //PolygonZ
     case 23: //PolyLineM
     case 25: //PolygonM
-      buildPolygonModels.apply (null, arguments);
+      buildPolygonModels.apply (this, arguments);
       break;
     case 31: //MultiPatch
-      buildMultiPatchModels.apply (null, arguments);
+      buildMultiPatchModels.apply (this, arguments);
       break;
     default:
       throw "Shape type unknown.";
-    return shape;
   }
 }
 

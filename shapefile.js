@@ -71,6 +71,20 @@ var Header = Class.create ({
 });
 
 /**
+ * Strips the first arguments off and returns the remaining arguments.
+ *
+ * \return The remaining arguments.
+ */
+function stripFirstArg () {
+  if (arguments.length == 0) throw "An action argument is required."
+  var args = new Array (arguments.length - 1);
+  if (arguments.length > 1)
+    for (var i = 1; i < arguments.length; ++i)
+      args[i - 1] = arguments[i];
+  return args;
+}
+
+/**
  * \class Shape The base shape class. Also represents a null shape.
  */
 var Shape = Class.create ({
@@ -123,12 +137,7 @@ var Point = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    var args = new Array (arguments.length);
-    for (var i = 1; i < args.length; ++i)
-      args[i] = arguments[i];
-
-    args[0] = this.coords;
-    action.apply (this.coords, args);
+    action.apply (this.coords, stripFirstArg.apply (null, arguments));
   }
 });
 
@@ -204,14 +213,8 @@ var MultiPoint = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    var args = new Array (arguments.length);
-    for (var i = 1; i < args.length; ++i)
-      args[i] = arguments[i];
-
-    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i) {
-      args[0] = this.points[i];
-      this.points[i] = action.apply (this.points[i], args);
-    }
+    for (var i = 0; i < this.header[this.NUM_POINTS]; ++i)
+      action.apply (this.points[i], stripFirstArg.apply (null, arguments));
   }
 });
 
@@ -313,15 +316,9 @@ var Polygon = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    var args = new Array (arguments.length);
-    for (var i = 1; i < args.length; ++i)
-      args[i] = arguments[i];
-
     for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
-      for (var j = 0; j < this.parts[i].length; ++j) {
-        args[0] = this.parts[i][j];
-        this.parts[i][j] = action.apply (this.parts[i][j], args);
-      }
+      for (var j = 0; j < this.parts[i].length; ++j)
+        action.apply (this.parts[i][j], stripFirstArg.apply (null, arguments));
   },
 
   /**
@@ -330,14 +327,8 @@ var Polygon = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachPart: function (action) {
-    var args = new Array (arguments.length);
-    for (var i = 1; i < args.length; ++i)
-      args[i] = arguments[i];
-
-    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i) {
-      args[0] = this.parts[i];
-      this.parts[i] = action.apply (this.parts[i], args);
-    }
+    for (var i = 0; i < this.header[this.NUM_PARTS]; ++i)
+      action.apply (this.parts[i], stripFirstArg.apply (null, arguments));
   }
 });
 
@@ -462,6 +453,7 @@ var MultiPatch = Class.create (Shape, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
   },
+
   /**
    * Applies action to each vertex in the shape.
    *
@@ -568,14 +560,8 @@ var ShapeFile = Class.create ({
    * \param action The action to apply.
    */
   eachShape: function (action) {
-    var args = new Array (arguments.length);
-    for (var i = 1; i < args.length; ++i)
-      args[i] = arguments[i];
-
-    for (var i = 0; i < this.header.numShapes; ++i) {
-      args[0] = this.shapes[i];
-      this.shapes[i] = action.apply (this.shapes[i], args);
-    }
+    for (var i = 0; i < this.header.numShapes; ++i)
+      action.apply (this.shapes[i], stripFirstArg.apply (null, arguments));
   }
 });
 

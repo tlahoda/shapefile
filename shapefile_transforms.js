@@ -31,105 +31,83 @@ var deg2rad = Math.PI / 180.0;
 
 /**
  * Converts a lat/lon point to a two dimensional point in an orthographic projection.
- *
- * \param ll The lat/lon point.
- *
- * \return The two dimensional point.
  */
-function toOrtho (ll) {
-  ll[0] *= deg2rad;
-  ll[1] *= deg2rad;
-  var slat = Math.sin (piOverTwo - ll[0]);
-  return [slat * Math.cos (ll[1]), slat * Math.sin (ll[1])];
+function toOrtho () {
+  var lat = this[0] * deg2rad;
+  var lon = this[1] * deg2rad;
+  var slat = Math.sin (piOverTwo - lat);
+  this[0] = slat * Math.cos (lon);
+  this[1] = slat * Math.sin (lon);
 }
 
 /**
  * Converts a lat/lon point to a three dimensional point.
- *
- * \param ll The lat/lon point.
- *
- * \return The three dimensional point.
  */
 function to3d (ll) {
-  ll[0] *= deg2rad;
-  ll[1] *= deg2rad;
-  var clat = Math.cos (ll[0]);
-  return [clat * Math.cos (ll[1]), clat * Math.sin (ll[1]), Math.sin (ll[0])];
+  var lat = this[0] * deg2rad;
+  var lon = this[1] * deg2rad;
+  var clat = Math.cos (lat);
+  this[0] = clat * Math.cos (lon);
+  this[1] = clat * Math.sin (lon);
+  this[2] = Math.sin (lat);
 }
 
 /**
  * Scales a point.
  *
- * \param point The point.
  * \param s The scaling factor.
  * \param axis The axis to scale. If not present all axes are scaled.
- *
- * \return The scaled point.
  */
-function scale (point, s, axis) {
+function scale (s, axis) {
   if (axis == undefined) {
-    for (var i = 0; i < point.length; ++i)
-      point[i] *= s;
+    for (var i = 0; i < this.length; ++i)
+      this[i] *= s;
   }
   else {
-    if (axis >= point.length) throw "axis out of range.";
-    point[axis] *= s;
+    if (axis >= this.length) throw "axis out of range.";
+    this[axis] *= s;
   }
-  return point;
 }
 
 /**
  * Shifts a point.
  *
- * \param point The point.
  * \param s The amount to shift.
  * \param axis The axis to shift. If not present all axes are shifted.
- *
- * \return The shifted point.
  */
-function shift (point, s, axis) {
+function shift (s, axis) {
   if (axis == undefined) {
-    for (var i = 0; i < point.length; ++i)
-      point[i] += s;
+    for (var i = 0; i < this.length; ++i)
+      this[i] += s;
   }
   else {
-    if (axis >= point.length) throw "axis out of range.";
-    point[axis] += s;
+    if (axis >= this.length) throw "axis out of range.";
+    this[axis] += s;
   }
-  return point;
 }
 
 /**
  * Inverts a point.
  *
- * \param point The point.
  * \param bound The max bound of the axis.
  * \param axis The axis to invert. If not present all axes are inverted.
- *
- * \return The shifted point.
  */
-function invert (point, bound, axis) {
+function invert (bound, axis) {
   if (axis == undefined) {
-    for (var i = 0; i < point.length; ++i)
-      point[i] = bound - point[i];
+    for (var i = 0; i < this.length; ++i)
+      this[i] = bound - this[i];
   }
   else {
-    if (axis >= point.length) throw "axis out of range.";
-    point[axis] = bound - point[axis];
+    if (axis >= this.length) throw "axis out of range.";
+    this[axis] = bound - this[axis];
   }
-  return point;
 }
 
 /**
  * Converts a point to an integer to rendering will be done without anti-aliasing.
- *
- * \param point The point.
- *
- * \return The rounded point.
  */
-function deAlias (point) {
-  for (var i = 0; i < point.length; ++i)
-    point[i] = Math.round (point[i]);
-  return point;
+function deAlias () {
+  for (var i = 0; i < this.length; ++i)
+    this[i] = Math.round (this[i]);
 }
 
