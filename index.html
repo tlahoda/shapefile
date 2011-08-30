@@ -37,9 +37,9 @@
             var shapeFile = new ShapeFile (shapeFileName);
             
             shapeFile.eachVertex (toOrtho);
-            shapeFile.eachVertex (scale, 400);
-            shapeFile.eachVertex (shift, 400);
-            shapeFile.eachVertex (invert, 800, 1);
+            shapeFile.eachVertex (scale, screen.width / 2);
+            shapeFile.eachVertex (shift, screen.width / 2);
+            shapeFile.eachVertex (invert, screen.height, 1);
             shapeFile.eachVertex (deAlias);
 
             shapeFile.eachShape (render, screen.getContext ("2d"), new Color (0xFF, 0x00, 0x00, 0x00));
