@@ -29,7 +29,7 @@
 
     <script type="text/javascript">
       function ready () {
-        var screen = document.getElementById ('screen');
+        var screen = document.getElementById ("screen");
         if (screen.getContext) {
           try {
             var shapeFileName = "shapefiles/northamerica_adm0";
@@ -45,7 +45,7 @@
             shapeFile.eachShape (render, screen.getContext ("2d"), new Color (0xFF, 0x00, 0x00, 0x00));
 
           } catch (error) {
-            var messages = document.getElementById ('messages');
+            var messages = document.getElementById ("messages");
             messages.innerHTML = error;
             console.log (error);
           }
