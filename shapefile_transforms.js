@@ -52,6 +52,10 @@ function to3d () {
   this[2] = Math.sin (lat);
 }
 
+function mul (s) {
+  return this * s;
+}
+
 /**
  * Scales a point.
  *
@@ -60,7 +64,7 @@ function to3d () {
  */
 function scale (s, axis) {
   if (axis == undefined) {
-    for (var i = 0; i < this.length; ++i)
+    for (var i = 0, length = this.length; i < length; ++i)
       this[i] *= s;
   }
   else {
@@ -77,7 +81,7 @@ function scale (s, axis) {
  */
 function shift (s, axis) {
   if (axis == undefined) {
-    for (var i = 0; i < this.length; ++i)
+    for (var i = 0, length = this.length; i < length; ++i)
       this[i] += s;
   }
   else {
@@ -94,7 +98,7 @@ function shift (s, axis) {
  */
 function invert (bound, axis) {
   if (axis == undefined) {
-    for (var i = 0; i < this.length; ++i)
+    for (var i = 0, length = this.length; i < length; ++i)
       this[i] = bound - this[i];
   }
   else {
@@ -107,7 +111,7 @@ function invert (bound, axis) {
  * Converts a point to integers so rendering will be done without anti-aliasing.
  */
 function deAlias () {
-  for (var i = 0; i < this.length; ++i)
+  for (var i = 0, length = this.length; i < length; ++i)
     this[i] = Math.round (this[i]);
 }
 
