@@ -21,12 +21,12 @@
 
 <html>
   <head>
-    <script type="text/javascript" src="prototype.js"></script>
-    <script type="text/javascript" src="binaryReader.js"></script>
+    <script type="text/javascript" src="external/prototype.js"></script>
+    <script type="text/javascript" src="external/binaryReader.js"></script>
     <script type="text/javascript" src="shapefile.js"></script>
     <script type="text/javascript" src="shapefile_transforms.js"></script>
     <script type="text/javascript" src="shapefile_model_builders.js"></script>
-    <script type="text/javascript" src="webglu/src/webglu.js"></script>
+    <script type="text/javascript" src="external/webglu/src/webglu.js"></script>
 
     <script type="text/javascript">
       function ready () {
@@ -45,17 +45,21 @@
           shapeFile.eachShape (buildModels, [1, 0, 0]);
 
         } catch (error) {
-          var messages = document.getElementById ("messages");
-          messages.innerHTML = error;
+          document.getElementById ("messages").innerHTML = error;
           console.log (error);
         }
+
+        $W.update = function () {
+          document.getElementById ("messages").innerHTML = $W.FPS;
+        }
+
         $W.start ();
       }
     </script>
   </head>
   <body onLoad="ready ();">
-    <div id="messages" width="800" height="800" z-index="10" style="position: relative; float: top; display: inline;"></div>
-    <canvas id="canvas" width="800" height="800" z-index="0" style="border: solid 1px; position: absolute; left: 0px; display: inline;">
+    <div id="messages" width="800" height="800" z-index="10"></div>
+    <canvas id="canvas" width="800" height="800" z-index="0">
       Your browser doesn't support canvas.
     </canvas>
   </body>
