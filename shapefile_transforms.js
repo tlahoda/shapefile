@@ -104,7 +104,7 @@ function invert (bound, axis) {
 }
 
 /**
- * Converts a point to an integer to rendering will be done without anti-aliasing.
+ * Converts a point to integers so rendering will be done without anti-aliasing.
  */
 function deAlias () {
   for (var i = 0; i < this.length; ++i)
