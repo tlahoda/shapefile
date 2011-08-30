@@ -34,6 +34,19 @@ function makeData (vertices, colors) {
 }
 
 /**
+ * Fills an array with a value.
+ *
+ * \param value The value with which to fill.
+ *
+ * \return The array.
+ */
+Array.prototype.fill = function (value) {
+  for (var i = 0, length = this.length; i < length; ++i)
+    this[i] = value;
+  return this;
+}
+
+/**
  * Makes an array of colors for ian array of vertices.
  *
  * \param arr The array of vertices for whic hto generate colors.
@@ -42,10 +55,7 @@ function makeData (vertices, colors) {
  * \return The array of colors.
  */
 function makeVertexColors (arr, color) {
-  var colors = new Array ();
-  for (var k = 0; k < arr.length; ++k)
-    colors[k] = color;
-  return colors;
+  return new Array (arr.length).fill (color);
 }
 
 /**
