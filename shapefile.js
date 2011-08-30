@@ -31,6 +31,68 @@ function load_binary_resource (url) {
 }
 
 /**
+ * Strips the first arguments off and returns the remaining arguments.
+ *
+ * \return The remaining arguments.
+ */
+function stripArgRange (begin, end, args) {
+  var length = end - begin;
+  if (length > args.length) throw "Range exceeds boundaries.";
+  var res = new Array (length);
+  if (length == 0) return; 
+  for (var i = 0; i < length; ++i)
+    res[i] = args[i + begin];
+  return res;
+}
+
+function readBigEndianInt32 (reader) {
+  return reader.endianSwap (reader.readInt32 ());
+}
+
+function readInt32 (reader) {
+  return reader.readInt32 ();
+}
+
+function readDouble (reader) {
+  return reader.readDouble ();
+}
+
+function readPoint (shp) {
+  var x = shp.readDouble ();
+  var y = shp.readDouble ();
+  return [x. y];
+}
+
+/**
+ * Reads a two element array where the elements are reversed in the BinaryReader.
+ *
+ * \param shp The BinaryReader from which to read.
+ *
+ * \return The array.
+ */
+function readReversedPoint (shp) {
+  var first = shp.readDouble ();
+  var second = shp.readDouble ();
+  return [second, first];
+}
+
+
+function readRecordHeader (shx) {
+  var offset = shx.endianSwap (shx.readInt32 ()) * 2;
+  var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
+  return [offset, contentLen];
+}
+
+function readOffset (shx) {
+  return readRecordHeader (shx)[0] + 8;
+}
+
+function readRange (begin, end, action, shp) {
+  for (var i = begin; i < end; ++i)
+    this[i] = action.apply (null, stripArgRange (3, arguments.length, arguments));
+}
+
+/**
  * \class Header The shapefile header contains various pieces of management data for the shapefile.
  */
 var Header = Class.create ({
@@ -54,38 +116,15 @@ var Header = Class.create ({
    */
   initialize: function (shx) {
     this.header = new Array (17);
-    for (var i = 0; i < 7; ++i)
-      this.header[i] = shx.endianSwap (shx.readInt32 ());
-    for (var i = 7; i < 9; ++i)
-      this.header[i] = shx.readInt32 ();
-    for (var i = 9; i < 17; ++i)
-      this.header[i] = shx.readDouble ();
+    readRange.call (this.header, 0, 7, readBigEndianInt32, shx);
+    readRange.call (this.header, 7, 9, readInt32, shx);
+    readRange.call (this.header, 9, 17, readDouble, shx);
 
-    this.offsets = new Array ();
-    var fileLength = this.header[this.FILE_LENGTH] * 2;
-    this.numShapes = (fileLength - 100) / 8;
-    for (var i = 0, numShapes = this.numShapes; i < numShapes; ++i) {
-      var offset = shx.endianSwap (shx.readInt32 ()) * 2;
-      var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
-      this.offsets[i] = offset + 8;
-    }
+    this.numShapes = ((this.header[this.FILE_LENGTH] * 2) - 100) / 8;
+    this.offsets = new Array (this.numShapes);
+    readRange.call (this.offsets, 0, this.numShapes, readOffset, shx);
   }
 });
-
-/**
- * Strips the first arguments off and returns the remaining arguments.
- *
- * \return The remaining arguments.
- */
-function stripFirstArg () {
-  var length = arguments.length;
-  if (length == 0) throw "An action argument is required."
-  var args = new Array (length - 1);
-  if (length > 1)
-    for (var i = 1; i < length; ++i)
-      args[i - 1] = arguments[i];
-  return args;
-}
 
 /**
  * \class Shape The base shape class. Also represents a null shape.
@@ -129,9 +168,7 @@ var Point = Class.create (Shape, {
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    var x = shp.readDouble ();
-    var y = shp.readDouble ();
-    this.coords = [x, y];
+    this.coords = readPoint (shp);
   },
 
   /**
@@ -140,7 +177,7 @@ var Point = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    action.apply (this.coords, stripFirstArg.apply (null, arguments));
+    action.apply (this.coords, stripArgRange (1, arguments.length, arguments));
   }
 });
 
@@ -197,18 +234,11 @@ var MultiPoint = Class.create (Shape, {
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    
-    for (var i = 1; i < 5; ++i)
-      this.header[i] = shp.readDouble ();
-    this.header[this.NUM_POINTS] = shp.readInt32 ();
-
-    var numPoints = this.header[this.NUM_POINTS];
+    readRange.call (this.header, 1, 5, readDouble, shp);
+    var numPoints = shp.readInt32 ();
+    this.header[this.NUM_POINTS] = numPoints;
     this.points = new Array (numPoints);
-    for (var i = 0; i < numPoints; ++i) {
-      var x = shp.readDouble ();
-      var y = shp.readDouble ();
-      this.points[i] = [x, y];
-    }
+    readRange.call (this.points, 0, numPoints, readPoint, shp);
   },
 
   /**
@@ -218,7 +248,7 @@ var MultiPoint = Class.create (Shape, {
    */
   eachVertex: function (action) {
     for (var i = 0, numPoints = this.header[this.NUM_POINTS]; i < numPoints; ++i)
-      action.apply (this.points[i], stripFirstArg.apply (null, arguments));
+      action.apply (this.points[i], stripArgRange (1, arguments.length, arguments));
   }
 });
 
@@ -239,14 +269,12 @@ var MultiPointZ = Class.create (MultiPoint, {
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
     this.Zarray = new Array (numPoints);
-    for (var i = 0; i < numPoints; ++i)
-      this.Zarray[i] = shp.readDouble ();
+    readRange.call (this.Zarray, 0, numPoints, readDouble, shp);
 
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Marray = new Array (numPoints);
-    for (var i = 0; i < numPoints; ++i)
-      this.Marray[i] = shp.readDouble ();
+    readRange.call (this.Marray, 0, numPoints, readDouble, shp);
   }
 });
 
@@ -267,10 +295,29 @@ var MultiPointM = Class.create (MultiPoint, {
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Marray = new Array (numPoints);
-    for (var i = 0; i < numPoints; ++i)
-      this.Marray[i] = shp.readDouble ();
+    readRange.call (this.Marray, 0, numPoints, readDouble, shp);
   }
 });
+
+/**
+ * Reads a set of objects.
+ *
+ * \param numObjects The number of objects to read.
+ * \param numPoints The total number of points in all of the objects.
+ * \param partsIndex The indices to the objects.
+ * \param reader the object reader.
+ * \param shp The BinaryReader from which to read.
+ *
+ * \return An array containing the objects.
+ */
+function readObjects (numPoints, partsIndex, reader, shp) {
+  var numParts = this.length;
+  for (var i = 0; i < numParts; ++i) {
+    var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
+    this[i] = new Array (length);
+    readRange.call (this[i], 0, length, reader, shp);
+  }
+}
 
 /**
  * \class Polygon Represents a polygon.
@@ -294,29 +341,17 @@ var Polygon = Class.create (Shape, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
    
-    for (var i = 1; i < 5; ++i)
-      this.header[i] = shp.readDouble ();
-    for (var i = 5; i < 7; ++i)
-      this.header[i] = shp.readInt32 ();
+    readRange.call (this.header, 1, 5, readDouble, shp);
+    readRange.call (this.header, 5, 7, readInt32, shp);
 
     var numParts = this.header[this.NUM_PARTS];
     var numPoints = this.header[this.NUM_POINTS];
 
     var partsIndex = new Array (numParts);
-    for (var i = 0; i < numParts; ++i)
-      partsIndex[i] = shp.readInt32 ();
+    readRange.call (partsIndex, 0, numParts, readInt32, shp);
 
     this.parts = new Array (numParts);
-    for (var i = 0; i < numParts; ++i) {
-      var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
-      this.parts[i] = new Array (length);
-
-      for (var j = 0; j < length; ++j) {
-        var lon = shp.readDouble ();
-        var lat = shp.readDouble ();
-        this.parts[i][j] = [lat, lon];
-      }
-    }
+    readObjects.call (this.parts, numPoints, partsIndex, readReversedPoint, shp)
   },
 
   /**
@@ -327,7 +362,7 @@ var Polygon = Class.create (Shape, {
   eachVertex: function (action) {
     for (var i = 0, numParts = this.header[this.NUM_PARTS]; i < numParts; ++i)
       for (var j = 0, length = this.parts[i].length; j < length; ++j)
-        action.apply (this.parts[i][j], stripFirstArg.apply (null, arguments));
+        action.apply (this.parts[i][j], stripArgRange (1, arguments.length, arguments));
   },
 
   /**
@@ -337,7 +372,7 @@ var Polygon = Class.create (Shape, {
    */
   eachPart: function (action) {
     for (var i = 0, numParts = this.header[this.NUM_PARTS]; i < numParts; ++i)
-      action.apply (this.parts[i], stripFirstArg.apply (null, arguments));
+      action.apply (this.parts[i], stripArgRange (1, arguments.length, arguments));
   }
 });
 
@@ -360,24 +395,12 @@ var PolygonZ = Class.create (Polygon, {
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
     this.Zparts = new Array (numParts);
-    for (var i = 0; i < numParts; ++i) {
-      var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
-      this.Zparts[i] = new Array (length);
-
-      for (var j = 0; j < length; ++j)
-        this.Zparts[i][j] = shp.readDouble ();
-    }
+    readObjects.call (this.Zparts, numPoints, partsIndex, readDouble, shp);
 
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array (numParts);
-    for (var i = 0; i < numParts; ++i) {
-      var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
-      this.Mparts[i] = new Array (length);
-
-      for (var j = 0; j < length; ++j)
-        this.Mparts[i][j] = shp.readDouble ();
-    }
+    readObjects.call (this.Mparts, numPoints, partsIndex, readDouble, shp);
   }
 });
 
@@ -400,13 +423,7 @@ var PolygonM = Class.create (Polygon, {
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array (numParts);
-    for (var i = 0; i < numParts; ++i) {
-      var length = ((i ==  - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
-      this.Mparts[i] = new Array (length);
-
-      for (var j = 0; j < length; ++j)
-        this.Mparts[i][j] = shp.readDouble ();
-    }
+    this.Mparts = readObjects.call (this.Mparts, numPoints, partsIndex, readDouble, shp);
   }
 });
 
@@ -577,7 +594,7 @@ var ShapeFile = Class.create ({
    */
   eachShape: function (action) {
     for (var i = 0, numShapes = this.header.numShapes; i < numShapes; ++i)
-      action.apply (this.shapes[i], stripFirstArg.apply (null, arguments));
+      action.apply (this.shapes[i], stripArgRange (1, arguments.length, arguments));
   }
 });
 
