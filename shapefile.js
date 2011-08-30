@@ -92,10 +92,10 @@ function readOffset (shx) {
 }
 
 Array.prototype.apply = function (action) {
-  var length = this.length;
-  var args = stripArgRange (1, arguments.length, arguments);
-  for (var i = 0; i < length; ++i)
-    this[i] = action.apply (this[i], args);
+  var args = stripArgRange (0, arguments.length, arguments);
+  args.unshift (this.length);
+  args.unshift (0);
+  this.applyRange.apply (this, args);
   return this;
 }
 
