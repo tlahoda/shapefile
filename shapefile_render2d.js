@@ -37,7 +37,7 @@ var Color = Class.create ({
    * \param a The alpha channel intensity.
    */
   initialize: function (r, g, b, a) {
-      this.data = [r & 0xFF, g & 0xFF, b & 0xFF, a & 0xFF];
+    this.data = [r & 0xFF, g & 0xFF, b & 0xFF, a & 0xFF];
   },
 
   /**
@@ -103,9 +103,7 @@ function renderMultiPoint (context) {
 function renderPolygonPart (context) {
   context.beginPath ();
   context.moveTo (this[0][0], this[0][1]);
-  
-  for (var i = 1; i < this.length; ++i)
-    context.lineTo (this[i][0], this[i][1]);
+  this.forEach (function (vertex) { context.lineTo (vertex[0], vertex[1]); });
   context.stroke ();
   context.closePath ();
 }
