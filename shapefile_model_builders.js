@@ -80,19 +80,27 @@ function buildMultiPointModel (color) {
 }
 
 /**
- * Builds the models for a Polygon part.
+ * Builds the vertices for a Polygon part.
  *
- * \param vertices The main vertex array.
  * \param color The color of the part.
  */
-//function buildPolygonPartModel (vertices, color) {
-function buildPolygonPartModel (color) {
-  var vertices = new Array ();
+function buildPolygonPartVertices (vertices) {
   vertices.push (this[0]);
   for (var i = 1; i < this.length - 2; ++i) {
     vertices.push (this[i]);
     vertices.push (this[i]);
   }
+  vertices.push (this[this.length - 1]);
+}
+
+/**
+ * Builds the models for a Polygon part.
+ *
+ * \param color The color of the part.
+ */
+function buildPolygonPartModel (color) {
+  var vertices = new Array ();
+  buildPolygonPartVertices.call (this, vertices);
   vertices.push (this[this.length - 1]);
   this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
 }
@@ -102,11 +110,13 @@ function buildPolygonPartModel (color) {
  *
  * \param color The color to render the shape.
  */
-function buildPolygonModels (color) {
-  //var vertices = new Array ();
-  //this.eachPart (buildPolygonPartModel, vertices, color);
-  this.eachPart (buildPolygonPartModel, color);
-  //this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
+function buildPolygonModels (color, runFast) {
+  if (runFast) {
+    var vertices = new Array ();
+    this.eachPart (buildPolygonPartVertices, vertices);
+    this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
+  } else 
+    this.eachPart (buildPolygonPartModel, color);
   //this.eachModel = function (action) {
   //   action.apply (this.model, stripArgRange (1, arguments.length, arguments));
   //};
@@ -126,8 +136,9 @@ function buildMultiPatchModels (color) {
  * Builds the models for a shape.
  *
  * \param color The color to render the shape.
+ * \param runFast, Selects between running fast fps or loading fast.
  */
-function buildModels (color) {
+function buildModels (color, runFast) {
   switch (this.header[0]) {
     case 0:
       //NullShape does not need a model.
@@ -148,6 +159,8 @@ function buildModels (color) {
     case 15: //PolygonZ
     case 23: //PolyLineM
     case 25: //PolygonM
+      var args = stripArgRange (0, arguments.length, arguments);
+      args.push (runFast);
       buildPolygonModels.apply (this, arguments);
       break;
     case 31: //MultiPatch
