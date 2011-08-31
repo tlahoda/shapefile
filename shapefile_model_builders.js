@@ -85,13 +85,16 @@ function buildMultiPointModel (color) {
  * \param vertices The main vertex array.
  * \param color The color of the part.
  */
-function buildPolygonPartModel (vertices, color) {
+//function buildPolygonPartModel (vertices, color) {
+function buildPolygonPartModel (color) {
+  var vertices = new Array ();
   vertices.push (this[0]);
   for (var i = 1; i < this.length - 2; ++i) {
     vertices.push (this[i]);
     vertices.push (this[i]);
   }
   vertices.push (this[this.length - 1]);
+  this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
 }
 
 /**
@@ -100,9 +103,10 @@ function buildPolygonPartModel (vertices, color) {
  * \param color The color to render the shape.
  */
 function buildPolygonModels (color) {
-  var vertices = new Array ();
-  this.eachPart (buildPolygonPartModel, vertices, color);
-  this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
+  //var vertices = new Array ();
+  //this.eachPart (buildPolygonPartModel, vertices, color);
+  this.eachPart (buildPolygonPartModel, color);
+  //this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
   //this.eachModel = function (action) {
   //   action.apply (this.model, stripArgRange (1, arguments.length, arguments));
   //};
