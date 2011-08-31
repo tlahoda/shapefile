@@ -26,7 +26,6 @@ var Color = Class.create ({
   R: 0,
   G: 1,
   B: 2,
-  A: 3,
   
   /**
    * Creates a Color.
@@ -34,10 +33,9 @@ var Color = Class.create ({
    * \param r The red channel intensity.
    * \param g The green channel intensity.
    * \param b The blue channel intensity.
-   * \param a The alpha channel intensity.
    */
-  initialize: function (r, g, b, a) {
-    this.data = [r & 0xFF, g & 0xFF, b & 0xFF, a & 0xFF];
+  initialize: function (r, g, b) {
+    this.data = [r & 0xFF, g & 0xFF, b & 0xFF];
   },
 
   /**
@@ -52,20 +50,6 @@ var Color = Class.create ({
       return "#" + ((r < 10) ? "0" : "") + r.toString (16) + ((g < 10) ? "0" : "") + g.toString (16) + 
              ((b < 10) ? "0" : "") + b.toString (16);
   },
-
-  /**
-   * Converts the color to an RGBA string.
-   *
-   * \return The RGBA string.
-   */
-  to_rgba_string: function () {
-      var r = this.data[this.R];
-      var g = this.data[this.G];
-      var b = this.data[this.B];
-      var a = this.data[this.A];
-      return "#" + ((r < 10) ? "0" : "") + r.toString (16) + ((g < 10) ? "0" : "") + g.toString (16) + 
-             ((b < 10) ? "0" : "") + b.toString (16) + ((a < 10) ? "0" : "") + a.toString (16);
-  }
 });
 
 /**
