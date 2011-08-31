@@ -1,6 +1,6 @@
 /**
- * \file shapefile_render2d.js
- * Contains the shapefile two dimensional render functions.
+ * \file render2d.js
+ * Contains the two dimensional render functions.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
  *
