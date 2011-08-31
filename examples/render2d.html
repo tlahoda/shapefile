@@ -21,11 +21,11 @@
 
 <html>
   <head>
-    <script type="text/javascript" src="external/prototype.js"></script>
-    <script type="text/javascript" src="external/binaryReader.js"></script>
-    <script type="text/javascript" src="shapefile.js"></script>
-    <script type="text/javascript" src="shapefile_transforms.js"></script>
-    <script type="text/javascript" src="shapefile_render2d.js"></script>
+    <script type="text/javascript" src="../external/prototype.js"></script>
+    <script type="text/javascript" src="../external/binaryReader.js"></script>
+    <script type="text/javascript" src="../shapefile.js"></script>
+    <script type="text/javascript" src="../shapefile_transforms.js"></script>
+    <script type="text/javascript" src="../shapefile_render2d.js"></script>
 
     <script type="text/javascript">
       function fixPoint () {
@@ -80,7 +80,7 @@
         var screen = document.getElementById ("screen");
         if (screen.getContext) {
           try {
-            var shapeFileName = "shapefiles/northamerica_adm0";
+            var shapeFileName = "../shapefiles/northamerica_adm0";
             var shapeFile = new ShapeFile (shapeFileName);
             
             shapeFile.eachVertex (fixPoint);
