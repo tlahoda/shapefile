@@ -1,6 +1,6 @@
 /**
- * \file shapefile_transforms.js
- * Contains the shapefile transform functions.
+ * \file transforms.js
+ * Contains the transform functions.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
  *
