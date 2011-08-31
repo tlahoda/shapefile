@@ -74,7 +74,7 @@
           var shapeFileName = "shapefiles/northamerica_adm0";
           var shapeFile = new ShapeFile (shapeFileName);
           
-          shapeFile.eachVertex (to3d);
+          shapeFile.eachVertex (toWebGL);
           shapeFile.eachVertex (scale, scalingFactor);
 
           drawAxis ();
