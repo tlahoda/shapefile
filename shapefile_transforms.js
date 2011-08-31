@@ -48,8 +48,8 @@ function to3d () {
   var lon = this[1] * Math.deg2rad;
   var clat = Math.cos (lat);
   this[0] = clat * Math.cos (lon);
-  this[1] = clat * Math.sin (lon);
-  this[2] = Math.sin (lat);
+  this[2] = -(clat * Math.sin (lon));
+  this[1] = Math.sin (lat);
 }
 
 /**
