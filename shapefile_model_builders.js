@@ -20,25 +20,13 @@
  */
 
 /**
- * Makes the webglu data structure for an object.
- *
- * \param vertices The vertices.
- * \param colors The colors of the vertices.
- *
- * \return The data array.
- */
-function makeData (vertices, colors) {
-  return [["vertex", vertices], 
-          ["color", colors],
-          ["wglu_elements", [0, 1, 2, 0, 3, 4, 0, 3, 1, 0, 2, 4]]];
-}
-
-/**
- * Retruns a value with which to replace an array element.
+ * Returns a value with which to set an array element.
  *
  * \param value The value with which to fill.
+ *
+ * \return The value.
  */
-function replace (value) {
+function set (value) {
   return value;
 }
 
@@ -51,7 +39,26 @@ function replace (value) {
  * \return The array of colors.
  */
 function makeVertexColors (arr, color) {
-  return new Array (arr.length).apply (replace, color);
+  return new Array (arr.length).apply (set, color);
+}
+
+/**
+ * Builds a model. Uses GL.POINTS for now.
+ *
+ * \param modelType The type of the model.
+ * \param vertices The model vertices.
+ * \param colors The model colors.
+ *
+ * \return The model.
+ */
+function buildModel (modelType, vertices, colors, rotate) {
+  var model = new $W.Object (modelType);
+  model.vertexCount = vertices.length;
+  model.fillArray ("vertex", vertices);
+  model.fillArray ("color", colors);
+  model.setPosition (0, 0, 0);
+  if (rotate) model.animation._update = function() { this.setRotation(-this.age / 60, 0, 0); }
+  return model;
 }
 
 /**
@@ -60,9 +67,7 @@ function makeVertexColors (arr, color) {
  * \param color The color to render the shape.
  */
 function buildPointModel (color) {
-  this.model = $W.createObject({ type: $W.GL.POINTS, data: makeData ([this.coords], [color]) });
-  this.model.setPosition (0, 0, 0);
-  this.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0); }
+  this.model = buildModel ($W.GL.POINTS, [this.vertices], [color], true);
 }
 
 /**
@@ -71,20 +76,22 @@ function buildPointModel (color) {
  * \param color The color to render the shape.
  */
 function buildMultiPointModel (color) {
-  this.model = $W.createObject({ type: $W.GL.POINTS, data: makeData (this.points, makeVertexColors (this.points, color)) });
-  this.model.setPosition (0, 0, 0);
-  this.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0); }
+  this.model = buildModel ($W.GL.POINTS, this.points, makeVertexColors (this.points, color), true);
 }
 
 /**
  * Builds the models for a Polygon part.
  *
+ * \param vertices The main vertex array.
  * \param color The color of the part.
  */
-function buildPolygonPartModel (color) {
-  this.model = $W.createObject({ type: $W.GL.POINTS, data: makeData (this, makeVertexColors (this, color)) });
-  this.model.setPosition (0, 1, 0);
-  this.model.animation._update = function() { this.setRotation(this.age / 60, 0, 0);}
+function buildPolygonPartModel (vertices, color) {
+  vertices.push (this[0]);
+  for (var i = 1; i < this.length - 2; ++i) {
+    vertices.push (this[i]);
+    vertices.push (this[i]);
+  }
+  vertices.push (this[this.length - 1]);
 }
 
 /**
@@ -93,10 +100,12 @@ function buildPolygonPartModel (color) {
  * \param color The color to render the shape.
  */
 function buildPolygonModels (color) {
-  this.eachPart (buildPolygonPartModel, color);
-  this.eachModel = function (action) {
-     action.apply (this.model, stripArgRange (1, arguments.length, arguments));
-  };
+  var vertices = new Array ();
+  this.eachPart (buildPolygonPartModel, vertices, color);
+  this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
+  //this.eachModel = function (action) {
+  //   action.apply (this.model, stripArgRange (1, arguments.length, arguments));
+  //};
 }
 
 /**
@@ -105,8 +114,8 @@ function buildPolygonModels (color) {
  * \param color The color to render the shape.
  */
 function buildMultiPatchModels (color) {
-  this.eachModel = function (action) {
-  };
+  //this.eachModel = function (action) {
+  //};
 }
 
 /**
