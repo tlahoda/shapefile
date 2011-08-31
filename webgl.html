@@ -31,6 +31,11 @@
     <script type="text/javascript">
       var scalingFactor = 3;
 
+      function fixPoint () {
+        toWebGL.call (this);
+        scale.call (this, scalingFactor);
+      }
+
       function drawAxis () {
         var vertices = [[0, 0, -50], [0, 0, 50], [0, -50, 0], [0, 50, 0], [-50, 0, 0], [50, 0, 0]];
         var colors = [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]];
@@ -42,8 +47,7 @@
         for (var lat = -90; lat <= 90; lat += 10) {
           for (var lon = 0; lon <= 360; lon += 5) {
             vertex = [lat, lon];
-            to3d.call (vertex);
-            scale.call (vertex, scalingFactor);
+            fixPoint.call (vertex);
             vertices.push (vertex);
             if (lon != 0 && lon != 360) vertices.push (vertex);
           }
@@ -56,8 +60,7 @@
         for (var lon = 0, j = 0; lon <= 360; lon += 10) {
           for (var lat = -90; lat <= 90; lat += 5) {
             vertex = [lat, lon];
-            to3d.call (vertex);
-            scale.call (vertex, scalingFactor);
+            fixPoint.call (vertex);
             vertices.push (vertex);
             if (lat != -90 && lat != 90) vertices.push (vertex);
           }
@@ -74,8 +77,7 @@
           var shapeFileName = "shapefiles/northamerica_adm0";
           var shapeFile = new ShapeFile (shapeFileName);
           
-          shapeFile.eachVertex (toWebGL);
-          shapeFile.eachVertex (scale, scalingFactor);
+          shapeFile.eachVertex (fixPoint);
 
           drawAxis ();
           shapeFile.eachShape (buildModels, [1, 0, 0]);
