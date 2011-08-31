@@ -1,6 +1,6 @@
 /**
- * \file shapefile_model_builders.js
- * Contains the shapefile three dimensional model builders.
+ * \file model_builders.js
+ * Contains the three dimensional model builders.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
  *
