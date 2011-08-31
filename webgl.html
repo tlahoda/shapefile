@@ -29,6 +29,42 @@
     <script type="text/javascript" src="external/webglu/src/webglu.js"></script>
 
     <script type="text/javascript">
+      var scalingFactor = 3;
+
+      function drawAxis () {
+        var vertices = [[0, 0, -50], [0, 0, 50], [0, -50, 0], [0, 50, 0], [-50, 0, 0], [50, 0, 0]];
+        var colors = [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]];
+        buildModel ($W.GL.LINES, vertices, colors, false);
+      }
+
+      function drawLats (screen) {
+        var vertices = new Array ();
+        for (var lat = -90; lat <= 90; lat += 10) {
+          for (var lon = 0; lon <= 360; lon += 5) {
+            vertex = [lat, lon];
+            to3d.call (vertex);
+            scale.call (vertex, scalingFactor);
+            vertices.push (vertex);
+            if (lon != 0 && lon != 360) vertices.push (vertex);
+          }
+        }
+        var model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, [0, 0, 0]), true);
+      };
+
+      function drawLons (screen) {
+        var vertices = new Array ();
+        for (var lon = 0, j = 0; lon <= 360; lon += 10) {
+          for (var lat = -90; lat <= 90; lat += 5) {
+            vertex = [lat, lon];
+            to3d.call (vertex);
+            scale.call (vertex, scalingFactor);
+            vertices.push (vertex);
+            if (lat != -90 && lat != 90) vertices.push (vertex);
+          }
+        }
+        var model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, [0, 0, 0]), true);
+      };
+
       function ready () {
         if (!$W.initialize ()) return;
         $W.GL.clearColor (0.9, 0.9, 0.9, 1.0);
@@ -36,13 +72,16 @@
 
         try {
           var shapeFileName = "shapefiles/northamerica_adm0";
-          //var shapeFileName = "shapefiles/world_borders";
           var shapeFile = new ShapeFile (shapeFileName);
           
           shapeFile.eachVertex (to3d);
-          shapeFile.eachVertex (scale, 3);
+          shapeFile.eachVertex (scale, scalingFactor);
 
-          shapeFile.eachShape (buildModels, [1, 0, 0]);
+          drawAxis ();
+          shapeFile.eachShape (buildModels, $W.GL.LINES, [1, 0, 0]);
+
+          drawLats ();
+          drawLons ();
 
         } catch (error) {
           document.getElementById ("messages").innerHTML = error;
