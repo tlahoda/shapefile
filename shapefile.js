@@ -157,9 +157,8 @@ Array.prototype.apply = function (action) {
 Array.prototype.applyRange = function (begin, end, action) {
   var length = this.length;
   var args = stripArgRange (3, arguments.length, arguments);
-  for (var i = begin; i < end; ++i) {
+  for (var i = begin; i < end; ++i)
     this[i] = action.apply (this[i], args);
-  }
   return this;
 }
 
