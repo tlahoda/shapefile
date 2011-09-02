@@ -22,28 +22,34 @@
 /**
  * Returns a value with which to set an array element.
  *
+ * \param ele The element.
  * \param value The value with which to fill.
  *
  * \return The value.
  */
-function set (value) {
+function set (ele, value) {
   return value;
 }
 
 /**
  * Makes an array of colors for ian array of vertices.
  *
- * \param arr The array of vertices for whic hto generate colors.
+ * \param vertices The array of vertices for whic hto generate colors.
  * \param color The color to make the vertices.
  *
  * \return The array of colors.
  */
-function makeVertexColors (arr, color) {
-  return new Array (arr.length).apply (set, color);
+function makeVertexColors (vertices, colors) {
+  var newColors = new Array (vertices.length);
+  for (var i = 0, j = 0; i < vertices.length; ++i) {
+    newColors[i] = colors[j];
+    if (++j >= colors.length) j = 0;
+  }
+  return newColors;
 }
 
 /**
- * Builds a model. Uses GL.POINTS for now.
+ * Builds a model.
  *
  * \param modelType The type of the model.
  * \param vertices The model vertices.
@@ -51,107 +57,91 @@ function makeVertexColors (arr, color) {
  *
  * \return The model.
  */
-function buildModel (modelType, vertices, colors, rotate) {
+function buildModel (modelType, vertices, colors) {
   var model = new $W.Object (modelType);
   model.vertexCount = vertices.length;
   model.fillArray ("vertex", vertices);
-  model.fillArray ("color", colors);
-  model.setPosition (0, 0, 0);
-  if (rotate) model.animation._update = function() { this.setRotation(-this.age / 60, 0, 0); }
+  model.fillArray ("color", makeVertexColors (vertices, colors));
   return model;
 }
 
 /**
  * Build the model for a point.
  *
- * \param color The color to render the shape.
+ * \param shape The shape.
+ * \param vertices The vertices.
  */
-function buildPointModel (color) {
-  this.model = buildModel ($W.GL.POINTS, [this.vertices], [color], true);
+function addPoint (shape, vertices) {
+  vertices.push ([shape.coords]);
 }
 
 /**
  * Builds the model for a MultiPoint.
  *
- * \param color The color to render the shape.
+ * \param shape The shape.
+ * \param vertices The vertices.
  */
-function buildMultiPointModel (color) {
-  this.model = buildModel ($W.GL.POINTS, this.points, makeVertexColors (this.points, color), true);
+function addMultiPoint (shape, vertices) {
+  vertices.push.apply (vertices, shape);
 }
 
 /**
  * Builds the vertices for a Polygon part.
  *
- * \param color The color of the part.
+ * \param part The part.
+ * \param vertices The vertices.
  */
-function buildPolygonPartVertices (vertices) {
-  vertices.push (this[0]);
-  for (var i = 1; i < this.length - 2; ++i) {
-    vertices.push (this[i]);
-    vertices.push (this[i]);
+function addPolygonPart (part, vertices) {
+  vertices.push (part[0]);
+  var length = part.length;
+  for (var i = 1; i < length - 2; ++i) {
+    vertices.push (part[i]);
+    vertices.push (part[i]);
   }
-  vertices.push (this[this.length - 1]);
-}
-
-/**
- * Builds the models for a Polygon part.
- *
- * \param color The color of the part.
- */
-function buildPolygonPartModel (color) {
-  var vertices = new Array ();
-  buildPolygonPartVertices.call (this, vertices);
-  vertices.push (this[this.length - 1]);
-  this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
+  vertices.push (part[length - 1]);
 }
 
 /**
  * Builds the models for a Polygon.
  *
- * \param color The color to render the shape.
+ * \param shape The shape.
+ * \param vertices The vertices.
  */
-function buildPolygonModels (color, runFast) {
-  if (runFast) {
-    var vertices = new Array ();
-    this.eachPart (buildPolygonPartVertices, vertices);
-    this.model = buildModel ($W.GL.LINES, vertices, makeVertexColors (vertices, color), true);
-  } else 
-    this.eachPart (buildPolygonPartModel, color);
-  //this.eachModel = function (action) {
-  //   action.apply (this.model, stripArgRange (1, arguments.length, arguments));
-  //};
+function addPolygon (shape, vertices) {
+  shape.parts.for_each (addPolygonPart, vertices);
 }
 
 /**
  * Builds the models for a MultiPatch. MultiPatch is not yet implemented.
  *
- * \param color The color to render the shape.
+ * \param shape The shape.
+ * \param vertices The vertices.
  */
-function buildMultiPatchModels (color) {
-  //this.eachModel = function (action) {
-  //};
+function addMultiPatch (shape, vertices) {
 }
 
 /**
  * Builds the models for a shape.
  *
- * \param color The color to render the shape.
- * \param runFast, Selects between running fast fps or loading fast.
+ * \param shape The shape.
+ * \param colors The colors to render the shapes.
  */
-function buildModels (color, runFast) {
-  switch (this.header[0]) {
+function buildModels (shape, colors) {
+  var vertices = new Array ();
+  var modelType = $W.GL.LINES;
+  switch (shape.header[0]) {
     case 0:
       //NullShape does not need a model.
       break;
-    case 1:
+    case 1: //Point
     case 11: //PointZ
     case 21: //PointM
-      buildPointModel.apply (this, arguments);
+      addPoint (shape, vertices);
       break;
     case 8: //MultiPoint
     case 18: //MultiPointZ
     case 28: //MultiPointM
-      buildMultiPointModel.apply (this, arguments);
+      addMultiPoint (shape, vertices);
       break;
     case 3: //PolyLine
     case 5: //Polygon
@@ -159,15 +149,14 @@ function buildModels (color, runFast) {
     case 15: //PolygonZ
     case 23: //PolyLineM
     case 25: //PolygonM
-      var args = stripArgRange (0, arguments.length, arguments);
-      args.push (runFast);
-      buildPolygonModels.apply (this, arguments);
+      addPolygon (shape, vertices);
       break;
     case 31: //MultiPatch
-      buildMultiPatchModels.apply (this, arguments);
+      addMultiPatch (shape, vertices);
       break;
     default:
       throw "Shape type unknown.";
   }
+  shape.model = buildModel (modelType, vertices, colors);
 }
 

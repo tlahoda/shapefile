@@ -53,41 +53,45 @@ var Color = Class.create ({
 });
 
 /**
- * Draws a point onto context.
+ * Renders a vertex onto context.
  *
+ * \param vertex The vertex to render.
  * \param context The onto onto which to draw.
  */
-function drawPoint (context) {
-  context.strokeRect (this[0], this[1], 1, 1);
+function renderVertex (vertex, context) {
+  context.strokeRect (vertex[0], vertex[1], 1, 1);
 }
 
 /**
  * Renders a Point onto context.
  *
+ * \param shape The shape to render.
  * \param context The conext onto which to render.
  */
-function renderPoint (context) {
-  drawPoint.apply (this.coords, context);
+function renderPoint (shape, context) {
+  renderVertex (shape.coords, context);
 }
 
 /**
  * Renders a MultiPoint onto context.
  *
+ * \param shape The shape to render.
  * \param context The conext onto which to render.
  */
-function renderMultiPoint (context) {
-  this.eachVertex (drawPoint, context);
+function renderMultiPoint (shape, context) {
+  shape.eachVertex (renderVertex, context);
 }
 
 /**
  * Renders a Polygon part onto context.
  *
+ * \param part The part to render.
  * \param context The conext onto which to render.
  */
-function renderPolygonPart (context) {
+function renderPolygonPart (part, context) {
   context.beginPath ();
-  context.moveTo (this[0][0], this[0][1]);
-  this.forEachRange (1, this.length, function () { context.lineTo (this[0], this[1]); });
+  context.moveTo (part[0][0], part[0][1]);
+  part.for_each_range (1, part.length, function (vertex) { context.lineTo (vertex[0], vertex[1]); });
   context.stroke ();
   context.closePath ();
 }
@@ -95,43 +99,47 @@ function renderPolygonPart (context) {
 /**
  * Renders a Polygon onto context.
  *
+ * \param shape The shape to render.
  * \param context The conext onto which to render.
  */
-function renderPolygon (context) {
-  this.eachPart (renderPolygonPart, context);
+function renderPolygon (shape, context) {
+  shape.parts.for_each (renderPolygonPart, context);
 }
 
 /**
  * Renders a MultiPatch onto context.
  *
+ * \param shape The shape to render.
  * \param context The context onto which to render.
  */
-function renderMultiPatch (context) {
+function renderMultiPatch (shape, context) {
   //not yet implemented.
 }
 
 /**
  * Renders a shape onto a context in the given color.
  *
+ * \param shape The shape to render.
  * \param context The context onto which to render.
+ * \param color The Color to render the shape.
  *
  * \throw error On unknown shape type.
  */
-function render (context, color) {
+function render (shape, context, color) {
   context.strokeStyle = color.to_rgb_string ();
-  switch (this.header[0]) {
+  switch (shape.header[0]) {
     case 0:
       //NullShape does not need rendering. 
       break;
     case 1: //Point
     case 11: //PointZ
     case 21: //PointM
-      renderPoint.apply (this, arguments);
+      renderPoint (shape, context);
       break;
     case 8: //MultiPoint
     case 18: //MultiPointZ
     case 28: //MultiPointM
-      renderMultiPoint.apply (this, arguments);
+      renderMultiPoint (shape, context);
       break;
     case 5: //Polygon
     case 15: //PolygonZ
@@ -139,10 +147,10 @@ function render (context, color) {
     case 3: //PolyLine
     case 13: //PolyLineZ
     case 23: //PolyLineM
-      renderPolygon.apply (this, arguments);
+      renderPolygon (shape, context);
       break;
     case 31: //MultiPatch
-      renderMultiPatch.apply (this, arguments);
+      renderMultiPatch.apply (shape, context);
       break;
     default:
       throw "Shape type unknown.";

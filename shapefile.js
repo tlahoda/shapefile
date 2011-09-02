@@ -31,63 +31,50 @@ function load_binary_resource (url) {
 }
 
 /**
- * Makes a copy of the arguments from begin to end.
- *
- * \param begin The begining of the range.
- * \param end The end of the range.
- * \param args The arguments.
- *
- * \return The remaining arguments.
- */
-function stripArgRange (begin, end, args) {
-  var length = end - begin;
-  var res = new Array (length);
-  for (var i = 0; i < length; ++i)
-    res[i] = args[i + begin];
-  return res;
-}
-
-/**
  * Reads a big endian int32 from reader.
  *
+ * \param value The value.
  * \param reader The BinaryReary from which to read.
  *
  * \return The big endian int32.
  */
-function readBigEndianInt32 (reader) {
+function readBigEndianInt32 (value, reader) {
   return reader.endianSwap (reader.readInt32 ());
 }
 
 /**
  * Reads an int32 from reader.
  *
+ * \param value The value.
  * \param reader The BinaryReary from which to read.
  *
  * \return The int32.
  */
-function readInt32 (reader) {
+function readInt32 (value, reader) {
   return reader.readInt32 ();
 }
 
 /**
  * Reads a double from reader.
  *
+ * \param value The value.
  * \param reader The BinaryReary from which to read.
  *
  * \return The double.
  */
-function readDouble (reader) {
+function readDouble (value, reader) {
   return reader.readDouble ();
 }
 
 /**
  * Reads a point from reader.
  *
+ * \param point The point.
  * \param reader The BinaryReary from which to read.
  *
  * \return The point.
  */
-function readPoint (reader) {
+function readPoint (point, reader) {
   var x = reader.readDouble ();
   var y = reader.readDouble ();
   return [x, y];
@@ -96,11 +83,12 @@ function readPoint (reader) {
 /**
  * Reads a two element array where the elements are reversed in the BinaryReader.
  *
+ * \param point The point.
  * \param reader The BinaryReader from which to read.
  *
  * \return The array.
  */
-function readReversedPoint (reader) {
+function readReversedPoint (point, reader) {
   var first = reader.readDouble ();
   var second = reader.readDouble ();
   return [second, first];
@@ -109,7 +97,7 @@ function readReversedPoint (reader) {
 /**
  * Reads a record header from reader.
  *
- * \param reader The BinaryReary from which to read.
+ * \param shx The BinaryReary from which to read.
  *
  * \return The record header.
  */
@@ -122,60 +110,13 @@ function readRecordHeader (shx) {
 /**
  * Reads a offset from reader.
  *
+ * \param shape The shape.
  * \param reader The BinaryReary from which to read.
  *
  * \return The offset.
  */
-function readOffset (shx) {
+function readOffset (shape, shx) {
   return readRecordHeader (shx)[0] + 8;
-}
-
-/**
- * Applies action to all of the elements of the Array.
- *
- * \param action The action to apply.
- *
- * \return The Array.
- */
-Array.prototype.apply = function (action) {
-  var args = stripArgRange (0, arguments.length, arguments);
-  args.unshift (this.length);
-  args.unshift (0);
-  this.applyRange.apply (this, args);
-  return this;
-}
-
-/**
- * Applies action to the specified range of the Array elements.
- *
- * \param begin The beginning of the range.
- * \param end The end of the range.
- * \param action The action to apply.
- *
- * \return The Array.
- */
-Array.prototype.applyRange = function (begin, end, action) {
-  var length = this.length;
-  var args = stripArgRange (3, arguments.length, arguments);
-  for (var i = begin; i < end; ++i)
-    this[i] = action.apply (this[i], args);
-  return this;
-}
-
-/**
- * Runs action on each element in the specified range of the Array.
- *
- * \param begin The beginning of the range.
- * \param end The end of the range.
- * \param action The action to apply.
- *
- * \return The Array.
- */
-Array.prototype.forEachRange = function (begin, end, action) {
-  var args = stripArgRange (3, arguments.length, arguments);
-  for (var i = begin; i < end; ++i)
-    action.apply (this[i], args);
-  return this;
 }
 
 /**
@@ -202,9 +143,9 @@ var Header = Class.create ({
    */
   initialize: function (shx) {
     this.header = new Array (17)
-      .applyRange (0, 7, readBigEndianInt32, shx)
-      .applyRange (7, 9, readInt32, shx)
-      .applyRange (9, 17, readDouble, shx);
+      .apply_range (0, 7, readBigEndianInt32, shx)
+      .apply_range (7, 9, readInt32, shx)
+      .apply_range (9, 17, readDouble, shx);
 
     this.numShapes = ((this.header[this.FILE_LENGTH] * 2) - 100) / 8;
     this.offsets = new Array (this.numShapes).apply (readOffset, shx);
@@ -262,7 +203,9 @@ var Point = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    action.apply (this.coords, stripArgRange (1, arguments.length, arguments));
+    var args = sliceArguments (arguments, 1);
+    args.unshift (this.coords);
+    this.coords = action.apply (null, args);
   }
 });
 
@@ -319,7 +262,7 @@ var MultiPoint = Class.create (Shape, {
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
-    this.header.applyRange (1, 5, readDouble, shp);
+    this.header.apply_range (1, 5, readDouble, shp);
     var numPoints = shp.readInt32 ();
     this.header[this.NUM_POINTS] = numPoints;
     this.points = new Array (numPoints).apply (readPoint, shp);
@@ -331,9 +274,7 @@ var MultiPoint = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    var args = stripArgRange (1, arguments.length, arguments);
-    for (var i = 0, numPoints = this.header[this.NUM_POINTS]; i < numPoints; ++i)
-      action.apply (this.points[i], args);
+    Array.apply.call (this.points, arguments);
   }
 });
 
@@ -422,8 +363,8 @@ var Polygon = Class.create (Shape, {
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
    
-    this.header.applyRange (1, 5, readDouble, shp)
-               .applyRange (5, 7, readInt32, shp);
+    this.header.apply_range (1, 5, readDouble, shp)
+               .apply_range (5, 7, readInt32, shp);
 
     var numParts = this.header[this.NUM_PARTS];
     var numPoints = this.header[this.NUM_POINTS];
@@ -440,22 +381,14 @@ var Polygon = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    var args = stripArgRange (1, arguments.length, arguments);
-    for (var i = 0, numParts = this.header[this.NUM_PARTS]; i < numParts; ++i)
-      for (var j = 0, length = this.parts[i].length; j < length; ++j)
-        action.apply (this.parts[i][j], args);
-  },
+    var args = sliceArguments (arguments);
+    args.unshift (function (part) {
+      var args = sliceArguments (arguments, 1);
+      part.apply.apply (part, args); 
+    });
 
-  /**
-   * Applies action to each part in the Polygon.
-   *
-   * \param action The action to apply.
-   */
-  eachPart: function (action) {
-    var args = stripArgRange (1, arguments.length, arguments);
-    for (var i = 0, numParts = this.header[this.NUM_PARTS]; i < numParts; ++i)
-      action.apply (this.parts[i], args);
-  }
+    this.parts.for_each.apply (this.parts, args);
+  },
 });
 
 /**
@@ -658,26 +591,5 @@ var ShapeFile = Class.create ({
       this.shapes[i] = ShapeFactory (shp.readInt32 (), shp);
     }
   },
-
-  /**
-   * Applies action to each vertex in the shapefile.
-   *
-   * \param action The action to apply.
-   */
-  eachVertex: function (action) {
-    for (var i = 0, numShapes = this.header.numShapes; i < numShapes; ++i)
-      this.shapes[i].eachVertex.apply (this.shapes[i], arguments);
-  },
-
-  /**
-   * Applies action to each Shape in the shapefile.
-   *
-   * \param action The action to apply.
-   */
-  eachShape: function (action) {
-    var args = stripArgRange (1, arguments.length, arguments);
-    for (var i = 0, numShapes = this.header.numShapes; i < numShapes; ++i)
-      action.apply (this.shapes[i], args);
-  }
 });
 

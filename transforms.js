@@ -31,83 +31,105 @@ Math.deg2rad = Math.PI / 180.0;
 
 /**
  * Converts a lat/lon point to a two dimensional point in an orthographic projection.
+ *
+ * \param point The lat/lon point.
+ *
+ * \return The two dimensional point.
  */
-function toOrtho () {
-  var lat = this[0] * Math.deg2rad;
-  var lon = this[1] * Math.deg2rad;
-  var slat = Math.sin (Math.piOverTwo - lat);
-  this[0] = slat * Math.cos (lon);
-  this[1] = slat * Math.sin (lon);
+function toOrtho (point) {
+  point[0] *= Math.deg2rad;
+  point[1] *= Math.deg2rad;
+  var slat = Math.sin (Math.piOverTwo - point[0]);
+  return [slat * Math.cos (point[1]), slat * Math.sin (point[1])];
 }
 
 /**
  * Converts a lat/lon point to a three dimensional point.
+ *
+ * \param point The lat/lon point.
+ *
+ * \return The WebGL dimensional point.
  */
-function toWebGL () {
-  var lat = this[0] * Math.deg2rad;
-  var lon = this[1] * Math.deg2rad;
-  var clat = Math.cos (lat);
-  this[0] = clat * Math.cos (lon);
-  this[2] = -(clat * Math.sin (lon));
-  this[1] = Math.sin (lat);
+function toWebGL (point) {
+  point[0] *= Math.deg2rad;
+  point[1] *= Math.deg2rad;
+  var clat = Math.cos (point[0]);
+  return [clat * Math.cos (point[1]), Math.sin (point[0]), -(clat * Math.sin (point[1]))];
 }
 
 /**
- * Scales a point.
+ * Scales a vertex.
  *
+ * \param vertex The vertex.
  * \param s The scaling factor.
  * \param axis The axis to scale. If not present all axes are scaled.
+ *
+ * \return The scaled vertex.
  */
-function scale (s, axis) {
+function scale (vertex, s, axis) {
   if (axis == undefined) {
-    for (var i = 0, length = this.length; i < length; ++i)
-      this[i] *= s;
+    for (var i = 0, length = vertex.length; i < length; ++i)
+      vertex[i] *= s;
   }
   else {
-    if (axis >= this.length) throw "axis out of range.";
-    this[axis] *= s;
+    if (axis >= vertex.length) throw "axis out of range.";
+    vertex[axis] *= s;
   }
+  return vertex;
 }
 
 /**
- * Shifts a point.
+ * Shifts a vertex.
  *
+ * \param vertex The vertex.
  * \param s The amount to shift.
  * \param axis The axis to shift. If not present all axes are shifted.
+ *
+ * \return The shifted vertex.
  */
-function shift (s, axis) {
+function shift (vertex, s, axis) {
   if (axis == undefined) {
-    for (var i = 0, length = this.length; i < length; ++i)
-      this[i] += s;
+    for (var i = 0, length = vertex.length; i < length; ++i)
+      vertex[i] += s;
   }
   else {
-    if (axis >= this.length) throw "axis out of range.";
-    this[axis] += s;
+    if (axis >= vertex.length) throw "axis out of range.";
+    vertex[axis] += s;
   }
+  return vertex;
 }
 
 /**
- * Inverts a point.
+ * Inverts a vertex.
  *
+ * \param vertex The vertex.
  * \param bound The max bound of the axis.
  * \param axis The axis to invert. If not present all axes are inverted.
+ *
+ * \return The inverted vertex.
  */
-function invert (bound, axis) {
+function invert (vertex, bound, axis) {
   if (axis == undefined) {
-    for (var i = 0, length = this.length; i < length; ++i)
-      this[i] = bound - this[i];
+    for (var i = 0, length = vertex.length; i < length; ++i)
+      vertex[i] = bound - vertex[i];
   }
   else {
-    if (axis >= this.length) throw "axis out of range.";
-    this[axis] = bound - this[axis];
+    if (axis >= vertex.length) throw "axis out of range.";
+    vertex[axis] = bound - vertex[axis];
   }
+  return vertex;
 }
 
 /**
- * Converts a point to integers so rendering will be done without anti-aliasing.
+ * Converts a vertex to integers so rendering will be done without anti-aliasing.
+ *
+ * \param vertex The vertex.
+ *
+ * \return The dealiased vertex.
  */
-function deAlias () {
-  for (var i = 0, length = this.length; i < length; ++i)
-    this[i] = Math.round (this[i]);
+function deAlias (vertex) {
+  for (var i = 0, length = vertex.length; i < length; ++i)
+    vertex[i] = Math.round (vertex[i]);
+  return vertex;
 }
 
