@@ -120,6 +120,19 @@ function readOffset (shape, shx) {
 }
 
 /**
+ * Reads a shape from a BinaryReader.
+ *
+ * \param offset The offset to the shape in the BinaryReader.
+ * \param shp The BinaryReader.
+ *
+ * \return The shape.
+ */
+function readShape (offset, shp) {
+  shp.seek (offset);
+  return ShapeFactory (shp.readInt32 (), shp);
+}
+
+/**
  * \class Header The shapefile header contains various pieces of management data for the shapefile.
  */
 var Header = Class.create ({
@@ -141,14 +154,14 @@ var Header = Class.create ({
    *
    * \param shx The binaryReader containg the shapefile index.
    */
-  initialize: function (shx) {
+  initialize: function (shapeFile, shx) {
     this.header = new Array (17)
       .apply_range (0, 7, readBigEndianInt32, shx)
       .apply_range (7, 9, readInt32, shx)
       .apply_range (9, 17, readDouble, shx);
 
     this.numShapes = ((this.header[this.FILE_LENGTH] * 2) - 100) / 8;
-    this.offsets = new Array (this.numShapes).apply (readOffset, shx);
+    shapeFile.shapes = new Array (this.numShapes).apply (readOffset, shx);
   }
 });
 
@@ -165,8 +178,8 @@ var Shape = Class.create ({
    * \param shp The binaryReader containing the main shapefile.
    */
   initialize: function (shapeType, shp) {
-    this.header = new Array (1);
-    this.header[this.SHAPE_TYPE] = shapeType;
+    this.header = new Array ();
+    this.header.push (shapeType);
   },
 
   /**
@@ -325,7 +338,7 @@ var MultiPointM = Class.create (MultiPoint, {
 /**
  * Reads a set of objects.
  *
- * \param numObjects The number of objects to read.
+ * \param object The objects to read.
  * \param numPoints The total number of points in all of the objects.
  * \param partsIndex The indices to the objects.
  * \param reader the object reader.
@@ -333,12 +346,13 @@ var MultiPointM = Class.create (MultiPoint, {
  *
  * \return An array containing the objects.
  */
-function readObjects (numPoints, partsIndex, reader, shp) {
-  var numParts = this.length;
-  for (var i = 0; i < numParts; ++i) {
-    var length = ((i == numParts - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i];
-    this[i] = new Array (length).apply (reader, shp);
-  }
+function readObjects (objects, numPoints, partsIndex, reader, shp) {
+  var i = 0;
+  var numObjects = objects.length;
+  objects.apply (function (part) {
+    var length = ((i == numObjects - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i++];
+    return new Array (length).apply (reader, shp);
+  });
 }
 
 /**
@@ -372,7 +386,8 @@ var Polygon = Class.create (Shape, {
     var partsIndex = new Array (numParts).apply (readInt32, shp);
 
     this.parts = new Array (numParts);
-    readObjects.call (this.parts, numPoints, partsIndex, readReversedPoint, shp)
+
+    readObjects (this.parts, numPoints, partsIndex, readReversedPoint, shp);
   },
 
   /**
@@ -410,12 +425,12 @@ var PolygonZ = Class.create (Polygon, {
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
     this.Zparts = new Array (numParts);
-    readObjects.call (this.Zparts, numPoints, partsIndex, readDouble, shp);
+    readObjects (this.Zparts, numPoints, partsIndex, readDouble, shp);
 
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array (numParts);
-    readObjects.call (this.Mparts, numPoints, partsIndex, readDouble, shp);
+    readObjects (this.Mparts, numPoints, partsIndex, readDouble, shp);
   }
 });
 
@@ -438,7 +453,7 @@ var PolygonM = Class.create (Polygon, {
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array (numParts);
-    this.Mparts = readObjects.call (this.Mparts, numPoints, partsIndex, readDouble, shp);
+    this.Mparts = readObjects (this.Mparts, numPoints, partsIndex, readDouble, shp);
   }
 });
 
@@ -581,15 +596,11 @@ var ShapeFile = Class.create ({
    */
   initialize: function (name) {
     this.name = name;
-    this.header = new Header (new BinaryReader (load_binary_resource (name + ".shx")));
+    this.header = new Header (this, new BinaryReader (load_binary_resource (name + ".shx")));
   
     var shp = new BinaryReader (load_binary_resource (name + ".shp"));
     var numShapes = this.header.numShapes;
-    this.shapes = new Array (numShapes);
-    for (var i = 0; i < numShapes; ++i) {
-      shp.seek (this.header.offsets[i]);
-      this.shapes[i] = ShapeFactory (shp.readInt32 (), shp);
-    }
+    this.shapes.apply (readShape, shp);
   },
 });
 
