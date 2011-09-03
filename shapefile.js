@@ -120,6 +120,26 @@ function readOffset (shape, shx) {
 }
 
 /**
+ * Reads a set of objects.
+ *
+ * \param object The objects to read.
+ * \param numPoints The total number of points in all of the objects.
+ * \param partsIndex The indices to the objects.
+ * \param reader the object reader.
+ * \param shp The BinaryReader from which to read.
+ *
+ * \return An array containing the objects.
+ */
+function readObjects (objects, numPoints, partsIndex, reader, shp) {
+  var i = 0;
+  var numObjects = objects.length;
+  objects.apply (function (part) {
+    var length = ((i == numObjects - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i++];
+    return new Array (length).apply (reader, shp);
+  });
+}
+
+/**
  * Reads a shape from a BinaryReader.
  *
  * \param offset The offset to the shape in the BinaryReader.
@@ -334,26 +354,6 @@ var MultiPointM = Class.create (MultiPoint, {
     this.Marray = new Array (numPoints).apply (readDouble, shp);
   }
 });
-
-/**
- * Reads a set of objects.
- *
- * \param object The objects to read.
- * \param numPoints The total number of points in all of the objects.
- * \param partsIndex The indices to the objects.
- * \param reader the object reader.
- * \param shp The BinaryReader from which to read.
- *
- * \return An array containing the objects.
- */
-function readObjects (objects, numPoints, partsIndex, reader, shp) {
-  var i = 0;
-  var numObjects = objects.length;
-  objects.apply (function (part) {
-    var length = ((i == numObjects - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i++];
-    return new Array (length).apply (reader, shp);
-  });
-}
 
 /**
  * \class Polygon Represents a polygon.
