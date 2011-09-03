@@ -44,9 +44,9 @@ var Color = Class.create ({
    * \return The RGB string.
    */
   to_rgb_string: function () {
-      var r = this.data[this.R];
-      var g = this.data[this.G];
-      var b = this.data[this.B];
+      var r = this.data[0];
+      var g = this.data[1];
+      var b = this.data[2];
       return "#" + ((r < 10) ? "0" : "") + r.toString (16) + ((g < 10) ? "0" : "") + g.toString (16) + 
              ((b < 10) ? "0" : "") + b.toString (16);
   },
