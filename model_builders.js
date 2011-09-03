@@ -32,6 +32,18 @@ function set (ele, value) {
 }
 
 /**
+ * Makes an array of colors for ian array of vertices.
+ *
+ * \param vertices The array of vertices for whic hto generate colors.
+ * \param color The color to make the vertices.
+ *
+ * \return The array of colors.
+ */
+function makeVertexColors (vertices, color) {
+  return new Array (vertices.length).apply (set, color);
+}
+
+/**
  * Makes a model.
  *
  * \param modelType The type of the model.
@@ -40,11 +52,11 @@ function set (ele, value) {
  *
  * \return The model.
  */
-function makeModel (modelType, vertices, color) {
+function makeModel (modelType, vertices, colors) {
   var model = new $W.Object (modelType);
   model.vertexCount = vertices.length;
   model.fillArray ("vertex", vertices);
-  model.fillArray ("color", new Array (vertices.length).apply (set, color));
+  model.fillArray ("color", colors);
   return model;
 }
 
@@ -142,6 +154,6 @@ function buildModels (shape, color) {
     default:
       throw "Shape type unknown.";
   }
-  shape.model = makeModel (modelType, vertices, color);
+  shape.model = makeModel (modelType, vertices, makeVertexColors (vertices, color));
 }
 

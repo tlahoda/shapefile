@@ -51,7 +51,7 @@
             if (lon != 0 && lon != 360) vertices.push (vertex);
           }
         }
-        return makeModel ($W.GL.LINES, vertices, [[0, 0, 0]]);
+        return makeModel ($W.GL.LINES, vertices, makeVertexColors (vertices, [0, 0, 0]));
       };
 
       function drawLons (screen) {
@@ -63,7 +63,7 @@
             if (lat != -90 && lat != 90) vertices.push (vertex);
           }
         }
-        return makeModel ($W.GL.LINES, vertices, [[0, 0, 0]]);
+        return makeModel ($W.GL.LINES, vertices, makeVertexColors (vertices, [0, 0, 0]));
       };
 
       function ready () {
@@ -83,7 +83,7 @@
           shapeFile.shapes.for_each (function (shape) { shape.eachVertex (fixVertex); });
 
           axisModel = drawAxis ();
-          shapeFile.shapes.for_each (buildModels, [[1, 0, 0]]);
+          shapeFile.shapes.for_each (buildModels, [1, 0, 0]);
           latModel = drawLats ();
           lonModel = drawLons ();
 
