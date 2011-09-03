@@ -383,11 +383,10 @@ var Polygon = Class.create (Shape, {
     var numParts = this.header[this.NUM_PARTS];
     var numPoints = this.header[this.NUM_POINTS];
 
-    var partsIndex = new Array (numParts).apply (readInt32, shp);
+    this.partsIndex = new Array (numParts).apply (readInt32, shp);
 
     this.parts = new Array (numParts);
-
-    readObjects (this.parts, numPoints, partsIndex, readReversedPoint, shp);
+    readObjects (this.parts, numPoints, this.partsIndex, readReversedPoint, shp);
   },
 
   /**
@@ -425,12 +424,12 @@ var PolygonZ = Class.create (Polygon, {
     this.Zmin = shp.readDouble ();
     this.Zmax = shp.readDouble ();
     this.Zparts = new Array (numParts);
-    readObjects (this.Zparts, numPoints, partsIndex, readDouble, shp);
+    readObjects (this.Zparts, numPoints, this.partsIndex, readDouble, shp);
 
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array (numParts);
-    readObjects (this.Mparts, numPoints, partsIndex, readDouble, shp);
+    readObjects (this.Mparts, numPoints, this.partsIndex, readDouble, shp);
   }
 });
 
@@ -453,7 +452,7 @@ var PolygonM = Class.create (Polygon, {
     this.Mmin = shp.readDouble ();
     this.Mmax = shp.readDouble ();
     this.Mparts = new Array (numParts);
-    this.Mparts = readObjects (this.Mparts, numPoints, partsIndex, readDouble, shp);
+    readObjects (this.Mparts, numPoints, this.partsIndex, readDouble, shp);
   }
 });
 
