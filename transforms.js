@@ -67,14 +67,9 @@ function toWebGL (point) {
  * \return The scaled vertex.
  */
 function scale (vertex, s, axis) {
-  if (axis == undefined) {
-    for (var i = 0, length = vertex.length; i < length; ++i)
-      vertex[i] *= s;
-  }
-  else {
-    if (axis >= vertex.length) throw "axis out of range.";
-    vertex[axis] *= s;
-  }
+  if (axis == undefined)
+    return vertex.apply (function (ele, s) { return ele * s; }, s);
+  vertex[axis] *= s;
   return vertex;
 }
 
@@ -88,14 +83,9 @@ function scale (vertex, s, axis) {
  * \return The shifted vertex.
  */
 function shift (vertex, s, axis) {
-  if (axis == undefined) {
-    for (var i = 0, length = vertex.length; i < length; ++i)
-      vertex[i] += s;
-  }
-  else {
-    if (axis >= vertex.length) throw "axis out of range.";
-    vertex[axis] += s;
-  }
+  if (axis == undefined)
+    return vertex.apply (function (ele, s) { return ele + s; }, s);
+  vertex[axis] += s;
   return vertex;
 }
 
@@ -109,14 +99,9 @@ function shift (vertex, s, axis) {
  * \return The inverted vertex.
  */
 function invert (vertex, bound, axis) {
-  if (axis == undefined) {
-    for (var i = 0, length = vertex.length; i < length; ++i)
-      vertex[i] = bound - vertex[i];
-  }
-  else {
-    if (axis >= vertex.length) throw "axis out of range.";
-    vertex[axis] = bound - vertex[axis];
-  }
+  if (axis == undefined)
+    return vertex.apply (function (ele, bound) { return bound - ele; }, bound);
+  vertex[axis] = bound - vertex[axis];
   return vertex;
 }
 
@@ -128,8 +113,6 @@ function invert (vertex, bound, axis) {
  * \return The dealiased vertex.
  */
 function deAlias (vertex) {
-  for (var i = 0, length = vertex.length; i < length; ++i)
-    vertex[i] = Math.round (vertex[i]);
-  return vertex;
+  return vertex.apply (function (ele) { return Math.round (ele); });
 }
 
