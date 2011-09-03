@@ -39,7 +39,7 @@
       function drawAxis () {
         var vertices = [[0, 0, -50], [0, 0, 50], [0, -50, 0], [0, 50, 0], [-50, 0, 0], [50, 0, 0]];
         var colors = [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]];
-        return buildModel ($W.GL.LINES, vertices, colors);
+        return makeModel ($W.GL.LINES, vertices, colors);
       }
 
       function drawLats (screen) {
@@ -51,7 +51,7 @@
             if (lon != 0 && lon != 360) vertices.push (vertex);
           }
         }
-        return buildModel ($W.GL.LINES, vertices, [[0, 0, 0]]);
+        return makeModel ($W.GL.LINES, vertices, [[0, 0, 0]]);
       };
 
       function drawLons (screen) {
@@ -63,7 +63,7 @@
             if (lat != -90 && lat != 90) vertices.push (vertex);
           }
         }
-        return buildModel ($W.GL.LINES, vertices, [[0, 0, 0]]);
+        return makeModel ($W.GL.LINES, vertices, [[0, 0, 0]]);
       };
 
       function ready () {
