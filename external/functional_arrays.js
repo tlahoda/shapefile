@@ -56,7 +56,6 @@ Array.prototype.apply = function (action) {
  * \return The Array.
  */
 Array.prototype.apply_range = function (begin, end, action) {
-  var length = this.length;
   var args = sliceArguments (arguments, 3);
   for (var i = begin; i < end; ++i) {
     args.unshift (this[i]);
@@ -76,8 +75,7 @@ Array.prototype.apply_range = function (begin, end, action) {
  */
 Array.prototype.apply_index = function (indices, action) {
   var args = sliceArguments (arguments, 2);
-  var length = indices.length;
-  for (var i = 0; i < length; ++i) {
+  for (var i = 0, length = indices.length; i < length; ++i) {
     args.unshift (this[indices[i]]);
     this[indices[i]] = action.apply (null, args);
     args.shift ();
@@ -128,8 +126,7 @@ Array.prototype.for_each_range = function (begin, end, action) {
  */
 Array.prototype.for_each_index = function (indices, action) {
   var args = sliceArguments (arguments, 2);
-  var length = indices.length;
-  for (var i = 0; i < length; ++i) {
+  for (var i = 0, length = indices.length; i < length; ++i) {
     args.unshift (this[indices[i]]);
     action.apply (null, args);
     args.shift ();
