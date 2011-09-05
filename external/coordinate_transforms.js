@@ -1,5 +1,5 @@
 /**
- * \file coordinate_transforms.js
+ * @file coordinate_transforms.js
  * Contains coordinate transform functions.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -32,9 +32,9 @@ Math.deg2rad = Math.PI / 180.0;
 /**
  * Converts a lat/lon point to a two dimensional point in an orthographic projection.
  *
- * \param point The lat/lon point.
+ * @param point The lat/lon point.
  *
- * \return The two dimensional point.
+ * @return The two dimensional point.
  */
 function toOrtho (point) {
   point[0] *= Math.deg2rad;
@@ -46,9 +46,9 @@ function toOrtho (point) {
 /**
  * Converts a lat/lon point to a three dimensional point.
  *
- * \param point The lat/lon point.
+ * @param point The lat/lon point.
  *
- * \return The WebGL dimensional point.
+ * @return The WebGL dimensional point.
  */
 function toWebGL (point) {
   point[0] *= Math.deg2rad;
@@ -60,11 +60,11 @@ function toWebGL (point) {
 /**
  * Scales a vertex.
  *
- * \param vertex The vertex.
- * \param s The scaling factor.
- * \param axis The axis to scale. If not present all axes are scaled.
+ * @param vertex The vertex.
+ * @param s The scaling factor.
+ * @param axis The axis to scale. If not present all axes are scaled.
  *
- * \return The scaled vertex.
+ * @return The scaled vertex.
  */
 function scale (vertex, s, axis) {
   if (axis == undefined)
@@ -76,11 +76,11 @@ function scale (vertex, s, axis) {
 /**
  * Shifts a vertex.
  *
- * \param vertex The vertex.
- * \param s The amount to shift.
- * \param axis The axis to shift. If not present all axes are shifted.
+ * @param vertex The vertex.
+ * @param s The amount to shift.
+ * @param axis The axis to shift. If not present all axes are shifted.
  *
- * \return The shifted vertex.
+ * @return The shifted vertex.
  */
 function shift (vertex, s, axis) {
   if (axis == undefined)
@@ -92,11 +92,11 @@ function shift (vertex, s, axis) {
 /**
  * Inverts a vertex.
  *
- * \param vertex The vertex.
- * \param bound The max bound of the axis.
- * \param axis The axis to invert. If not present all axes are inverted.
+ * @param vertex The vertex.
+ * @param bound The max bound of the axis.
+ * @param axis The axis to invert. If not present all axes are inverted.
  *
- * \return The inverted vertex.
+ * @return The inverted vertex.
  */
 function invert (vertex, bound, axis) {
   if (axis == undefined)

@@ -1,5 +1,5 @@
 /**
- * \file render2d.js
+ * @file render2d.js
  * Contains the two dimensional render functions.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -30,9 +30,9 @@ var Color = Class.create ({
   /**
    * Creates a Color.
    *
-   * \param r The red channel intensity.
-   * \param g The green channel intensity.
-   * \param b The blue channel intensity.
+   * @param r The red channel intensity.
+   * @param g The green channel intensity.
+   * @param b The blue channel intensity.
    */
   initialize: function (r, g, b) {
     this.data = [r & 0xFF, g & 0xFF, b & 0xFF];
@@ -41,7 +41,7 @@ var Color = Class.create ({
   /**
    * Converts the color to an RGB string.
    *
-   * \return The RGB string.
+   * @return The RGB string.
    */
   to_rgb_string: function () {
       var r = this.data[0];
@@ -55,8 +55,8 @@ var Color = Class.create ({
 /**
  * Renders a vertex onto context.
  *
- * \param vertex The vertex to render.
- * \param context The onto onto which to draw.
+ * @param vertex The vertex to render.
+ * @param context The onto onto which to draw.
  */
 function renderVertex (vertex, context) {
   context.strokeRect (vertex[0], vertex[1], 1, 1);
@@ -65,8 +65,8 @@ function renderVertex (vertex, context) {
 /**
  * Renders a Point onto context.
  *
- * \param shape The shape to render.
- * \param context The conext onto which to render.
+ * @param shape The shape to render.
+ * @param context The conext onto which to render.
  */
 function renderPoint (shape, context) {
   renderVertex (shape.coords, context);
@@ -75,8 +75,8 @@ function renderPoint (shape, context) {
 /**
  * Renders a MultiPoint onto context.
  *
- * \param shape The shape to render.
- * \param context The conext onto which to render.
+ * @param shape The shape to render.
+ * @param context The conext onto which to render.
  */
 function renderMultiPoint (shape, context) {
   shape.eachVertex (renderVertex, context);
@@ -85,8 +85,8 @@ function renderMultiPoint (shape, context) {
 /**
  * Renders a Polygon part onto context.
  *
- * \param part The part to render.
- * \param context The conext onto which to render.
+ * @param part The part to render.
+ * @param context The conext onto which to render.
  */
 function renderPolygonPart (part, context) {
   context.beginPath ();
@@ -99,8 +99,8 @@ function renderPolygonPart (part, context) {
 /**
  * Renders a Polygon onto context.
  *
- * \param shape The shape to render.
- * \param context The conext onto which to render.
+ * @param shape The shape to render.
+ * @param context The conext onto which to render.
  */
 function renderPolygon (shape, context) {
   shape.parts.for_each (renderPolygonPart, context);
@@ -109,8 +109,8 @@ function renderPolygon (shape, context) {
 /**
  * Renders a MultiPatch onto context.
  *
- * \param shape The shape to render.
- * \param context The context onto which to render.
+ * @param shape The shape to render.
+ * @param context The context onto which to render.
  */
 function renderMultiPatch (shape, context) {
   //not yet implemented.
@@ -119,11 +119,11 @@ function renderMultiPatch (shape, context) {
 /**
  * Renders a shape onto a context in the given color.
  *
- * \param shape The shape to render.
- * \param context The context onto which to render.
- * \param color The Color to render the shape.
+ * @param shape The shape to render.
+ * @param context The context onto which to render.
+ * @param color The Color to render the shape.
  *
- * \throw error On unknown shape type.
+ * @throw error On unknown shape type.
  */
 function render (shape, context, color) {
   context.strokeStyle = color.to_rgb_string ();

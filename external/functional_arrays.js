@@ -1,5 +1,5 @@
 /**
- * \file functional_arrays.js
+ * @file functional_arrays.js
  * Contains modifications to the prototypical Array to facilitate functional programming.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -22,11 +22,11 @@
 /**
  * Makes a copy of the arguments from begin to end.
  *
- * \param begin The begining of the range.
- * \param end The end of the range.
- * \param args The arguments.
+ * @param begin The begining of the range.
+ * @param end The end of the range.
+ * @param args The arguments.
  *
- * \return The remaining arguments.
+ * @return The remaining arguments.
  */
 Array.prototype.slice_args = function (args, begin, end) {
   return Array.prototype.slice.call (args, begin, end);
@@ -35,9 +35,9 @@ Array.prototype.slice_args = function (args, begin, end) {
 /**
  * Applies action to all of the elements of the Array.
  *
- * \param action The action to apply.
+ * @param action The action to apply.
  *
- * \return The Array.
+ * @return The Array.
  */
 Array.prototype.apply = function (action) {
   var args = Array.prototype.slice_args (arguments);
@@ -49,11 +49,11 @@ Array.prototype.apply = function (action) {
 /**
  * Applies action to the specified range of the Array elements.
  *
- * \param begin The beginning of the range.
- * \param end The end of the range.
- * \param action The action to apply.
+ * @param begin The beginning of the range.
+ * @param end The end of the range.
+ * @param action The action to apply.
  *
- * \return The Array.
+ * @return The Array.
  */
 Array.prototype.apply_range = function (begin, end, action) {
   var args = Array.prototype.slice_args (arguments, 3);
@@ -68,10 +68,10 @@ Array.prototype.apply_range = function (begin, end, action) {
 /**
  * Applies action to the specified indices of the Array elements.
  *
- * \param The indices to which to apply the action.
- * \param action The action to apply.
+ * @param The indices to which to apply the action.
+ * @param action The action to apply.
  *
- * \return The Array.
+ * @return The Array.
  */
 Array.prototype.apply_index = function (indices, action) {
   var args = Array.prototype.slice_args (arguments, 2);
@@ -86,9 +86,9 @@ Array.prototype.apply_index = function (indices, action) {
 /**
  * Runs action for all of the elements of the Array.
  *
- * \param action The action to apply.
+ * @param action The action to apply.
  *
- * \return The Array.
+ * @return The Array.
  */
 Array.prototype.for_each = function (action) {
   var args = Array.prototype.slice_args (arguments);
@@ -100,11 +100,11 @@ Array.prototype.for_each = function (action) {
 /**
  * Runs action on each element in the specified range of the Array.
  *
- * \param begin The beginning of the range.
- * \param end The end of the range.
- * \param action The action to apply.
+ * @param begin The beginning of the range.
+ * @param end The end of the range.
+ * @param action The action to apply.
  *
- * \return The Array.
+ * @return The Array.
  */
 Array.prototype.for_each_range = function (begin, end, action) {
   var args = Array.prototype.slice_args (arguments, 3);
@@ -119,10 +119,10 @@ Array.prototype.for_each_range = function (begin, end, action) {
 /**
  * Runs action on each of the indices of the Array.
  *
- * \param indices The indices on which to run the action.
- * \param action The action to apply.
+ * @param indices The indices on which to run the action.
+ * @param action The action to apply.
  *
- * \return The Array.
+ * @return The Array.
  */
 Array.prototype.for_each_index = function (indices, action) {
   var args = Array.prototype.slice_args (arguments, 2);

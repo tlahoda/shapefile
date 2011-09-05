@@ -1,5 +1,5 @@
 /**
- * \file model_builders.js
+ * @file model_builders.js
  * Contains the three dimensional model builders.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -22,10 +22,10 @@
 /**
  * Returns a value with which to set an array element.
  *
- * \param ele The element.
- * \param value The value with which to fill.
+ * @param ele The element.
+ * @param value The value with which to fill.
  *
- * \return The value.
+ * @return The value.
  */
 function set (ele, value) {
   return value;
@@ -34,10 +34,10 @@ function set (ele, value) {
 /**
  * Makes an array of colors for ian array of vertices.
  *
- * \param vertices The array of vertices for whic hto generate colors.
- * \param color The color to make the vertices.
+ * @param vertices The array of vertices for whic hto generate colors.
+ * @param color The color to make the vertices.
  *
- * \return The array of colors.
+ * @return The array of colors.
  */
 function makeVertexColors (vertices, color) {
   return new Array (vertices.length).apply (set, color);
@@ -46,11 +46,11 @@ function makeVertexColors (vertices, color) {
 /**
  * Makes a model.
  *
- * \param modelType The type of the model.
- * \param vertices The model vertices.
- * \param colors The model colors.
+ * @param modelType The type of the model.
+ * @param vertices The model vertices.
+ * @param colors The model colors.
  *
- * \return The model.
+ * @return The model.
  */
 function makeModel (modelType, vertices, colors) {
   var model = new $W.Object (modelType);
@@ -63,8 +63,8 @@ function makeModel (modelType, vertices, colors) {
 /**
  * Build the model for a point.
  *
- * \param shape The shape.
- * \param vertices The vertices.
+ * @param shape The shape.
+ * @param vertices The vertices.
  */
 function addPoint (shape, vertices) {
   vertices.push ([shape.coords]);
@@ -73,8 +73,8 @@ function addPoint (shape, vertices) {
 /**
  * Builds the model for a MultiPoint.
  *
- * \param shape The shape.
- * \param vertices The vertices.
+ * @param shape The shape.
+ * @param vertices The vertices.
  */
 function addMultiPoint (shape, vertices) {
   vertices.push.apply (vertices, shape);
@@ -83,8 +83,8 @@ function addMultiPoint (shape, vertices) {
 /**
  * Builds the vertices for a Polygon part.
  *
- * \param part The part.
- * \param vertices The vertices.
+ * @param part The part.
+ * @param vertices The vertices.
  */
 function addPolygonPart (part, vertices) {
   vertices.push (part[0]);
@@ -99,8 +99,8 @@ function addPolygonPart (part, vertices) {
 /**
  * Builds the models for a Polygon.
  *
- * \param shape The shape.
- * \param vertices The vertices.
+ * @param shape The shape.
+ * @param vertices The vertices.
  */
 function addPolygon (shape, vertices) {
   shape.parts.for_each (addPolygonPart, vertices);
@@ -109,8 +109,8 @@ function addPolygon (shape, vertices) {
 /**
  * Builds the models for a MultiPatch. MultiPatch is not yet implemented.
  *
- * \param shape The shape.
- * \param vertices The vertices.
+ * @param shape The shape.
+ * @param vertices The vertices.
  */
 function addMultiPatch (shape, vertices) {
 }
@@ -118,8 +118,8 @@ function addMultiPatch (shape, vertices) {
 /**
  * Builds the models for a shape.
  *
- * \param shape The shape.
- * \param color The color to render the shape.
+ * @param shape The shape.
+ * @param color The color to render the shape.
  */
 function buildModels (shape, color) {
   var vertices = new Array ();
