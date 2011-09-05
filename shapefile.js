@@ -411,7 +411,9 @@ var MultiPatch = Class.create (Shape, {
  *
  * \throw error On unknown shape type.
  */
-function ShapeFactory (shapeType, shp) {
+function ShapeFactory (offset, shp) {
+  shp.seek (offset);
+  var shapeType = shp.readInt32 ();
   switch (shapeType) {
     case 0:
       return new Shape (shapeType, shp);
