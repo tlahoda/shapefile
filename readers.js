@@ -148,7 +148,6 @@ function readObjects (objects, numPoints, partsIndex, reader, shp) {
  * \return The shape.
  */
 function readShape (offset, shp) {
-  shp.seek (offset);
-  return ShapeFactory (shp.readInt32 (), shp);
+  return ShapeFactory (offset, shp);
 }
 
