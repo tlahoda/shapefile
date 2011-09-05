@@ -1,5 +1,5 @@
 /**
- * \file shapefile.js
+ * @file shapefile.js
  * Contains the shapefile library.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -31,7 +31,7 @@ function load_binary_resource (url) {
 }
 
 /**
- * \class Header The shapefile header contains various pieces of management data for the shapefile.
+ * @class Header The shapefile header contains various pieces of management data for the shapefile.
  */
 var Header = Class.create ({
   FILE_CODE: 0,
@@ -50,7 +50,7 @@ var Header = Class.create ({
   /**
    * Creates a Header.
    *
-   * \param shx The binaryReader containg the shapefile index.
+   * @param shx The binaryReader containg the shapefile index.
    */
   initialize: function (shapeFile, shx) {
     this.header = new Array (17)
@@ -64,7 +64,7 @@ var Header = Class.create ({
 });
 
 /**
- * \class Shape The base shape class. Also represents a null shape.
+ * @class Shape The base shape class. Also represents a null shape.
  */
 var Shape = Class.create ({
   SHAPE_TYPE: 0,
@@ -72,8 +72,8 @@ var Shape = Class.create ({
   /**
    * Creates a Shape.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function (shapeType, shp) {
     this.header = new Array ();
@@ -83,7 +83,7 @@ var Shape = Class.create ({
   /**
    * Applies action to each vertex in the shape.
    *
-   * \param action The action to apply.
+   * @param action The action to apply.
    */
   eachVertex: function (action) {
     //Does nothing.
@@ -91,10 +91,10 @@ var Shape = Class.create ({
 });
 
 /**
- * \class Point Represents a point.
+ * @class Point Represents a point.
  *
- * \param shapeType The type of the shape.
- * \param shp The binaryReader containing the main shapefile.
+ * @param shapeType The type of the shape.
+ * @param shp The binaryReader containing the main shapefile.
  */
 var Point = Class.create (Shape, {
   X: 0,
@@ -111,7 +111,7 @@ var Point = Class.create (Shape, {
   /**
    * Applies action to the Point.
    *
-   * \param action The action to apply.
+   * @param action The action to apply.
    */
   eachVertex: function (action) {
     var args = Array.prototype.slice_args (arguments, 1);
@@ -121,14 +121,14 @@ var Point = Class.create (Shape, {
 });
 
 /**
- * \class PointZ Represents a PointZ.
+ * @class PointZ Represents a PointZ.
  */
 var PointZ = Class.create (Point, {
   /**
    * Creates a PointZ.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -138,14 +138,14 @@ var PointZ = Class.create (Point, {
 });
 
 /**
- * \class PointM Represents a measured point.
+ * @class PointM Represents a measured point.
  */
 var PointM = Class.create (Point, {
   /**
    * Creates a PointM.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -154,7 +154,7 @@ var PointM = Class.create (Point, {
 });
 
 /**
- * \class MultiPoint Represents a set of points.
+ * @class MultiPoint Represents a set of points.
  */
 var MultiPoint = Class.create (Shape, {
   X: 0,
@@ -168,8 +168,8 @@ var MultiPoint = Class.create (Shape, {
   /**
    * Creates a MultiPoint.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -182,7 +182,7 @@ var MultiPoint = Class.create (Shape, {
   /**
    * Applies action to each vertex in the shape.
    *
-   * \param action The action to apply.
+   * @param action The action to apply.
    */
   eachVertex: function (action) {
     Array.apply.call (this.points, arguments);
@@ -190,14 +190,14 @@ var MultiPoint = Class.create (Shape, {
 });
 
 /**
- * \class MultiPointZ Represents a set of MultiPointZs.
+ * @class MultiPointZ Represents a set of MultiPointZs.
  */
 var MultiPointZ = Class.create (MultiPoint, {
   /**
    * Creates a MultiPointZ.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -214,14 +214,14 @@ var MultiPointZ = Class.create (MultiPoint, {
 });
 
 /**
- * \class MultiPointM Represents a set of measured points.
+ * @class MultiPointM Represents a set of measured points.
  */
 var MultiPointM = Class.create (MultiPoint, {
   /**
    * Creates a MultiPointM.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -234,7 +234,7 @@ var MultiPointM = Class.create (MultiPoint, {
 });
 
 /**
- * \class Polygon Represents a polygon.
+ * @class Polygon Represents a polygon.
  */
 var Polygon = Class.create (Shape, {
   X: 0,
@@ -249,8 +249,8 @@ var Polygon = Class.create (Shape, {
   /**
    * Creates a Polygon.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -270,7 +270,7 @@ var Polygon = Class.create (Shape, {
   /**
    * Applies action to each vertex in the shape.
    *
-   * \param action The action to apply.
+   * @param action The action to apply.
    */
   eachVertex: function (action) {
     var args = Array.prototype.slice_args (arguments);
@@ -284,14 +284,14 @@ var Polygon = Class.create (Shape, {
 });
 
 /**
- * \class PolygonZ Represents a PolygonZ.
+ * @class PolygonZ Represents a PolygonZ.
  */
 var PolygonZ = Class.create (Polygon, {
   /**
    * Creates a PolygonZ.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -312,14 +312,14 @@ var PolygonZ = Class.create (Polygon, {
 });
 
 /**
- * \class PolygonM Represents a PolygonM.
+ * @class PolygonM Represents a PolygonM.
  */
 var PolygonM = Class.create (Polygon, {
   /**
    * Creates a PolygonM.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -335,14 +335,14 @@ var PolygonM = Class.create (Polygon, {
 });
 
 /**
- * \class PolyLine Represents a PolyLine.
+ * @class PolyLine Represents a PolyLine.
  */
 var PolyLine = Class.create (Polygon, {
   /**
    * Creates a PolyLine.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -350,14 +350,14 @@ var PolyLine = Class.create (Polygon, {
 });
 
 /**
- * \class PolyLineZ Represents a PolyLineZ.
+ * @class PolyLineZ Represents a PolyLineZ.
  */
 var PolyLineZ = Class.create (PolygonZ, {
   /**
    * Creates a PolyLineZ.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -365,14 +365,14 @@ var PolyLineZ = Class.create (PolygonZ, {
 });
 
 /**
- * \class PolyLineM Represents a PolyLineM.
+ * @class PolyLineM Represents a PolyLineM.
  */
 var PolyLineM = Class.create (PolygonM, {
   /**
    * Creates a PolyLineM.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -380,14 +380,14 @@ var PolyLineM = Class.create (PolygonM, {
 });
 
 /**
- * \class MultiPatch Represents a MultiPatch. Due to the complicated nature of this shape type it is not yet implemented.
+ * @class MultiPatch Represents a MultiPatch. Due to the complicated nature of this shape type it is not yet implemented.
  */
 var MultiPatch = Class.create (Shape, {
   /**
    * Creates a MultiPatch.
    *
-   * \param shapeType The type of the shape.
-   * \param shp The binaryReader containing the main shapefile.
+   * @param shapeType The type of the shape.
+   * @param shp The binaryReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -396,7 +396,7 @@ var MultiPatch = Class.create (Shape, {
   /**
    * Applies action to each vertex in the shape.
    *
-   * \param action The action to apply.
+   * @param action The action to apply.
    */
   eachVertex: function (action) {
     //Do nothing
@@ -406,10 +406,10 @@ var MultiPatch = Class.create (Shape, {
 /**
  * Creates the appropriate shape type.
  *
- * \param shapeType The type of the shape
- * \param shp The BinaryReader containing the raw shapefile.
+ * @param shapeType The type of the shape
+ * @param shp The BinaryReader containing the raw shapefile.
  *
- * \throw error On unknown shape type.
+ * @throw error On unknown shape type.
  */
 function ShapeFactory (offset, shp) {
   shp.seek (offset);
@@ -463,15 +463,15 @@ function ShapeFactory (offset, shp) {
 }
 
 /**
- * \class Shapefile Represents a shapefile
+ * @class Shapefile Represents a shapefile
  */
 var ShapeFile = Class.create ({
   /**
    * Creates a ShapeFile.
    *
-   * \param name The base name of the shape file exluding extensions but including path.
+   * @param name The base name of the shape file exluding extensions but including path.
    *
-   * \throws error On failure to load the shapefile and on unkown shape type.
+   * @throws error On failure to load the shapefile and on unkown shape type.
    */
   initialize: function (name) {
     this.name = name;

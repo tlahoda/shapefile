@@ -1,5 +1,5 @@
 /**
- * \file readers.js
+ * @file readers.js
  * Contains shapefile readers.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
@@ -33,10 +33,10 @@ function load_binary_resource (url) {
 /**
  * Reads a big endian int32 from reader.
  *
- * \param value The value.
- * \param reader The BinaryReary from which to read.
+ * @param value The value.
+ * @param reader The BinaryReary from which to read.
  *
- * \return The big endian int32.
+ * @return The big endian int32.
  */
 function readBigEndianInt32 (value, reader) {
   return reader.endianSwap (reader.readInt32 ());
@@ -45,10 +45,10 @@ function readBigEndianInt32 (value, reader) {
 /**
  * Reads an int32 from reader.
  *
- * \param value The value.
- * \param reader The BinaryReary from which to read.
+ * @param value The value.
+ * @param reader The BinaryReary from which to read.
  *
- * \return The int32.
+ * @return The int32.
  */
 function readInt32 (value, reader) {
   return reader.readInt32 ();
@@ -57,10 +57,10 @@ function readInt32 (value, reader) {
 /**
  * Reads a double from reader.
  *
- * \param value The value.
- * \param reader The BinaryReary from which to read.
+ * @param value The value.
+ * @param reader The BinaryReary from which to read.
  *
- * \return The double.
+ * @return The double.
  */
 function readDouble (value, reader) {
   return reader.readDouble ();
@@ -69,10 +69,10 @@ function readDouble (value, reader) {
 /**
  * Reads a point from reader.
  *
- * \param point The point.
- * \param reader The BinaryReary from which to read.
+ * @param point The point.
+ * @param reader The BinaryReary from which to read.
  *
- * \return The point.
+ * @return The point.
  */
 function readPoint (point, reader) {
   var x = reader.readDouble ();
@@ -83,10 +83,10 @@ function readPoint (point, reader) {
 /**
  * Reads a two element array where the elements are reversed in the BinaryReader.
  *
- * \param point The point.
- * \param reader The BinaryReader from which to read.
+ * @param point The point.
+ * @param reader The BinaryReader from which to read.
  *
- * \return The array.
+ * @return The array.
  */
 function readReversedPoint (point, reader) {
   var first = reader.readDouble ();
@@ -97,9 +97,9 @@ function readReversedPoint (point, reader) {
 /**
  * Reads a record header from reader.
  *
- * \param shx The BinaryReary from which to read.
+ * @param shx The BinaryReary from which to read.
  *
- * \return The record header.
+ * @return The record header.
  */
 function readRecordHeader (shx) {
   var offset = shx.endianSwap (shx.readInt32 ()) * 2;
@@ -110,10 +110,10 @@ function readRecordHeader (shx) {
 /**
  * Reads a offset from reader.
  *
- * \param shape The shape.
- * \param reader The BinaryReary from which to read.
+ * @param shape The shape.
+ * @param reader The BinaryReary from which to read.
  *
- * \return The offset.
+ * @return The offset.
  */
 function readOffset (shape, shx) {
   return readRecordHeader (shx)[0] + 8;
@@ -122,13 +122,13 @@ function readOffset (shape, shx) {
 /**
  * Reads a set of objects.
  *
- * \param object The objects to read.
- * \param numPoints The total number of points in all of the objects.
- * \param partsIndex The indices to the objects.
- * \param reader the object reader.
- * \param shp The BinaryReader from which to read.
+ * @param object The objects to read.
+ * @param numPoints The total number of points in all of the objects.
+ * @param partsIndex The indices to the objects.
+ * @param reader the object reader.
+ * @param shp The BinaryReader from which to read.
  *
- * \return An array containing the objects.
+ * @return An array containing the objects.
  */
 function readObjects (objects, numPoints, partsIndex, reader, shp) {
   var i = 0;
@@ -142,10 +142,10 @@ function readObjects (objects, numPoints, partsIndex, reader, shp) {
 /**
  * Reads a shape from a BinaryReader.
  *
- * \param offset The offset to the shape in the BinaryReader.
- * \param shp The BinaryReader.
+ * @param offset The offset to the shape in the BinaryReader.
+ * @param shp The BinaryReader.
  *
- * \return The shape.
+ * @return The shape.
  */
 function readShape (offset, shp) {
   return ShapeFactory (offset, shp);
