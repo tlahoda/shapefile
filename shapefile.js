@@ -114,7 +114,7 @@ var Point = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    var args = sliceArguments (arguments, 1);
+    var args = Array.prototype.slice_args (arguments, 1);
     args.unshift (this.coords);
     this.coords = action.apply (null, args);
   }
@@ -273,9 +273,9 @@ var Polygon = Class.create (Shape, {
    * \param action The action to apply.
    */
   eachVertex: function (action) {
-    var args = sliceArguments (arguments);
+    var args = Array.prototype.slice_args (arguments);
     args.unshift (function (part) {
-      var args = sliceArguments (arguments, 1);
+      var args = Array.prototype.slice_args (arguments, 1);
       part.apply.apply (part, args); 
     });
 
