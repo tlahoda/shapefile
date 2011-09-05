@@ -124,31 +124,31 @@
 
         rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
 
-        $G.event.bind('left', function() {
+        $G.event.bind ('left', function () {
           xRot += 1;
           if (xRot > 360) xRot = 0;
           rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
         });
 
-        $G.event.bind('right', function() {
+        $G.event.bind ('right', function () {
           xRot -= 1;
           if (xRot < -360) xRot = 0;
           rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
         });
 
-        $G.event.bind('up', function() {
+        $G.event.bind ('up', function () {
           yRot += 1;
           if (yRot > 360) yRot = 0;
           rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
         });
 
-        $G.event.bind('down', function() {
+        $G.event.bind ('down', function () {
           yRot -= 1;
           if (yRot < -360) yRot = 0;
           rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
         });
 
-        $G.event.bind('r', function() {
+        $G.event.bind ('r', function () {
           xRot = -25;
           yRot = 0;
           rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
