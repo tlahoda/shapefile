@@ -15,12 +15,10 @@ vertices as lat/lon points that may then be transformed to the desired
 projection.
 
 A live two dimensional example representation of a shapefile can be found
-at http://tlahoda.org/render2d.html for a two dimensional representation
-of a shapefile.
-
-A three dimensional WebGL example is located at http://tlahoda.org . Be
-forewarned this demo may take a long time to load (as in a miute or so)
-on some browsers (namely firefox). It is best viewed in Google Chrome.
+at http://tlahoda.org/render2d.html A three dimensional WebGL example can
+be found at http://tlahoda.org . Be forewarned this demo may take a long
+time to load (as in a miute or so) on some browsers (namely firefox). It
+is best viewed in Google Chrome.
 
 =========================================================================
 
