@@ -1,6 +1,5 @@
 /**
- * @file shapefile.js
- * Contains the shapefile library.
+ * @file shapefile.js Contains the shapefile library.
  *
  * Copyright (C) 2011 Thomas P. Lahoda
  *
@@ -31,7 +30,7 @@ function load_binary_resource (url) {
 }
 
 /**
- * @class Header The shapefile header contains various pieces of management data for the shapefile.
+ * @class The shapefile header contains various pieces of management data for the shapefile.
  */
 var Header = Class.create ({
   FILE_CODE: 0,
@@ -64,7 +63,7 @@ var Header = Class.create ({
 });
 
 /**
- * @class Shape The base shape class. Also represents a null shape.
+ * @class The base shape class. Also represents a null shape.
  */
 var Shape = Class.create ({
   SHAPE_TYPE: 0,
@@ -91,7 +90,7 @@ var Shape = Class.create ({
 });
 
 /**
- * @class Point Represents a point.
+ * @class Represents a point.
  *
  * @param shapeType The type of the shape.
  * @param shp The binaryReader containing the main shapefile.
@@ -121,7 +120,7 @@ var Point = Class.create (Shape, {
 });
 
 /**
- * @class PointZ Represents a PointZ.
+ * @class Represents a PointZ.
  */
 var PointZ = Class.create (Point, {
   /**
@@ -138,7 +137,7 @@ var PointZ = Class.create (Point, {
 });
 
 /**
- * @class PointM Represents a measured point.
+ * @class Represents a measured point.
  */
 var PointM = Class.create (Point, {
   /**
@@ -154,7 +153,7 @@ var PointM = Class.create (Point, {
 });
 
 /**
- * @class MultiPoint Represents a set of points.
+ * @class Represents a set of points.
  */
 var MultiPoint = Class.create (Shape, {
   X: 0,
@@ -190,7 +189,7 @@ var MultiPoint = Class.create (Shape, {
 });
 
 /**
- * @class MultiPointZ Represents a set of MultiPointZs.
+ * @class Represents a set of MultiPointZs.
  */
 var MultiPointZ = Class.create (MultiPoint, {
   /**
@@ -214,7 +213,7 @@ var MultiPointZ = Class.create (MultiPoint, {
 });
 
 /**
- * @class MultiPointM Represents a set of measured points.
+ * @class Represents a set of measured points.
  */
 var MultiPointM = Class.create (MultiPoint, {
   /**
@@ -234,7 +233,7 @@ var MultiPointM = Class.create (MultiPoint, {
 });
 
 /**
- * @class Polygon Represents a polygon.
+ * @class Represents a polygon.
  */
 var Polygon = Class.create (Shape, {
   X: 0,
@@ -284,7 +283,7 @@ var Polygon = Class.create (Shape, {
 });
 
 /**
- * @class PolygonZ Represents a PolygonZ.
+ * @class Represents a PolygonZ.
  */
 var PolygonZ = Class.create (Polygon, {
   /**
@@ -312,7 +311,7 @@ var PolygonZ = Class.create (Polygon, {
 });
 
 /**
- * @class PolygonM Represents a PolygonM.
+ * @class Represents a PolygonM.
  */
 var PolygonM = Class.create (Polygon, {
   /**
@@ -335,7 +334,7 @@ var PolygonM = Class.create (Polygon, {
 });
 
 /**
- * @class PolyLine Represents a PolyLine.
+ * @class Represents a PolyLine.
  */
 var PolyLine = Class.create (Polygon, {
   /**
@@ -350,7 +349,7 @@ var PolyLine = Class.create (Polygon, {
 });
 
 /**
- * @class PolyLineZ Represents a PolyLineZ.
+ * @class Represents a PolyLineZ.
  */
 var PolyLineZ = Class.create (PolygonZ, {
   /**
@@ -365,7 +364,7 @@ var PolyLineZ = Class.create (PolygonZ, {
 });
 
 /**
- * @class PolyLineM Represents a PolyLineM.
+ * @class Represents a PolyLineM.
  */
 var PolyLineM = Class.create (PolygonM, {
   /**
@@ -380,7 +379,7 @@ var PolyLineM = Class.create (PolygonM, {
 });
 
 /**
- * @class MultiPatch Represents a MultiPatch. Due to the complicated nature of this shape type it is not yet implemented.
+ * @class Represents a MultiPatch. Due to the complicated nature of this shape type it is not yet implemented.
  */
 var MultiPatch = Class.create (Shape, {
   /**
@@ -463,7 +462,7 @@ function ShapeFactory (offset, shp) {
 }
 
 /**
- * @class Shapefile Represents a shapefile
+ * @class Represents a shapefile
  */
 var ShapeFile = Class.create ({
   /**
