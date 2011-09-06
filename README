@@ -4,8 +4,23 @@
 =
 =========================================================================
 
+Shapefile makes ESRI shapefiles available in Javascript. Currently all 
+shape types other than MultiPatch have been implemented. MultiPatch is a 
+complex shape that will require some thought. Shapefile is designed to be
+rendering method agnostic as it exposes the vertices as lat/lon points
+that may then be transformed to the desired projection.
 
-======================================================================
+The examples directory contains examples of two dimensional and three
+dimensional rendering. Lives examples can be found at
+http://tlahoda.org/render2d.html for a two dimensional representation of
+a shapefile.
+
+A three dimensional WebGL example is located at http://tlahoda.org . Be
+forewarned this demo may take a long time (as in a miute or so) to load
+on some browsers (namely firefox). It is best viewed in Google Chrome.
+
+=========================================================================
+
 Copyright (C) 2011 Thomas P. Lahoda
 
 This library is free software; you can redistribute it and/or
