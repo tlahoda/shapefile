@@ -13,10 +13,11 @@ this by exposing the vertices as lat/lon points that may then be
 transformed to the desired projection.
 
 A live two dimensional orthographic projection example can be found at
-http://tlahoda.org/render2d.html A three dimensional WebGL example can be
-found at http://tlahoda.org . Be forewarned this demo may take a long time
-to load (as in a minute or so) on some browsers (namely firefox). It is
-best viewed in Google Chrome.
+http://tlahoda.github.com/shapefile/examples/render2d.html A three 
+dimensional WebGL example can be found at 
+http://tlahoda.github.com/shapefile/examples/webgl.html . Be forewarned 
+this demo may take a long time to load (as in a minute or so) on some 
+browsers (namely firefox). It is best viewed in Google Chrome.
 
 
 ####Copyright (C) 2011 Thomas P. Lahoda
