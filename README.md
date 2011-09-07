@@ -19,6 +19,9 @@ http://tlahoda.github.com/shapefile/examples/webgl.html . Be forewarned
 this demo may take a long time to load (as in a minute or so) on some 
 browsers (namely firefox). It is best viewed in Google Chrome.
 
+Usage
+-----
+
 
 ####Copyright (C) 2011 Thomas P. Lahoda
 
