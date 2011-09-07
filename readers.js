@@ -34,49 +34,50 @@ function load_binary_resource (url) {
  * Reads a big endian int32 from reader.
  *
  * @param value The value.
- * @param reader The BinaryReary from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return The big endian int32.
  */
-function readBigEndianInt32 (value, reader) {
-  return reader.endianSwap (reader.readInt32 ());
+function readBigEndianInt32 (value, dataView) {
+  //return dataView.endianSwap (dataView.getInt32 ());
+  return dataView.readInt32 (false);
 }
 
 /**
  * Reads an int32 from reader.
  *
  * @param value The value.
- * @param reader The BinaryReary from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return The int32.
  */
-function readInt32 (value, reader) {
-  return reader.readInt32 ();
+function readInt32 (value, dataView) {
+  return dataView.readInt32 ();
 }
 
 /**
  * Reads a double from reader.
  *
  * @param value The value.
- * @param reader The BinaryReary from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return The double.
  */
-function readDouble (value, reader) {
-  return reader.readDouble ();
+function readDouble (value, dataView) {
+  return dataView.readDouble ();
 }
 
 /**
  * Reads a point from reader.
  *
  * @param point The point.
- * @param reader The BinaryReary from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return The point.
  */
-function readPoint (point, reader) {
-  var x = reader.readDouble ();
-  var y = reader.readDouble ();
+function readPoint (point, dataView) {
+  var x = dataView.readDouble ();
+  var y = dataView.readDouble ();
   return [x, y];
 }
 
@@ -84,26 +85,28 @@ function readPoint (point, reader) {
  * Reads a two element array where the elements are reversed in the BinaryReader.
  *
  * @param point The point.
- * @param reader The BinaryReader from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return The array.
  */
-function readReversedPoint (point, reader) {
-  var first = reader.readDouble ();
-  var second = reader.readDouble ();
+function readReversedPoint (point, dataView) {
+  var first = dataView.readDouble ();
+  var second = dataView.readDouble ();
   return [second, first];
 }
 
 /**
  * Reads a record header from reader.
  *
- * @param shx The BinaryReary from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return The record header.
  */
-function readRecordHeader (shx) {
-  var offset = shx.endianSwap (shx.readInt32 ()) * 2;
-  var contentLen = shx.endianSwap (shx.readInt32 ()) * 2;
+function readRecordHeader (dataView) {
+  var offset = dataView.readInt32 (false) * 2;
+  var contentLen = dataView.readInt32 (false) * 2;
+  //var offset = dataView.endianSwap (dataView.getInt32 ()) * 2;
+  //var contentLen = dataView.endianSwap (dataView.getInt32 ()) * 2;
   return [offset, contentLen];
 }
 
@@ -111,12 +114,12 @@ function readRecordHeader (shx) {
  * Reads a offset from reader.
  *
  * @param shape The shape.
- * @param reader The BinaryReary from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return The offset.
  */
-function readOffset (shape, shx) {
-  return readRecordHeader (shx)[0] + 8;
+function readOffset (shape, dataView) {
+  return readRecordHeader (dataView)[0] + 8;
 }
 
 /**
@@ -126,16 +129,16 @@ function readOffset (shape, shx) {
  * @param numPoints The total number of points in all of the objects.
  * @param partsIndex The indices to the objects.
  * @param reader the object reader.
- * @param shp The BinaryReader from which to read.
+ * @param dataView The jDataView from which to read.
  *
  * @return An array containing the objects.
  */
-function readObjects (objects, numPoints, partsIndex, reader, shp) {
+function readObjects (objects, numPoints, partsIndex, reader, dataView) {
   var i = 0;
   var numObjects = objects.length;
   objects.apply (function (part) {
     var length = ((i == numObjects - 1) ? numPoints : partsIndex[i + 1]) - partsIndex[i++];
-    return new Array (length).apply (reader, shp);
+    return new Array (length).apply (reader, dataView);
   });
 }
 
@@ -143,11 +146,11 @@ function readObjects (objects, numPoints, partsIndex, reader, shp) {
  * Reads a shape from a BinaryReader.
  *
  * @param offset The offset to the shape in the BinaryReader.
- * @param shp The BinaryReader.
+ * @param dataView The jDataView from which to read.
  *
  * @return The shape.
  */
-function readShape (offset, shp) {
-  return ShapeFactory (offset, shp);
+function readShape (offset, dataView) {
+  return ShapeFactory (offset, dataView);
 }
 

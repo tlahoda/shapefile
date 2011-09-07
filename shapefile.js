@@ -474,11 +474,8 @@ var ShapeFile = Class.create ({
    */
   initialize: function (name) {
     this.name = name;
-    this.header = new Header (this, new BinaryReader (load_binary_resource (name + ".shx")));
-  
-    var shp = new BinaryReader (load_binary_resource (name + ".shp"));
-    var numShapes = this.header.numShapes;
-    this.shapes.apply (readShape, shp);
+    this.header = new Header (this, new jDataViewReader (new jDataView (load_binary_resource (name + ".shx"))));
+    this.shapes.apply (readShape, new jDataViewReader (new jDataView (load_binary_resource (name + ".shp"))));
   },
 });
 
