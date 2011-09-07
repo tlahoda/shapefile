@@ -49,11 +49,11 @@ var Header = Class.create ({
   /**
    * Creates a Header.
    *
-   * @param shx The binaryReader containg the shapefile index.
+   * @param shx The jDataViewReader containg the shapefile index.
    */
   initialize: function (shapeFile, shx) {
     this.header = new Array (17)
-      .apply_range (0, 7, readBigEndianInt32, shx)
+      .apply_range (0, 7, readInt32, shx, false)
       .apply_range (7, 9, readInt32, shx)
       .apply_range (9, 17, readDouble, shx);
 
@@ -72,7 +72,7 @@ var Shape = Class.create ({
    * Creates a Shape.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function (shapeType, shp) {
     this.header = new Array ();
@@ -93,7 +93,7 @@ var Shape = Class.create ({
  * @class Represents a point.
  *
  * @param shapeType The type of the shape.
- * @param shp The binaryReader containing the main shapefile.
+ * @param shp The jDataViewReader containing the main shapefile.
  */
 var Point = Class.create (Shape, {
   X: 0,
@@ -127,7 +127,7 @@ var PointZ = Class.create (Point, {
    * Creates a PointZ.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -144,7 +144,7 @@ var PointM = Class.create (Point, {
    * Creates a PointM.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -168,7 +168,7 @@ var MultiPoint = Class.create (Shape, {
    * Creates a MultiPoint.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -196,7 +196,7 @@ var MultiPointZ = Class.create (MultiPoint, {
    * Creates a MultiPointZ.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -220,7 +220,7 @@ var MultiPointM = Class.create (MultiPoint, {
    * Creates a MultiPointM.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -249,7 +249,7 @@ var Polygon = Class.create (Shape, {
    * Creates a Polygon.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -290,7 +290,7 @@ var PolygonZ = Class.create (Polygon, {
    * Creates a PolygonZ.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -318,7 +318,7 @@ var PolygonM = Class.create (Polygon, {
    * Creates a PolygonM.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -341,7 +341,7 @@ var PolyLine = Class.create (Polygon, {
    * Creates a PolyLine.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -356,7 +356,7 @@ var PolyLineZ = Class.create (PolygonZ, {
    * Creates a PolyLineZ.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -371,7 +371,7 @@ var PolyLineM = Class.create (PolygonM, {
    * Creates a PolyLineM.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -386,7 +386,7 @@ var MultiPatch = Class.create (Shape, {
    * Creates a MultiPatch.
    *
    * @param shapeType The type of the shape.
-   * @param shp The binaryReader containing the main shapefile.
+   * @param shp The jDataViewReader containing the main shapefile.
    */
   initialize: function ($super, shapeType, shp) {
     $super (shapeType, shp);
@@ -406,7 +406,7 @@ var MultiPatch = Class.create (Shape, {
  * Creates the appropriate shape type.
  *
  * @param shapeType The type of the shape
- * @param shp The BinaryReader containing the raw shapefile.
+ * @param shp The jDataViewReader containing the raw shapefile.
  *
  * @throw error On unknown shape type.
  */
@@ -474,11 +474,8 @@ var ShapeFile = Class.create ({
    */
   initialize: function (name) {
     this.name = name;
-    this.header = new Header (this, new BinaryReader (load_binary_resource (name + ".shx")));
-  
-    var shp = new BinaryReader (load_binary_resource (name + ".shp"));
-    var numShapes = this.header.numShapes;
-    this.shapes.apply (readShape, shp);
+    this.header = new Header (this, new jDataViewReader (new jDataView (load_binary_resource (name + ".shx"))));
+    this.shapes.apply (readShape, new jDataViewReader (new jDataView (load_binary_resource (name + ".shp"))));
   },
 });
 
