@@ -23,6 +23,7 @@ Usage
 -----
 
 
+--------------------------------------------------------------------------
 ####Copyright (C) 2011 Thomas P. Lahoda
 
 This library is free software; you can redistribute it and/or
