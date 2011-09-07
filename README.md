@@ -1,8 +1,5 @@
-=========================================================================
-=
-= Shapefile
-=
-=========================================================================
+Shapefile
+=========
 
 Shapefile makes ESRI shapefiles available in Javascript. Currently all 
 shape types other than MultiPatch have been implemented. MultiPatch is a 
@@ -21,9 +18,8 @@ found at http://tlahoda.org . Be forewarned this demo may take a long time
 to load (as in a minute or so) on some browsers (namely firefox). It is
 best viewed in Google Chrome.
 
-=========================================================================
 
-Copyright (C) 2011 Thomas P. Lahoda
+####Copyright (C) 2011 Thomas P. Lahoda
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
