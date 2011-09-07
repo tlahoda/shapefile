@@ -31,19 +31,6 @@ function load_binary_resource (url) {
 }
 
 /**
- * Reads a big endian int32 from reader.
- *
- * @param value The value.
- * @param dataView The jDataView from which to read.
- *
- * @return The big endian int32.
- */
-function readBigEndianInt32 (value, dataView) {
-  //return dataView.endianSwap (dataView.getInt32 ());
-  return dataView.readInt32 (false);
-}
-
-/**
  * Reads an int32 from reader.
  *
  * @param value The value.
@@ -51,8 +38,8 @@ function readBigEndianInt32 (value, dataView) {
  *
  * @return The int32.
  */
-function readInt32 (value, dataView) {
-  return dataView.readInt32 ();
+function readInt32 (value, dataView, littleEndian) {
+  return dataView.readInt32 (littleEndian);
 }
 
 /**
@@ -105,8 +92,6 @@ function readReversedPoint (point, dataView) {
 function readRecordHeader (dataView) {
   var offset = dataView.readInt32 (false) * 2;
   var contentLen = dataView.readInt32 (false) * 2;
-  //var offset = dataView.endianSwap (dataView.getInt32 ()) * 2;
-  //var contentLen = dataView.endianSwap (dataView.getInt32 ()) * 2;
   return [offset, contentLen];
 }
 
