@@ -1,7 +1,7 @@
 Shapefile
 =========
 
-Shapefile makes ESRI shapefiles available in Javascript. Currently all 
+Shapefile makes ESRI shapefiles available programmatically. Currently all 
 shape types other than MultiPatch have been implemented. MultiPatch is a 
 complex shape that will require some thought. Further only Polygon has
 been tested as I only have Polygon shapefiles at the moment and have not
