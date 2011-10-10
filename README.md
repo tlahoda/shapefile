@@ -16,16 +16,12 @@ Shapefile is available in both Javascript and Ruby with a C++ version
 coming sometime. A Java version may be considered at some point but at
 this time I do not intend on writing one.
 
-A live two dimensional orthographic projection example can be found at
-http://tlahoda.github.com/shapefile/examples/render2d.html A three 
-dimensional WebGL example can be found at 
+A live two dimensional orthographic projection Javascript example can be
+found at http://tlahoda.github.com/shapefile/examples/render2d.html A
+three dimensional WebGL example can be found at 
 http://tlahoda.github.com/shapefile/examples/webgl.html . Be forewarned 
 this demo may take a long time to load (as in a minute or so) on some 
 browsers (namely firefox). It is best viewed in Google Chrome.
-
-Usage
------
-
 
 --------------------------------------------------------------------------
 ####Copyright (C) 2011 Thomas P. Lahoda
