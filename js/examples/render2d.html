@@ -1,0 +1,105 @@
+<!--
+ file index.html
+ Contains the sample html page for rendering a shapefile.
+
+ Copyright (C) 2011 Thomas P. Lahoda
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+-->
+
+<html>
+  <head>
+    <script type="text/javascript" src="../external/prototype.js"></script>
+    <script type="text/javascript" src="../external/jdataview.js"></script>
+    <script type="text/javascript" src="../external/jdataview_reader.js"></script>
+    <script type="text/javascript" src="../external/functional_arrays.js"></script>
+    <script type="text/javascript" src="../external/coordinate_transforms.js"></script>
+    <script type="text/javascript" src="../shapefile.js"></script>
+    <script type="text/javascript" src="../readers.js"></script>
+    <script type="text/javascript" src="../examples/render2d.js"></script>
+
+    <script type="text/javascript">
+      function fixVertex (vertex) {
+        return invert (shift (scale (toOrtho (vertex), 400), 400), 800, 1);
+      }
+
+      function drawLats (screen, color) {
+        var context = screen.getContext ("2d");
+        context.strokeStyle = color.to_rgb_string ();
+
+        for (var lat = -90; lat <= 90; lat += 10) {
+          var startPoint = fixVertex ([lat, 0]);
+          context.beginPath ();
+          context.moveTo (startPoint[0], startPoint[1]);
+
+          for (var lon = 0; lon <= 360; lon += 1) {
+            var point = fixVertex ([lat, lon]);
+            context.lineTo (point[0], point[1]);
+          }
+          context.stroke ();
+          context.closePath ();
+        }
+      };
+
+      function drawLons (screen, color) {
+        var context = screen.getContext ("2d");
+        context.strokeStyle = color.to_rgb_string ();
+
+        for (var lon = 0; lon < 360; lon += 10) {
+          var startPoint = fixVertex ([-90, lon]);
+          context.beginPath ();
+          context.moveTo (startPoint[0], startPoint[1]);
+
+          for (var lat = -90; lat <= 90; lat += 1) {
+            var point = fixVertex ([lat, lon]);
+            context.lineTo (point[0], point[1]);
+          }
+          context.stroke ();
+          context.closePath ();
+        }
+      };
+
+      function ready () {
+        var screen = document.getElementById ("screen");
+        if (screen.getContext) {
+          try {
+            var shapeFileName = "../shapefiles/northamerica_adm0";
+            var shapeFile = new ShapeFile (shapeFileName);
+            
+            shapeFile.shapes.for_each (function (shape) { shape.eachVertex (fixVertex); });
+
+            shapeFile.shapes.for_each (render, screen.getContext ("2d"), new Color (0xFF, 0x00, 0x00));
+
+            var llColor = new Color (0, 0, 0);
+            drawLats (screen, llColor);
+            drawLons (screen, llColor);
+
+          } catch (error) {
+            var messages = document.getElementById ("messages");
+            messages.innerHTML = error;
+            console.log (error);
+          }
+        }
+      }
+    </script>
+  </head>
+  <body onLoad="ready ();">
+    <div id="messages" width="800" height="800" z-index="10" style="position: relative; float: top; display: inline;"></div>
+    <canvas id="screen" width="800" height="800" z-index="0" style="border: solid 1px; position: absolute; left: 0px; display: inline;">
+      Your browser doesn't support canvas.
+    </canvas>
+  </body>
+</html>
+

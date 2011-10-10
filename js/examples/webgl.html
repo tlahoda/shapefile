@@ -1,0 +1,174 @@
+<!--
+ file webgl.html
+ Contains the sample html page for rendering a shapefile using WebGL.
+
+ Copyright (C) 2011 Thomas P. Lahoda
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+-->
+
+<html>
+  <head>
+    <script type="text/javascript" src="../external/prototype.js"></script>
+    <script type="text/javascript" src="../external/jdataview.js"></script>
+    <script type="text/javascript" src="../external/jdataview_reader.js"></script>
+    <script type="text/javascript" src="../external/functional_arrays.js"></script>
+    <script type="text/javascript" src="../external/coordinate_transforms.js"></script>
+    <script type="text/javascript" src="../shapefile.js"></script>
+    <script type="text/javascript" src="../readers.js"></script>
+    <script type="text/javascript" src="../examples/model_builders.js"></script>
+    <script type="text/javascript" src="../external/webglu/src/webglu.js"></script>
+
+    <script type="text/javascript">
+      var scalingFactor = 5;
+
+      function fixVertex (vertex) {
+        return scale (toWebGL (vertex), scalingFactor);
+      }
+
+      function drawAxis () {
+        var vertices = [[0, 0, -50], [0, 0, 50], [0, -50, 0], [0, 50, 0], [-50, 0, 0], [50, 0, 0]];
+        var colors = [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]];
+        return makeModel ($W.GL.LINES, vertices, colors);
+      }
+
+      function drawGlobe () {
+        var vertices = new Array ();
+        for (var lat = -90; lat <= 90; lat += 5) {
+          for (var lon = 0; lon <= 360; lon += 5) {
+            vertices.push (fixVertex ([lat, lon]));
+            vertices.push (fixVertex ([lat + 10, lon]));
+          }
+        }
+        return makeModel ($W.GL.TRIANGLE_STRIP, vertices, makeVertexColors (vertices, [0, 0, 1]));
+      }
+
+      function drawLats () {
+        var vertices = new Array ();
+        var colors = new Array ();
+        for (var lat = -90; lat <= 90; lat += 10) {
+          for (var lon = 0; lon <= 360; lon += 1) {
+            var vertex = fixVertex ([lat, lon]);
+            vertices.push (vertex);
+            colors.push ((lat == 0) ? [1, 0, 0] : [0, 0, 0]);
+            if (lon != 0 && lon != 360) {
+              vertices.push (vertex);
+              colors.push ((lat == 0) ? [1, 0, 0] : [0, 0, 0]);
+            }
+          }
+        }
+        return makeModel ($W.GL.LINES, vertices, makeVertexColors (vertices, [0, 0, 0]));
+      }
+
+      function drawLons () {
+        var vertices = new Array ();
+        for (var lon = 0, j = 0; lon < 360; lon += 10) {
+          for (var lat = -90; lat <= 90; lat += 1) {
+            var vertex = fixVertex ([lat, lon]);
+            vertices.push (vertex);
+            if (lat != -90 && lat != 90) vertices.push (vertex);
+          }
+        }
+        return makeModel ($W.GL.LINES, vertices, makeVertexColors (vertices, [0, 0, 0]));
+      }
+
+      function rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot) {
+        globeModel.setRotation (xRot, yRot, 0);
+        shapeFile.shapes.forEach (function (shape) { shape.model.setRotation (xRot, yRot, 0); });
+        latModel.setRotation (xRot, yRot, 0);
+        lonModel.setRotation (xRot, yRot, 0);
+      }
+
+      function ready () {
+        if (!$W.initialize ()) return;
+        $W.GL.clearColor (0.9, 0.9, 0.9, 1.0);
+        $W.camera.setPosition (2, 5, 6.5);
+        $W.camera.setTarget (0, 0, 0);
+        $W.useGameGLU();
+
+        var axisModel;
+        var globeModel;
+        var shapeFile;
+        var latModel;
+        var lonModel;
+
+        try {
+          shapeFile = new ShapeFile ("../shapefiles/northamerica_adm0");
+          shapeFile.shapes.for_each (function (shape) { shape.eachVertex (fixVertex); });
+
+          axisModel = drawAxis ();
+          globeModel = drawGlobe ();
+          shapeFile.shapes.for_each (buildModels, [1, 0, 0]);
+          latModel = drawLats ();
+          lonModel = drawLons ();
+
+        } catch (error) {
+          document.getElementById ("messages").innerHTML = error;
+          console.log (error);
+        }
+
+        var location = new Array (3);
+        var xRot = -25;
+        var yRot = 0;
+
+        rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
+
+        $G.event.bind ('left', function () {
+          xRot += 1;
+          if (xRot > 360) xRot = 0;
+          rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
+        });
+
+        $G.event.bind ('right', function () {
+          xRot -= 1;
+          if (xRot < -360) xRot = 0;
+          rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
+        });
+
+        $G.event.bind ('up', function () {
+          yRot += 1;
+          if (yRot > 360) yRot = 0;
+          rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
+        });
+
+        $G.event.bind ('down', function () {
+          yRot -= 1;
+          if (yRot < -360) yRot = 0;
+          rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
+        });
+
+        $G.event.bind ('r', function () {
+          xRot = -25;
+          yRot = 0;
+          rotate (globeModel, shapeFile, latModel, lonModel, xRot, yRot);
+        });
+
+        $W.start ();
+      }
+    </script>
+  </head>
+  <body onLoad="ready ();">
+    <div id="messages" width="1200" height="800" z-index="10"></div>
+    <canvas id="canvas" width="1200" height="800" z-index="0">
+      Your browser doesn't support canvas.
+    </canvas>
+    <div>
+      <img src="../examples/images/arrow-1-left.png" border="0"> <img src="../examples/images/arrow-1-right_0.png" border="0"> rotates the globe to the left or the right<br>
+      <img src="../examples/images/arrow-1-up_0.png" border="0"> <img src="../examples/images/arrow-1-down.png" border="0"> rotates the globe up or down<br>
+      r resets the globe to the original position.
+    </div>
+  </body>
+</html>
+
