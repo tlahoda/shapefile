@@ -27,11 +27,11 @@ module Shape
       @header = Header.read(shx)
 
       @numShapes = ((@header.fileLength * 2) - 100) / 8
-      @shapes = Array.new(@numShapes);
-      shapeFactory = ShapeFactory.new
       
       shp = File.new(fileName + ".shp", "rb")
+      shapeFactory = ShapeFactory.new
 
+      @shapes = Array.new(@numShapes);
       @shapes = @shapes.collect do |shape|
         offset = BinData::Int32be.read(shx) * 2 + 8
         contentLength = BinData::Int32be.read(shx) * 2
@@ -41,12 +41,8 @@ module Shape
         shape.read(shp)
       end
 
-      shx.close
       shp.close
-
-      @shapes.each do |shape|
-        puts shape.shapeType
-      end
+      shx.close
     end
   end
 end
