@@ -12,6 +12,10 @@ Shapefile is designed to be rendering method agnostic and accomplishes
 this by exposing the vertices as lat/lon points that may then be
 transformed to the desired projection.
 
+Shapefile is available in both Javascript and Ruby with a C++ version
+coming sometime. A Java version may be considered at some point but at
+this time I do not intend on writing one.
+
 A live two dimensional orthographic projection example can be found at
 http://tlahoda.github.com/shapefile/examples/render2d.html A three 
 dimensional WebGL example can be found at 
