@@ -22,19 +22,30 @@ require 'ShapeFactory'
 
 module Shape
   class Shapefile
+    $WORD_LENGTH = 2
+    $HEADER_LENGTH = 100
+    $SHX_RECORD_LENGTH = 8
+    $SHAPE_START_OFFSET = 8
+    $SHX_EXTENSION = ".shx"
+    $SHP_EXTENSION = ".shp"
+    $BINARY_READ = "rb"
+
+    attr_accessor :header
+    attr_accessor :numShapes
+
     def initialize(fileName)
-      shx = File.new(fileName + ".shx", "rb")
+      shx = File.new(fileName + $SHX_EXTENSION, $BINARY_READ)
       @header = Header.read(shx)
 
-      @numShapes = ((@header.fileLength * 2) - 100) / 8
+      @numShapes = ((@header.fileLength * $WORD_LENGTH) - $HEADER_LENGTH) / $SHX_RECORD_LENGTH
       
-      shp = File.new(fileName + ".shp", "rb")
+      shp = File.new(fileName + $SHP_EXTENSION, $BINARY_READ)
       shapeFactory = ShapeFactory.new
 
       @shapes = Array.new(@numShapes);
       @shapes = @shapes.collect do |shape|
-        offset = BinData::Int32be.read(shx) * 2 + 8
-        contentLength = BinData::Int32be.read(shx) * 2
+        offset = BinData::Int32be.read(shx) * $WORD_LENGTH + $SHAPE_START_OFFSET
+        contentLength = BinData::Int32be.read(shx) * $WORD_LENGTH
         
         shape = shapeFactory.create(@header.shapeType)
         shp.seek(offset, IO::SEEK_SET)
