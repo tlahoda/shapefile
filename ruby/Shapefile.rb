@@ -32,6 +32,7 @@ module Shape
 
     attr_accessor :header
     attr_accessor :numShapes
+    attr_accessor :shapes
 
     def initialize(fileName)
       shx = File.new(fileName + $SHX_EXTENSION, $BINARY_READ)
