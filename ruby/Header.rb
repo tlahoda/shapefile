@@ -22,8 +22,10 @@ require 'bindata'
 
 module Shape
   class Header < BinData::Record
+    $NUM_UNUSED_BYTES = 20
+
     int32be :fileCode
-    skip :unused, :length => 20
+    skip :unused, :length => $NUM_UNUSED_BYTES
     int32be :fileLength
     int32le :version
     int32le :shapeType
