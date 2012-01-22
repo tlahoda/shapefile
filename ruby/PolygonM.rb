@@ -18,22 +18,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 require 'rubygems'
-require 'bindata'
+require 'Polygon'
+require 'MPart'
 
 module Shape
-  class PolygonM < BinData::Record
-    int32le :shapeType
-    double_le :xMin
-    double_le :yMin
-    double_le :xMax
-    double_le :yMax
-    int32le :numParts
-    int32le :numPoints
-    array :parts, :type => :int32le, :initial_length => :numParts
-    array :points, :type => :double_le, :initial_length => :numPoints
-    double_le :mMin
-    double_le :mMax
-    array :mArray, :type => :double_le, :initial_length => :numPoints
+  class PolygonM < Polygon
+    MPart :mpart
   end
 end
 

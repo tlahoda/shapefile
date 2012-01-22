@@ -18,25 +18,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 require 'rubygems'
-require 'bindata'
+require 'PolyLine'
+require 'ZPart'
+require 'MPart'
 
 module Shape
-  class PolyLineZ < BinData::Record
-    int32le :shapeType
-    double_le :xMin
-    double_le :yMin
-    double_le :xMax
-    double_le :yMax
-    int32le :numParts
-    int32le :numPoints
-    array :parts, :type => :int32le, :initial_length => :numParts
-    array :points, :type => :double_le, :initial_length => :numPoints
-    double_le :zMin
-    double_le :zMax
-    array :zArray, :type => :double_le, :initial_length => :numPoints
-    double_le :mMin
-    double_le :mMax
-    array :mArray, :type => :double_le, :initial_length => :numPoints
+  class PolyLineZ < PolyLine
+    ZPart :zpart
+    MPart :mpart
   end
 end
 

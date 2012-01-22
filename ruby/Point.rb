@@ -18,11 +18,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 require 'rubygems'
-require 'bindata'
+require 'Shape'
 
 module Shape
-  class Point < BinData::Record
-    int32le :shapeType
+  class Point < Shape
     double_le :x
     double_le :y
   end
