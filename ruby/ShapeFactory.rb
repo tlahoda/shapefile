@@ -33,8 +33,8 @@ require 'MultiPointM'
 
 module Shape
   class ShapeFactory
-    def create(shapeType)
-      case shapeType
+    def create(shape_type)
+      case shape_type
         when 0
           NullShape.new
         when 1

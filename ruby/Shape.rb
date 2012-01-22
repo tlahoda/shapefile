@@ -22,7 +22,7 @@ require 'bindata'
 
 module Shape
   class Shape < BinData::Record
-    int32le :shapeType
+    int32le :shape_type
   end
 end
 

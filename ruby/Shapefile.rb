@@ -31,24 +31,24 @@ module Shape
     $BINARY_READ = "rb"
 
     attr_accessor :header
-    attr_accessor :numShapes
+    attr_accessor :num_shapes
     attr_accessor :shapes
 
-    def initialize(fileName)
-      shx = File.new(fileName + $SHX_EXTENSION, $BINARY_READ)
+    def initialize(file_name)
+      shx = File.new(file_name + $SHX_EXTENSION, $BINARY_READ)
       @header = Header.read(shx)
 
-      @numShapes = ((@header.fileLength * $WORD_LENGTH) - $HEADER_LENGTH) / $SHX_RECORD_LENGTH
+      @num_shapes = ((@header.file_length * $WORD_LENGTH) - $HEADER_LENGTH) / $SHX_RECORD_LENGTH
       
-      shp = File.new(fileName + $SHP_EXTENSION, $BINARY_READ)
+      shp = File.new(file_name + $SHP_EXTENSION, $BINARY_READ)
       shapeFactory = ShapeFactory.new
 
-      @shapes = Array.new(@numShapes);
+      @shapes = Array.new(@num_shapes);
       @shapes = @shapes.collect do |shape|
         offset = BinData::Int32be.read(shx) * $WORD_LENGTH + $SHAPE_START_OFFSET
         contentLength = BinData::Int32be.read(shx) * $WORD_LENGTH
         
-        shape = shapeFactory.create(@header.shapeType)
+        shape = shapeFactory.create(@header.shape_type)
         shp.seek(offset, IO::SEEK_SET)
         shape.read(shp)
       end
