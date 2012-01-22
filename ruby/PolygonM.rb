@@ -23,7 +23,7 @@ require 'MPart'
 
 module Shape
   class PolygonM < Polygon
-    MPart :mpart
+    MPart :m_part
   end
 end
 

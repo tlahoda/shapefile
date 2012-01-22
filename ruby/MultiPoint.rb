@@ -19,14 +19,12 @@
 #
 require 'rubygems'
 require 'Shape'
+require 'BoundingBox'
 
 module Shape
   class MultiPoint < Shape
-    double_le :xMin
-    double_le :yMin
-    double_le :xMax
-    double_le :yMax
-    int32le :numPoints
+    BoundingBox :b_box
+    int32le :num_points
     array :points, :type => :double_le, :initial_length => :numPoints
   end
 end

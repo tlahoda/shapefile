@@ -24,8 +24,8 @@ require 'MPart'
 
 module Shape
   class PolyLineZ < PolyLine
-    ZPart :zpart
-    MPart :mpart
+    ZPart :z_part
+    MPart :m_part
   end
 end
 

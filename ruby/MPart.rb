@@ -19,12 +19,12 @@
 #
 require 'rubygems'
 require 'bindata'
+require 'Bounds'
 
 module Shape
   class MPart < BinData::Record
-    double_le :mMin
-    double_le :mMax
-    array :mArray, :type => :double_le, :initial_length => :numPoints
+    Bounds :bounds
+    array :m_array, :type => :double_le, :initial_length => :numPoints
   end
 end
 

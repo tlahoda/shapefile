@@ -19,24 +19,21 @@
 #
 require 'rubygems'
 require 'bindata'
+require 'BoundingBox'
+require 'Bounds'
 
 module Shape
   class Header < BinData::Record
     $NUM_UNUSED_BYTES = 20
 
-    int32be :fileCode
+    int32be :file_code
     skip :unused, :length => $NUM_UNUSED_BYTES
-    int32be :fileLength
+    int32be :file_length
     int32le :version
-    int32le :shapeType
-    double_le :xMin
-    double_le :yMin
-    double_le :xMax
-    double_le :yMax
-    double_le :zMin
-    double_le :zMax
-    double_le :mMin
-    double_le :mMax
+    int32le :shape_type
+    BoundingBox :b_box
+    Bounds :z_bounds
+    Bounds :m_bounds
   end
 end
 

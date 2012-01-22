@@ -23,7 +23,7 @@ require 'MPart'
 
 module Shape
   class MultiPointM < MultiPoint
-    MPart :mpart
+    MPart :m_part
   end
 end
 

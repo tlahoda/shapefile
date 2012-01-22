@@ -19,12 +19,12 @@
 #
 require 'rubygems'
 require 'bindata'
+require 'Bounds'
 
 module Shape
   class ZPart < BinData::Record
-    double_le :zMin
-    double_le :zMax
-    array :zArray, :type => :double_le, :initial_length => :numPoints
+    Bounds :bounds
+    array :z_array, :type => :double_le, :initial_length => :numPoints
   end
 end
 

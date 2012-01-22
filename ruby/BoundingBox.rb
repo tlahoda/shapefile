@@ -1,5 +1,5 @@
 #
-# @file Polygon.rb Contains the Polygon class.
+# @file BoundingBox.rb Contains the BoundingBox class.
 #
 # Copyright (C) 2011 Thomas P. Lahoda
 #
@@ -18,16 +18,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 require 'rubygems'
-require 'Shape'
-require 'BoundingBox'
+require 'bindata'
 
 module Shape
-  class Polygon < Shape
-    BoundingBox :b_box
-    int32le :num_parts
-    int32le :num_points
-    array :parts, :type => :int32le, :initial_length => :num_parts
-    array :points, :type => :double_le, :initial_length => :num_points
+  class BoundingBox < BinData::Record
+    double_le :x_min
+    double_le :y_min
+    double_le :x_max
+    double_le :y_max
   end
 end
 
