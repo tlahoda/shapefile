@@ -1,5 +1,5 @@
 #
-# @file shapefile.coffee Contains shapefile readers.
+# @file readers.coffee Contains shapefile readers.
 #
 # Copyright (C) 2012 Thomas P. Lahoda
 #
