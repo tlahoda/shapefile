@@ -108,7 +108,7 @@ class MultiPointM extends MultiPoint
 ##############################################################################
 class Polygon extends Shape
   constructor: (shapeType, shp) ->
-    super shapeType, shp, 8
+    super shapeType, shp, 7
 
     @header.apply_range 1, 5, readDouble, shp
     @header.apply_range 5, 7, readInt32, shp
